@@ -15,7 +15,6 @@ githrun.html,1770286129107,7d304bf596549f6f19bb584e265edfae63f540b8f3655bedb0391
 favicon.ico,1753949668465,95e1094d4b7771bb0650f5173245127d2af1a88f7c2e13c4c7b54c2dc093878b
 code_gallery.html,1770541153974,1431cb239b2e78d985c1378c1788ee823f1330a0747929ed3764127bc03943f7
 codenct.html,1753969397367,bdc2aedd207e32259245b1e0c71d9cf048aa69883f565876341a7b1e57a68e1e
-bsc.html,1770385445400,028ab0475330c2e9f4cb11c77795561d5c2c7d7d24a64b92b642cdc6298771bf
 animejs.html,1769423789414,060be413e16e012dce5a4b88b450ae637edab7a0e8d7bf355055edd5020eacf2
 animejs-logo.svg,1769358659909,6cb4a7a4c40d37c9b2c5cd4d41d369296a2750055f1605f42d7e6dfcbc0a0fa9
 404.html,1766923842632,338f82538261ed68f4552754972fc23353b00fc4a812184d1c2b7ad07db12e19
@@ -302,33 +301,34 @@ download/banneremail.png,1763280777860,278c13e06d9f0cc243290c495eb1b4b0f1edd2a1c
 screenshots/Write a program to recive Cartesian co-ordinates (x, y) of a_ba3b1f.jpg,1770541110933,585e407d9f39ce263bca62d9540913a860cd70fd003172f94fa2a449dab4b400
 screenshots/Write a Function power(a, b), to calculate the value of a ra_2cd482.jpg,1770541122253,0ab9374c95be145aa0566a10f31bfe2111cf841ae4527b12a6df0c3a1011f514
 screenshots/WAP to display the series using user defined method. 0, 7, 2_4f1c31.jpg,1770541151488,9ff2de7d64acce85055ceb4eeb33e5442bd78562c40afd752294f43b597deec7
-screenshots/WAP to accept diagonal of a square and calculate area, parim_28623a.jpg,1770541129604,2041e7ddcb3266874c0944248c5f561415f8bdc880ea2ca204e0c0b93028b95d
 screenshots/WAP that accept seconds as input and represent it an hours, _65054a.jpg,1770541130150,2505419e868eac737c79d5dd85684191a00e6ccc9e446ff1780148870498838a
 screenshots/If a five digit number is input through the keyboard, write _2f6bfc.jpg,1770541110733,ac2304ee3f4e401be0fb6d7172ffd43a143cb8d9c01103bd753bb6ef0a7897ab
-screenshots/A year is entered through the keyboard, write a program to d_f2c98a.jpg,1770541120238,8da79c6554ba557b4b3f50be54a5884c18f3515ba029819814eb6b68294417b2
+screenshots/WAP to accept diagonal of a square and calculate area, parim_28623a.jpg,1770541129604,2041e7ddcb3266874c0944248c5f561415f8bdc880ea2ca204e0c0b93028b95d
 screenshots/Write a program to store roll no, name and marks of 5 studen_79aba4.jpg,1770541139354,6a6de8876674b964a6a7a31eb63d6f7c5c643e5b5d44ef3b32289f915214fd36
+screenshots/A year is entered through the keyboard, write a program to d_f2c98a.jpg,1770541120238,8da79c6554ba557b4b3f50be54a5884c18f3515ba029819814eb6b68294417b2
 screenshots/Write a program to input sum(p), rate of interest(r), time(t_5a8093.jpg,1770541131435,3968e7475086b31d5132351f14113cfd61111e3183bdb1a00593f6976946ee39
+screenshots/Write a program to check whether a triangle is valid or not,_fd0dcc.jpg,1770541112399,b209f2935d5eef0dda42296eeadb4413863406fa92af3f6511672ee0d0d44477
 screenshots/Write a program to generate all combination of 1, 2 and 3 us_50b8ae.jpg,1770541121888,e58e751d605a78948b46a5127e16a312db258ee2d0f3d70a36c2cbbd85e2cb40
+screenshots/Write a program that takes the radius of a circle as input, _4c0c56.jpg,1770541106941,a02ffd0d4c008c11945ae6d861340fbab298ee075065a4a2d7169911f841483e
+screenshots/Write a program that takes the radius of a circle as input, _85f975.jpg,1770541102302,d572534e715973e0887c5d11c3144518dcd010c833887dd663ec512b7592c39c
 screenshots/According to a study, the approximate level of intelligence _bed50a.jpg,1770541117304,054f9987f0604720c20aabf65d140cf284b25591a9b7a526ca45dc57d68d8a2f
 screenshots/Write a program to receive values of latitude (L1, L2) and l_3129d7.jpg,1770541111135,b0256042b1a5ca1dbcc12f2b09766fc04ff3050d7e7c52c50c97766e9b00bf80
-screenshots/Write a program to check whether a triangle is valid or not,_fd0dcc.jpg,1770541112399,b209f2935d5eef0dda42296eeadb4413863406fa92af3f6511672ee0d0d44477
-screenshots/Write a program that takes the radius of a circle as input, _85f975.jpg,1770541102302,d572534e715973e0887c5d11c3144518dcd010c833887dd663ec512b7592c39c
-screenshots/Write a program that takes the radius of a circle as input, _4c0c56.jpg,1770541106941,a02ffd0d4c008c11945ae6d861340fbab298ee075065a4a2d7169911f841483e
-screenshots/Write a C program that defines an array of integers, and inc_bee16b.jpg,1770541109155,833fb017521db090afd026ed22e5710e4baffe419c4749d70819c2b3c39ab3cb
-screenshots/Write a C program that takes two positive integers, L (Lower_c330d3.jpg,1770541128872,308435dbf34dffc7e169b554cc68ad91406b3069ba671f8193c4c6ec0480ac9b
 screenshots/Write a function that receives integers and returns the sum,_3523d3.jpg,1770541122617,103d4b34a2e4a1159f11a060e7b9a5618b53090b5ea878ad7ae9581e81350cb5
+screenshots/Write a C program that takes two positive integers, L (Lower_c330d3.jpg,1770541128872,308435dbf34dffc7e169b554cc68ad91406b3069ba671f8193c4c6ec0480ac9b
 screenshots/Write a C program that opens its own source code file, reads_cd2a92.jpg,1770541100073,928a4e42accb9492efb0996a2a8f187912a53094eb24f890283dd70bc1a11b50
-screenshots/Given three variables x, y, z, write a function to circularl_1c1cc3.jpg,1770541119502,003920e0306d15e7c5e07354ac8a7df52bb90bc64c725adbb75dc0016f2a0521
-screenshots/If value of an angle is input through the keyboard, write a _d05f43.jpg,1770541111499,a25ae3624609a6c984def7af79a7aa770eb2ccbdc861b4e4979cac2c9b8e03b6
-screenshots/Pattern (a) 1, -3, 5, -7, 9, -11, ... upto n times (b) 0, 3,_327d0c.jpg,1770541133302,5870f7bab0acf35294787e0b5258c36e7143cb9b38f155d9c11883edbcaf4c2c
+screenshots/Write a C program that defines an array of integers, and inc_bee16b.jpg,1770541109155,833fb017521db090afd026ed22e5710e4baffe419c4749d70819c2b3c39ab3cb
 screenshots/Write a C program that defines an array of integers, and inc_8638b2.jpg,1770541098239,c5993238a6cdad38c3358111f7403dbbccfbbdf9fc3f5e8cc0231633876d8f00
-screenshots/If ages of Ram, Shyam and Ajay are input through the keyboar_642996.jpg,1770541112183,ffa94d6819686f5ad7a53089c6dd8f0adbd99c14388da30b572c2f000987e084
+screenshots/Pattern (a) 1, -3, 5, -7, 9, -11, ... upto n times (b) 0, 3,_327d0c.jpg,1770541133302,5870f7bab0acf35294787e0b5258c36e7143cb9b38f155d9c11883edbcaf4c2c
+screenshots/Given three variables x, y, z, write a function to circularl_1c1cc3.jpg,1770541119502,003920e0306d15e7c5e07354ac8a7df52bb90bc64c725adbb75dc0016f2a0521
 screenshots/If a character is entered through the keyboard, Write a prog_ec390e.jpg,1770541120419,eb74a334f56e11ddad231d82498d479c51d201faa7d246ce2f414b84ede10319
 screenshots/Given the length and breadth of a rectangle, write a program_2b5a9c.jpg,1770541112801,c394c14ec0d48382b173459601a3fa5d1c8b9046e239144e5cae8d251778d537
+screenshots/If ages of Ram, Shyam and Ajay are input through the keyboar_642996.jpg,1770541112183,ffa94d6819686f5ad7a53089c6dd8f0adbd99c14388da30b572c2f000987e084
+screenshots/If value of an angle is input through the keyboard, write a _d05f43.jpg,1770541111499,a25ae3624609a6c984def7af79a7aa770eb2ccbdc861b4e4979cac2c9b8e03b6
 screenshots/Given a point (x, y), write a program to find out if it lies_85ff55.jpg,1770541113435,8c327649dd3306a9f3d82ef65b95770ccdb202161d9f286f328ed87592fa7950
 screenshots/Write a function that receives integers and returns the sum,_221bb4.jpg,1770541122806,2daa01be8cb28fb94f3aa718376a65f15075f96ff40552a0d8e1019d61b154e5
-screenshots/Given three points (x1, y1), (x2, y2), and (x3, y3), write a_006596.jpg,1770541113002,5091767ae515ba41bbe63032a81ae51a366f9aa68757eb12d7eaaa78924a273c
 screenshots/WAP to input sum (p), rate of interest (r), time (t) and typ_e9841c.jpg,1770541145619,074572fa47f1d98c67bf1793f60e98a605722cd8c803b8e5e1e6ca697176a31d
+screenshots/Given three points (x1, y1), (x2, y2), and (x3, y3), write a_006596.jpg,1770541113002,5091767ae515ba41bbe63032a81ae51a366f9aa68757eb12d7eaaa78924a273c
 screenshots/According to Gregorian calender, it was Monday on the date 0_977f3c.jpg,1770541113821,cde190aa229bed4dcf3a6af7d21e6f0c2c3fd8e8a47acf03ec03fcf037d6e706
 screenshots/Given the coordiantes (x, y) of center of a circle and its r_222b8e.jpg,1770541113238,26033017a4d9929aa30d33efc06bd21a5effe6d02352fc5b5fad3eb2dd2d3355
 screenshots/According to Gregorian calender, it was Monday on the date 0_4f9c83.jpg,1770541113623,fc3112dce8aa0cbf1fc179b6a28199c721fd86694b3fd0514212e6921f015879
+bsc.html,1770559872284,b9c96f5df7da71742dcccdfe037a4861a6435d191cb21653ba76b00f4df53846
