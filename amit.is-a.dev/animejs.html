@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amit Dutta // Core Module</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --text: #e1e1e1;
+            --accent: #d4ff00; /* Neon Lime */
+            --accent-dim: rgba(212, 255, 0, 0.1);
+            --dark-gray: #1a1a1a;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            width: 100vw;
+            /* Hide scrollbar for cleaner look */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        /* --- UTILS --- */
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .absolute-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .uppercase { text-transform: uppercase; }
+        .mono { font-family: var(--font-mono); }
+        .accent { color: var(--accent); }
+        
+        /* --- LAYOUT --- */
+        main { position: relative; width: 100%; z-index: 10; }
+        
+        section {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 120vh; /* Extra height for scroll effect */
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-title-container {
+            position: fixed; /* Fixed initially for parallax */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 12vw, 15rem);
+            font-weight: 700;
+            line-height: 0.8;
+            letter-spacing: -0.05em;
+            white-space: nowrap;
+            will-change: transform, letter-spacing, opacity;
+        }
+
+        .hero-subtitle {
+            margin-top: 2rem;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: #666;
+            opacity: 0; /* Animated in */
+        }
+
+        /* --- SCROLL DOWN INDICATOR --- */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            z-index: 20;
+        }
+        .scroll-line { width: 1px; height: 60px; background: var(--accent); transform-origin: top; }
+
+        /* --- ABOUT (STICKY STACK) --- */
+        .about-section {
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .about-text {
+            font-size: clamp(1.5rem, 3vw, 3.5rem);
+            line-height: 1.2;
+            font-family: var(--font-display);
+        }
+
+        .highlight-word {
+            display: inline-block;
+            color: var(--accent);
+            position: relative;
+        }
+        
+        .stat-block {
+            margin-top: 4rem;
+            display: flex;
+            gap: 4rem;
+        }
+        .stat-item h4 { font-size: 3rem; font-family: var(--font-display); margin-bottom: 0.5rem; }
+        .stat-item p { font-size: 0.8rem; color: #666; font-family: var(--font-mono); text-transform: uppercase; }
+
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- HORIZONTAL SCROLL SECTION (WORKS) --- */
+        .works-wrapper {
+            height: 400vh; /* Defines length of scroll */
+            position: relative;
+            z-index: 20;
+        }
+
+        .works-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            background: var(--dark-gray);
+        }
+
+        .works-track {
+            display: flex;
+            gap: 4vw;
+            padding-left: 10vw; /* Initial offset */
+            will-change: transform;
+        }
+
+        .work-card {
+            flex: 0 0 35vw; /* Width of card */
+            height: 60vh;
+            position: relative;
+            background: #000;
+            border: 1px solid #333;
+            transition: border-color 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .work-card { flex: 0 0 85vw; height: 50vh; }
+        }
+
+        .work-card:hover { border-color: var(--accent); }
+        
+        .work-img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .work-card:hover .work-img { opacity: 0.7; transform: scale(1.1); }
+
+        .work-num {
+            position: absolute; top: 1rem; right: 1rem;
+            font-family: var(--font-mono); font-size: 2rem; color: #333;
+            -webkit-text-stroke: 1px #fff;
+        }
+
+        .work-info { z-index: 2; position: relative; transform: translateY(20px); transition: transform 0.5s; }
+        .work-card:hover .work-info { transform: translateY(0); }
+        .work-title { font-size: 2rem; margin-bottom: 0.5rem; font-family: var(--font-display); }
+        .work-tags { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); }
+
+        /* --- CONTACT --- */
+        .contact-section {
+            min-height: 80vh;
+            background: var(--bg);
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .contact-big {
+            font-size: clamp(3rem, 10vw, 10rem);
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .contact-big:hover { color: var(--accent); }
+
+        .social-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+        }
+        
+        .social-links a {
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        .social-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 1px;
+            background: var(--accent); transition: width 0.3s;
+        }
+        .social-links a:hover::after { width: 100%; }
+
+        /* --- BG ELEMENTS --- */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+        
+        /* Cursor */
+        #cursor {
+            position: fixed; top: 0; left: 0;
+            width: 20px; height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        body.hovering #cursor {
+            width: 50px; height: 50px;
+            background-color: var(--accent-dim);
+            border-color: transparent;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND -->
+    <div class="bg-grid"></div>
+    <div id="cursor"></div>
+
+    <main>
+        
+        <!-- SECTION 1: HERO -->
+        <section class="hero" id="hero">
+            <div class="hero-title-container">
+                <div class="hero-title" id="hero-text">AMIT DUTTA</div>
+                <div class="hero-subtitle mono">[ Full Stack Developer & AI Enthusiast ]</div>
+            </div>
+            
+            <div class="scroll-indicator">
+                <span class="mono" style="font-size: 0.7rem;">SCROLL TO INITIALIZE</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ABOUT -->
+        <section class="about-section" id="about">
+            <div class="content-grid">
+                <div>
+                    <div class="mono accent" style="margin-bottom: 2rem;">// 01. PROFILE</div>
+                </div>
+                <div>
+                    <div class="about-text">
+                        I engineer digital <span class="highlight-word">experiences</span> that merge brutalist aesthetics with <span class="highlight-word">intelligent</span> architecture.
+                    </div>
+                    
+                    <p style="margin-top: 2rem; color: #888; line-height: 1.6;">
+                        Currently an undergrad at Acharya Prafulla Chandra College. I specialize in Python, Deep Learning, and Web Technologies. My code is clean, efficient, and purpose-driven.
+                    </p>
+
+                    <div class="stat-block">
+                        <div class="stat-item">
+                            <h4 id="stat-1">0</h4>
+                            <p>Projects</p>
+                        </div>
+                        <div class="stat-item">
+                            <h4 id="stat-2">0</h4>
+                            <p>Contributions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: HORIZONTAL WORKS -->
+        <div class="works-wrapper" id="works-wrapper">
+            <div class="works-sticky">
+                <div class="mono accent" style="position: absolute; top: 2rem; left: 2rem; z-index: 5;">// 02. SELECTED WORKS</div>
+                
+                <div class="works-track" id="works-track">
+                    
+                    <!-- Card 1 -->
+                    <a href="/codenct" class="work-card">
+                        <div class="work-num">01</div>
+                        <div style="background:linear-gradient(45deg, #111, #222); position:absolute; inset:0;"></div> <!-- Placeholder BG -->
+                        <div class="work-info">
+                            <div class="work-title">Number Systems</div>
+                            <div class="work-tags">[ JS / CALCULATOR / ALGORITHM ]</div>
+                        </div>
+                    </a>
+
+                    <!-- Card 2 -->
+                    <a href="https://pypi.org/project/adpkg/" class="work-card">
+                        <div class="work-num">02</div>
+                        <div style="background:linear-gradient(45deg, #0a1f0a, #1a2f1a); position:absolute; inset:0;"></div>
+                        <div class="work-info">
+                            <div class="work-title">ADPKG Lib</div>
+                            <div class="work-tags">[ PYTHON / PYPI / MATH ]</div>
+                        </div>
+                    </a>
+
+                    <!-- Card 3 -->
+                    <a href="https://compiler.amit.is-a.dev" class="work-card">
+                        <div class="work-num">03</div>
+                        <div style="background:linear-gradient(45deg, #222, #333); position:absolute; inset:0;"></div>
+                        <div class="work-info">
+                            <div class="work-title">Cloud Compiler</div>
+                            <div class="work-tags">[ RENDER / API / C++ ]</div>
+                        </div>
+                    </a>
+
+                    <!-- Card 4 -->
+                    <a href="https://amit.is-a.dev/bsc" class="work-card">
+                        <div class="work-num">04</div>
+                        <div style="background:linear-gradient(45deg, #111, #222); position:absolute; inset:0;"></div>
+                        <div class="work-info">
+                            <div class="work-title">WBSU Repo</div>
+                            <div class="work-tags">[ EDUCATION / ARCHIVE ]</div>
+                        </div>
+                    </a>
+                    
+                    <!-- Card 5 -->
+                    <a href="https://ada.amit.is-a.dev" class="work-card">
+                        <div class="work-num">05</div>
+                        <div style="background:linear-gradient(45deg, #0a1f0a, #1a2f1a); position:absolute; inset:0;"></div>
+                        <div class="work-info">
+                            <div class="work-title">Project ADA</div>
+                            <div class="work-tags">[ AI / DEEP LEARNING ]</div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: CONTACT -->
+        <section class="contact-section" id="contact">
+            <div>
+                <div class="mono accent" style="margin-bottom: 2rem;">// 03. INITIATE PROTOCOL</div>
+                <a href="mailto:amitdutta4255@gmail.com">
+                    <h2 class="contact-big">SAY HELLO</h2>
+                </a>
+                
+                <div class="social-links">
+                    <a href="https://github.com/notamitgamer">GITHUB</a>
+                    <a href="https://linkedin.com/in/notamitgamer">LINKEDIN</a>
+                    <a href="https://twitter.com/notamitgamer">TWITTER</a>
+                </div>
+
+                <div class="mono" style="margin-top: 4rem; opacity: 0.5; font-size: 0.8rem;">
+                    © 2025 AMIT DUTTA // SYSTEM ONLINE
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- CURSOR ---
+            const cursor = document.getElementById('cursor');
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animateCursor() {
+                // Smooth follow
+                cursorX += (mouseX - cursorX) * 0.1;
+                cursorY += (mouseY - cursorY) * 0.1;
+                
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Hover States
+            document.querySelectorAll('a, .contact-big').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
+
+            // --- SCROLL ANIMATION ENGINE ---
+            // This replicates the functionality of ScrollTrigger / Anime.js v4 ScrollTimeline
+            // We map scroll position to animation progress (seek)
+            
+            let animations = []; // Store animation objects
+
+            // 1. HERO ANIMATION
+            // Hero Text Spreads and Fades Out
+            const heroAnim = anime.timeline({
+                autoplay: false,
+                easing: 'linear'
+            })
+            .add({
+                targets: '#hero-text',
+                scale: [1, 20], // Zooms way in
+                opacity: [1, 0],
+                letterSpacing: ['-0.05em', '0.5em'],
+                duration: 1000
+            })
+            .add({
+                targets: '.hero-subtitle',
+                opacity: [1, 0],
+                translateY: [0, -50],
+                duration: 500
+            }, 0);
+
+            animations.push({
+                anim: heroAnim,
+                start: 0,
+                end: window.innerHeight * 1.2, // Play over 1.2 screen heights
+                element: document.querySelector('.hero')
+            });
+
+
+            // 2. WORKS HORIZONTAL SCROLL
+            const worksWrapper = document.getElementById('works-wrapper');
+            const worksTrack = document.getElementById('works-track');
+            
+            // Calculate how far to move: track width - viewport width
+            // We do this dynamically in the scroll loop to handle resize, but setup basic anim here
+            const worksAnim = anime({
+                targets: worksTrack,
+                translateX: ['0', '-80%'], // Move left
+                easing: 'linear',
+                autoplay: false,
+                duration: 1000
+            });
+
+            animations.push({
+                anim: worksAnim,
+                triggerElement: worksWrapper, // The tall wrapper
+                // Start when wrapper top hits top of viewport
+                // End when wrapper bottom hits bottom of viewport
+                type: 'sticky' 
+            });
+
+
+            // 3. STATS COUNT UP (Trigger once)
+            const statsSection = document.querySelector('.stat-block');
+            let statsPlayed = false;
+            
+            const playStats = () => {
+                if(statsPlayed) return;
+                anime({
+                    targets: '#stat-1',
+                    innerHTML: [0, 24],
+                    round: 1,
+                    easing: 'easeOutExpo',
+                    duration: 2000
+                });
+                anime({
+                    targets: '#stat-2',
+                    innerHTML: [0, 450],
+                    round: 1,
+                    easing: 'easeOutExpo',
+                    duration: 2500
+                });
+                statsPlayed = true;
+            };
+
+
+            // --- MAIN SCROLL LOOP ---
+            function onScroll() {
+                const scrollY = window.scrollY;
+                const winH = window.innerHeight;
+
+                // Handle Scrubbable Animations
+                animations.forEach(item => {
+                    let progress = 0;
+
+                    if (item.type === 'sticky') {
+                        // Logic for Sticky/Horizontal Scroll
+                        const rect = item.triggerElement.getBoundingClientRect();
+                        // Total distance to scroll is height of wrapper - viewport height
+                        const scrollDist = rect.height - winH;
+                        // How far have we scrolled into the wrapper?
+                        // When rect.top is 0, we are at start. When rect.top is -scrollDist, we are at end.
+                        const scrolled = -rect.top; 
+                        
+                        progress = Math.max(0, Math.min(1, scrolled / scrollDist));
+                    } else {
+                        // Standard Parallax/Scrub logic
+                        // Map scrollY between start and end pixels
+                        progress = Math.max(0, Math.min(1, (scrollY - item.start) / (item.end - item.start)));
+                    }
+                    
+                    // Seek the animation to the specific percentage
+                    item.anim.seek(item.anim.duration * progress);
+                });
+
+
+                // Handle "In View" Triggers (Simple)
+                const statRect = statsSection.getBoundingClientRect();
+                if (statRect.top < winH * 0.8) {
+                    playStats();
+                }
+
+                requestAnimationFrame(onScroll);
+            }
+
+            // --- INIT ---
+            // Initial animation for Hero Text entering
+            anime({
+                targets: '#hero-text',
+                opacity: [0, 1],
+                scale: [0.8, 1],
+                easing: 'easeOutExpo',
+                duration: 1500,
+                delay: 300
+            });
+            
+            anime({
+                targets: '.hero-subtitle',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutExpo',
+                duration: 1500,
+                delay: 800
+            });
+
+            anime({
+                targets: '.scroll-line',
+                scaleY: [0, 1],
+                easing: 'easeInOutQuad',
+                duration: 1000,
+                delay: 1500,
+                loop: true,
+                direction: 'alternate'
+            });
+
+            // Start Loop
+            window.addEventListener('scroll', onScroll);
+            onScroll(); // Trigger once on load
+            
+        });
+    </script>
+</body>
+</html>

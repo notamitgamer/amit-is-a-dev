@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mojic v2.1.2 | C Code Obfuscation</title>
+    <style>
+        /* --- NPM THEME & VARIABLES --- */
+        :root {
+            --npm-red: #cb3837;
+            --npm-dark-red: #a32d2c;
+            --web-blue: #2563eb; /* Blue from Web App */
+            --web-dark-blue: #1d4ed8;
+            --text-color: #333333;
+            --bg-color: #ffffff;
+            --sidebar-bg: #f7f7f7;
+            --code-bg: #292d3e;
+            --code-text: #bfc7d5;
+            --link-color: #cb3837;
+            --border-color: #e1e1e1;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --font-mono: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-color);
+            background: var(--bg-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ccc; 
+            border-radius: 5px;
+            border: 2px solid #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999; 
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--bg-color);
+            border-top: 5px solid var(--npm-red);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            height: 70px; /* Fixed height to keep it clean */
+        }
+
+        /* --- HAMBURGER ANIMATION (Spin) --- */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px 0; 
+            margin-right: 20px; 
+            flex-shrink: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .hamburger-box {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
+            width: 24px;
+            height: 2px;
+            background-color: var(--text-color);
+            border-radius: 4px;
+            position: absolute;
+            transition-property: transform;
+            transition-duration: 0.15s;
+            transition-timing-function: ease;
+        }
+
+        .hamburger-inner {
+            display: block;
+            top: 50%;
+            margin-top: -1px;
+            transition-duration: 0.22s;
+            transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        .hamburger-inner::before, .hamburger-inner::after {
+            content: "";
+            display: block;
+        }
+
+        .hamburger-inner::before {
+            top: -8px;
+            transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+        }
+
+        .hamburger-inner::after {
+            bottom: -8px;
+            transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        /* Active State (X Icon) */
+        .mobile-toggle.is-active .hamburger-inner {
+            transform: rotate(225deg);
+            transition-delay: 0.12s;
+            transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .mobile-toggle.is-active .hamburger-inner::before {
+            top: 0;
+            opacity: 0;
+            transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+        }
+
+        .mobile-toggle.is-active .hamburger-inner::after {
+            bottom: 0;
+            transform: rotate(-90deg);
+            transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            margin-right: auto; 
+            flex-shrink: 0;     
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .logo-svg {
+            height: 32px;
+            fill: var(--npm-red);
+        }
+
+        /* --- LOGO TEXT STACKING --- */
+        .logo-text {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .project-name-main {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+        }
+
+        .project-name-sub {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+        }
+
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; 
+            flex-shrink: 0; 
+            margin-left: 10px;
+        }
+
+        /* --- DESKTOP BUTTON STYLES --- */
+        .icon-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .icon-link:hover { 
+            color: var(--npm-red);
+            transform: scale(1.1);
+        }
+
+        /* Base CTA Mixin Style */
+        .btn-base {
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+            -webkit-tap-highlight-color: transparent;
+            color: white;
+        }
+
+        .btn-base:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-base:active { transform: translateY(0); }
+
+        /* NPM Button (Red) */
+        .npm-cta {
+            background: linear-gradient(135deg, #cb3837 0%, #d64544 100%);
+            box-shadow: 0 4px 6px rgba(203, 56, 55, 0.25);
+            border: 1px solid #b52d2c;
+        }
+
+        .npm-cta:hover {
+            box-shadow: 0 8px 15px rgba(203, 56, 55, 0.35);
+            background: linear-gradient(135deg, #a32d2c 0%, #cb3837 100%);
+        }
+
+        /* Web View Button (Blue) */
+        .web-cta {
+            background: linear-gradient(135deg, var(--web-blue) 0%, var(--web-dark-blue) 100%);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+            border: 1px solid #1e40af;
+        }
+
+        .web-cta:hover {
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.35);
+            background: linear-gradient(135deg, var(--web-dark-blue) 0%, var(--web-blue) 100%);
+        }
+
+        .cta-icon-svg {
+            height: 20px;
+            fill: white;
+        }
+
+        /* --- MOBILE ACTIONS (Initially Hidden) --- */
+        .mobile-actions {
+            display: none; /* Hidden on desktop */
+            flex-direction: column;
+            gap: 12px;
+            padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+            background: var(--bg-color);
+        }
+
+        .mobile-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-btn:active { transform: scale(0.98); }
+
+        .mobile-github {
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #000;
+        }
+
+        .mobile-npm {
+            background: linear-gradient(135deg, #cb3837 0%, #d64544 100%);
+            color: #fff;
+            border: 1px solid #b52d2c;
+        }
+
+        .mobile-web {
+            background: linear-gradient(135deg, var(--web-blue) 0%, var(--web-dark-blue) 100%);
+            color: #fff;
+            border: 1px solid #1e40af;
+        }
+
+        /* --- LAYOUT --- */
+        .main-wrapper {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            flex-shrink: 0;
+            transform: translateX(0); /* Default for desktop */
+        }
+
+        aside h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 10px;
+            margin-top: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        aside h3:first-child { margin-top: 0; }
+
+        aside ul { list-style: none; }
+        aside li { margin-bottom: 5px; }
+
+        aside a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        aside a:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--npm-red);
+        }
+
+        aside a.active {
+            background: rgba(203, 56, 55, 0.1);
+            color: var(--npm-red);
+            font-weight: 600;
+        }
+
+        /* --- CONTENT AREA --- */
+        main {
+            flex: 1;
+            padding: 2rem 4rem;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        h2 { font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--text-color); border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem; font-weight: 600; }
+        p { margin-bottom: 1rem; color: #444; }
+
+        .callout {
+            background: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            color: #5d4037;
+        }
+
+        .callout.danger {
+            background: #ffebee;
+            border-left: 5px solid var(--npm-red);
+            color: #c62828;
+        }
+        
+        .contact-box {
+            background: #f0f4f8;
+            border: 1px solid #d9e2ec;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        /* --- CODE BLOCKS --- */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            position: relative;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: rgba(0,0,0,0.05);
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #d63384;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th { background-color: #fafafa; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: auto;
+            background: #f7f7f7;
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .footer-link {
+            color: var(--npm-red);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 900px) {
+            .main-wrapper { flex-direction: column; }
+            
+            /* Clean Header: Hamburger + Logo only */
+            .header-container {
+                padding: 0 1.2rem;
+                height: 60px;
+                justify-content: flex-start; /* Left align */
+            }
+
+            .mobile-toggle { 
+                display: block; 
+            }
+
+            .logo-svg { height: 32px; } 
+            
+            /* Stacked Text for Mobile */
+            .logo-text {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+                justify-content: center;
+            }
+            
+            .project-name-main {
+                font-size: 1.1rem;
+                line-height: 1.1;
+            }
+            
+            .project-name-sub {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #666; /* Subtler color for "Documentation" */
+                line-height: 1.1;
+            }
+
+            /* Hide Desktop Links */
+            .header-links { display: none; }
+            
+            /* Show Mobile Action Bar */
+            .mobile-actions { display: flex; }
+            
+            /* Mobile Button Alignment Fixes */
+            .mobile-btn {
+                line-height: 1; 
+            }
+            
+            .mobile-btn i {
+                position: relative;
+                top: 2px; /* Push icon down to align with text baseline */
+            }
+            
+            /* Sidebar Styling */
+            aside {
+                position: fixed;
+                top: 60px; /* Below header */
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 60px);
+                z-index: 998;
+                transform: translateX(-100%);
+                border-right: none;
+                background: var(--bg-color);
+                /* Stronger Animation */
+                transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1), box-shadow 0.4s ease;
+                box-shadow: none;
+                padding-bottom: 100px;
+            }
+            
+            aside.open { 
+                transform: translateX(0); 
+                box-shadow: 10px 0 30px rgba(0,0,0,0.15); 
+            }
+            
+            main { padding: 1rem 1.5rem; }
+        }
+    </style>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <!-- Hamburger Animation -->
+            <button class="mobile-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <span class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                </span>
+            </button>
+            
+            <!-- Logo resets to intro -->
+            <a href="#" class="logo-area" onclick="handleNavClick(event, 'intro')">
+                <svg class="logo-svg" viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M780,250h-200l0-160h-50v160h-50V0H780V250z M200,250h-50V50h-50v200H0V0h200V250z" />
+                </svg>
+                
+                <!-- Stacked Text Logic -->
+                <div class="logo-text">
+                    <span class="project-name-main">mojic</span>
+                    <span class="project-name-sub">Documentation</span>
+                </div>
+            </a>
+
+            <!-- Desktop Links (Hidden on Mobile) -->
+            <div class="header-links">
+                <a href="https://github.com/notamitgamer/mojic" target="_blank" class="icon-link" title="GitHub Repository">
+                    <i class="fab fa-github"></i>
+                </a>
+                
+                <a href="https://www.npmjs.com/package/mojic" target="_blank" class="btn-base npm-cta" title="Install from NPM">
+                    <svg class="cta-icon-svg" viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M780,250h-200l0-160h-50v160h-50V0H780V250z M200,250h-50V50h-50v200H0V0h200V250z" />
+                    </svg>
+                    <span>Install v2.1.2</span>
+                </a>
+
+                <!-- NEW WEB APP BUTTON -->
+                <a href="https://amit.is-a.dev/mojic" target="_blank" class="btn-base web-cta" title="Launch Web Version">
+                    <i class="fas fa-globe"></i>
+                    <span>Launch Web App</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Only Action Bar -->
+    <div class="mobile-actions">
+        <a href="https://github.com/notamitgamer/mojic" target="_blank" class="mobile-btn mobile-github">
+            <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+            <span>Visit Repository</span>
+        </a>
+        <a href="https://www.npmjs.com/package/mojic" target="_blank" class="mobile-btn mobile-npm">
+            <svg class="cta-icon-svg" viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg" style="height: 14px;">
+                <path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M780,250h-200l0-160h-50v160h-50V0H780V250z M200,250h-50V50h-50v200H0V0h200V250z" />
+            </svg>
+            <span>Install v2.1.2</span>
+        </a>
+        <!-- NEW MOBILE WEB APP BUTTON -->
+        <a href="https://amit.is-a.dev/mojic" target="_blank" class="mobile-btn mobile-web">
+            <i class="fas fa-globe" style="font-size: 1.1rem;"></i>
+            <span>Launch Web App</span>
+        </a>
+    </div>
+
+    <div class="main-wrapper">
+        <aside id="sidebar">
+            <h3>Start Here</h3>
+            <ul>
+                <li><a href="#intro" class="nav-link active" onclick="handleNavClick(event, 'intro')">Introduction</a></li>
+                <li><a href="#install" class="nav-link" onclick="handleNavClick(event, 'install')">Installation</a></li>
+            </ul>
+
+            <h3>CLI Usage</h3>
+            <ul>
+                <li><a href="#cli-encode" class="nav-link" onclick="handleNavClick(event, 'cli-encode')">mojic encode</a></li>
+                <li><a href="#cli-decode" class="nav-link" onclick="handleNavClick(event, 'cli-decode')">mojic decode</a></li>
+                <li><a href="#cli-srt" class="nav-link" onclick="handleNavClick(event, 'cli-srt')">mojic srt</a></li>
+            </ul>
+
+            <h3>Architecture</h3>
+            <ul>
+                <li><a href="#algo-overview" class="nav-link" onclick="handleNavClick(event, 'algo-overview')">Operation Ironclad</a></li>
+                <li><a href="#moon-protocol" class="nav-link" onclick="handleNavClick(event, 'moon-protocol')">Moon Header Protocol</a></li>
+            </ul>
+
+            <h3>Community</h3>
+            <ul>
+                <li><a href="#contributing" class="nav-link" onclick="handleNavClick(event, 'contributing')">Contributing</a></li>
+                <li><a href="#code-of-conduct" class="nav-link" onclick="handleNavClick(event, 'code-of-conduct')">Code of Conduct</a></li>
+                <li><a href="#security" class="nav-link" onclick="handleNavClick(event, 'security')">Security Policy</a></li>
+            </ul>
+
+            <h3>Meta</h3>
+            <ul>
+                <li><a href="#license" class="nav-link" onclick="handleNavClick(event, 'license')">License</a></li>
+            </ul>
+        </aside>
+
+        <main>
+            <!-- SECTION: Introduction -->
+            <section id="intro" class="active">
+                <h1>Operation Polymorphic Chaos</h1>
+                <p><strong>Mojic</strong> is a sophisticated CLI tool designed to transform readable C source code into an unrecognizable, chaotic stream of emojis. It is not a simple substitution cipher; it is a cryptographic obfuscation tool.</p>
+                
+                <div class="callout">
+                    <strong>Current Version:</strong> v2.1.2 <br>
+                    <strong>Core Tech:</strong> Node.js, AES-256-CTR, Scrypt (Memory-Hard)
+                </div>
+
+                <h3>Why use Mojic?</h3>
+                <ul style="margin-left: 20px; color: #444; margin-bottom: 20px;">
+                    <li><strong>Total Polymorphism:</strong> Both keywords <em>and</em> raw data are whitened. Patterns like repeating indentation are effectively scrambled.</li>
+                    <li><strong>GPU-Resistant:</strong> Uses the <strong>Scrypt</strong> KDF to derive keys, making brute-force attacks computationally expensive on graphics hardware.</li>
+                    <li><strong>Base-1024 Compression:</strong> Reduces the bloat of non-keyword characters.</li>
+                    <li><strong>Integrity Sealed:</strong> HMAC-SHA256 signature ensures files haven't been tampered with.</li>
+                </ul>
+                
+                <h3>How it works</h3>
+                <p>You input C code. Mojic asks for a password. It generates a unique emoji dialect and uses a military-grade keystream (AES-256-CTR) to encrypt your file into a <code>.mojic</code> artifact.</p>
+            </section>
+
+            <!-- SECTION: Installation -->
+            <section id="install">
+                <h1>Installation</h1>
+                <p>Mojic is distributed via NPM. You can install it globally to use the command line tools.</p>
+                
+                <h3>Global Install</h3>
+                <pre><code>npm install -g mojic</code><button class="copy-btn">Copy</button></pre>
+
+                <h3>Run via NPX (No Install)</h3>
+                <pre><code>npx mojic --help</code><button class="copy-btn">Copy</button></pre>
+
+                <h3>Build from Source</h3>
+                <pre><code>git clone https://github.com/notamitgamer/mojic.git
+cd mojic
+npm install
+npm run build-binaries</code><button class="copy-btn">Copy</button></pre>
+            </section>
+
+            <!-- SECTION: CLI Encode -->
+            <section id="cli-encode">
+                <h1>mojic encode</h1>
+                <p>Encrypts a C source file or an entire directory of files into Mojic format.</p>
+
+                <h3>Usage</h3>
+                <pre><code>mojic encode &lt;path&gt; [options]</code></pre>
+
+                <h3>Options</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Flag</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>-r, --recursive</code></td>
+                            <td>Recursively process all <code>.c</code> files in a directory.</td>
+                        </tr>
+                        <tr>
+                            <td><code>-f, --flat</code></td>
+                            <td><strong>Minify mode.</strong> Strips whitespace and newlines before encryption to increase obfuscation density.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+                <p><strong>Encrypt a single file:</strong></p>
+                <pre><code>$ mojic encode main.c
+> Create password for file(s): *****
+> Processing: main.c -> main.mojic
+> Encrypted.</code><button class="copy-btn">Copy</button></pre>
+
+                <p><strong>Batch encrypt a project with flattening:</strong></p>
+                <pre><code>$ mojic encode ./src -r -f
+> Initiating Mojic Encryption v2.1...
+> Structural Flattening Enabled
+> Scanning directory: ./src
+> Processing: utils.c -> utils.mojic
+> Processing: main.c -> main.mojic
+> Batch encryption complete.</code><button class="copy-btn">Copy</button></pre>
+            </section>
+
+            <!-- SECTION: CLI Decode -->
+            <section id="cli-decode">
+                <h1>mojic decode</h1>
+                <p>Restores <code>.mojic</code> files back to readable C source code.</p>
+
+                <h3>Usage</h3>
+                <pre><code>mojic decode &lt;path&gt; [options]</code></pre>
+
+                <h3>Options</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Flag</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>-r, --recursive</code></td>
+                            <td>Recursively find and decode all <code>.mojic</code> files.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Error Handling</h3>
+                <p>Mojic includes strict integrity checks.</p>
+                <ul>
+                    <li><code>WRONG_PASSWORD</code>: The derived key did not match the Auth Check in the Moon Header.</li>
+                    <li><code>FILE_TAMPERED</code>: The HMAC-SHA256 signature at the end of the stream failed. The file has been modified.</li>
+                </ul>
+            </section>
+
+             <!-- SECTION: CLI SRT -->
+             <section id="cli-srt">
+                <h1>Security & Rotation Tools (SRT)</h1>
+                <p>The <code>srt</code> command allows you to manage encrypted files without exposing their plaintext contents. This is useful for rotating credentials.</p>
+
+                <h3>Rotate Password</h3>
+                <p>Changes the password of a file by decrypting the stream into memory and re-encrypting with a new key.</p>
+                <pre><code>mojic srt --pass secret.mojic</code><button class="copy-btn">Copy</button></pre>
+
+                <h3>Re-Encrypt (Entropy Shuffle)</h3>
+                <p>Keeps the same password but generates a <strong>new salt</strong> and <strong>AES keystream</strong>. This completely changes the visual emoji output, defeating any potential pattern analysis over time.</p>
+                <pre><code>mojic srt --re secret.mojic</code><button class="copy-btn">Copy</button></pre>
+            </section>
+
+            <!-- SECTION: Algorithm Overview -->
+            <section id="algo-overview">
+                <h1>Operation Ironclad (v2.1.2)</h1>
+                <p>Mojic is built on the updated <code>CipherEngine.js</code>. Here is how it achieves "Polymorphic Chaos".</p>
+
+                <h3>1. The Emoji Universe</h3>
+                <p>The engine generates a pool of ~1,100 valid unicode characters (Emoticons, Transport, Symbols). This pool is <strong>shuffled</strong> using a CSPRNG (AES-256-CTR) seeded by your password.</p>
+
+                <h3>2. Polymorphic Keywords</h3>
+                <p>Standard C keywords (<code>int</code>, <code>void</code>, <code>if</code>) are not mapped 1:1. The engine calculates a random offset for every occurrence based on the keystream.</p>
+
+                <h3>3. XOR Whitening</h3>
+                <p>Before any raw data (variable names, strings, whitespace) is encoded, it is XORed with a mask generated from the AES-256-CTR stream. This ensures that repeating patterns—like 4 spaces of indentation—never look the same twice.</p>
+                <div style="background: #f1f8e9; padding: 15px; border-radius: 4px; font-family: monospace;">
+                    <strong>Input:</strong> "    " (4 spaces)<br>
+                    <strong>Stream A:</strong> 0x1A 0xB2... -> 🦁 🚗<br>
+                    <strong>Stream B:</strong> 0x4F 0x9C... -> 👺 🛸<br>
+                </div>
+
+                <h3>4. Base-1024 Compression</h3>
+                <p>The whitened data is buffered into 5-byte chunks and converted into 4 base-1024 digits (emojis), keeping file sizes manageable.</p>
+            </section>
+
+            <!-- SECTION: Moon Protocol -->
+            <section id="moon-protocol">
+                <h1>Moon Header Protocol</h1>
+                <p>Mojic files do not look like random noise immediately. They start with a distinct header.</p>
+
+                <h3>Structure</h3>
+                <p>The header contains the <strong>Salt</strong> (32 bytes) and an <strong>Auth Check</strong> (4 bytes). These are encoded using a specific alphabet of moon phases and clocks.</p>
+
+                <pre><code>HEADER_ALPHABET = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗'];</code></pre>
+
+                <p>This allows the <code>decode</code> command to verify your password <em>instantly</em> by checking the header, rather than processing the whole file and outputting garbage.</p>
+            </section>
+
+            <!-- SECTION: Contributing -->
+            <section id="contributing">
+                <h1>Contributing to Mojic</h1>
+                <p>First off, thanks for taking the time to contribute! Use your best judgment, and feel free to propose changes.</p>
+
+                <h3>Development Workflow</h3>
+                <ol style="margin-left: 20px; line-height: 2;">
+                    <li><strong>Fork</strong> the repository on GitHub.</li>
+                    <li><strong>Clone</strong> your fork locally: <code>git clone https://github.com/YOUR_USERNAME/mojic.git</code></li>
+                    <li><strong>Create a Branch</strong> for your feature or bugfix: <code>git checkout -b feature/amazing-feature</code></li>
+                    <li><strong>Install Dependencies</strong>: <code>npm install</code></li>
+                    <li><strong>Test your changes</strong>: Run the CLI locally using <code>npm start -- encode test.c</code></li>
+                    <li><strong>Commit</strong> your changes using imperative mood (e.g., "Add feature").</li>
+                    <li><strong>Push</strong> and Open a Pull Request.</li>
+                </ol>
+
+                <h3>Mojic Code Style</h3>
+                <ul>
+                    <li><strong>Cipher Logic:</strong> Changes to <code>CipherEngine.js</code> must ensure backward compatibility.</li>
+                    <li><strong>Streams:</strong> Always use <code>StringDecoder</code> when handling text streams to prevent multi-byte emoji corruption.</li>
+                </ul>
+            </section>
+
+            <!-- SECTION: Code of Conduct -->
+            <section id="code-of-conduct">
+                <h1>Code of Conduct</h1>
+                <h2>Our Pledge</h2>
+                <p>In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.</p>
+
+                <h2>Enforcement</h2>
+                <p>Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team. All complaints will be reviewed and investigated.</p>
+                <div class="contact-box">
+                    <strong>Report Issues To:</strong><br>
+                    <i class="fas fa-envelope"></i> <a href="mailto:amitdutta4255@gmail.com">amitdutta4255@gmail.com</a> (Priority)<br>
+                    <i class="fas fa-envelope"></i> <a href="mailto:mail@amit.is-a.dev">mail@amit.is-a.dev</a>
+                </div>
+            </section>
+
+            <!-- SECTION: Security -->
+            <section id="security">
+                <h1>Security Policy</h1>
+                <div class="callout danger">
+                    <strong>Warning:</strong> Please do not open public issues for security vulnerabilities.
+                </div>
+
+                <h3>Reporting a Vulnerability</h3>
+                <p>We take security seriously. If you discover a security vulnerability within Mojic (e.g., in the <code>CipherEngine</code> logic or the PRNG implementation), please send an e-mail immediately.</p>
+
+                <div class="contact-box">
+                    <strong>Security Contact:</strong><br>
+                    <i class="fas fa-shield-alt"></i> <a href="mailto:amitdutta4255@gmail.com">amitdutta4255@gmail.com</a>
+                </div>
+
+                <h3>Scope</h3>
+                <ul>
+                    <li><strong>Supported:</strong> Issues regarding key derivation (Scrypt), salt collisions, HMAC integrity failures, or stream buffer overflows.</li>
+                    <li><strong>Not Supported:</strong> Brute-forcing weak passwords (users are responsible for password strength).</li>
+                </ul>
+            </section>
+
+             <!-- SECTION: License -->
+             <section id="license">
+                <h1>License</h1>
+                <p>Mojic is licensed under the <strong>Apache License, Version 2.0</strong>.</p>
+                
+                <div style="background: #f1f8e9; padding: 15px; border: 1px solid #c5e1a5; border-radius: 5px; margin-bottom: 20px;">
+                    <p><strong>Apache License 2.0 Summary:</strong></p>
+                    <p>You can do whatever you want with this software, as long as you include the original copyright and license notice in any copy of the software/source. It is provided "as is" without warranty.</p>
+                    <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" style="font-weight: bold;">Read Full License &rarr;</a>
+                </div>
+
+                <p>Copyright &copy; 2026 <strong>notamitgamer</strong></p>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>
+            Copyright &copy; 2026 
+            <a href="https://amit.is-a.dev" class="footer-link">amit.is-a.dev</a> & 
+            <a href="https://github.com/notamitgamer" class="footer-link">notamitgamer</a>. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        // --- IMPROVED NAVIGATION LOGIC ---
+        
+        // Use a unified handler for nav clicks to ensure correct scrolling and history updates
+        function handleNavClick(event, id) {
+            // Prevent default anchor jump behavior which creates the "scrolled to bottom" issue
+            event.preventDefault();
+            
+            showSection(id);
+            
+            // Optionally update URL hash without jumping
+            if(history.pushState) {
+                history.pushState(null, null, '#' + id);
+            } else {
+                window.location.hash = id;
+            }
+        }
+
+        function showSection(id) {
+            // Hide all sections
+            document.querySelectorAll('main section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add('active');
+                // Force scroll to top (0,0) to prevent the title being cut off by the sticky header
+                window.scrollTo(0, 0);
+            }
+
+            // Update sidebar active state
+            document.querySelectorAll('aside a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find the link that points to this section and add active class
+            // Note: Use attribute selector carefully
+            const activeLink = document.querySelector(`aside a[href="#${id}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            // Close mobile menu if open
+            if (window.innerWidth <= 900) {
+                document.getElementById('sidebar').classList.remove('open');
+                
+                // Reset hamburger animation if clicking a link closes the menu
+                const toggle = document.getElementById('menuToggle');
+                if (toggle) toggle.classList.remove('is-active');
+            }
+        }
+
+        // --- COPY TO CLIPBOARD ---
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const codeBlock = e.target.previousSibling;
+                const code = codeBlock.textContent || codeBlock.innerText; // Handle different node types
+                
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalText = e.target.textContent;
+                    e.target.textContent = 'Copied!';
+                    setTimeout(() => {
+                        e.target.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+
+        // --- MOBILE MENU ---
+        const toggleBtn = document.getElementById('menuToggle');
+        toggleBtn.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+            toggleBtn.classList.toggle('is-active'); // Triggers the hamburger animation
+        });
+
+        // --- INITIAL LOAD ---
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            showSection(hash);
+        } else {
+            showSection('intro');
+        }
+    </script>
+</body>
+</html>
