@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="canonical" href="https://amit.is-a.dev/code-nct-legacy.html" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCT Legacy Code View</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48c3R5bGU+cGF0aHtmaWxsOiNEMEJDRkZ9QG1lZGlhIChwcmVmZXJzLWNvbG9yLXNjaGVtZTpkYXJrKXtwYXRoe2ZpbGw6I2ZmZnx9fTwvc3R5bGU+PHBhdGggZD0iTTcgMnYxMWgzdjlsNy0xMmgtNGw0LTh6Ii8+PC9zdmc+">
+    <!-- Link to Cascadia Code font from CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/cascadia-code.min.css">
+    <style>
+        /* Base styling for the entire page */
+        body {
+            background-color: black;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Cascadia Code', 'Fira Code', 'Roboto Mono', monospace;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1abc9c; }
+
+        h1 {
+            color: #f0f0f0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Container for the tabs */
+        .tab-container {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        /* Tab buttons styling */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px 5px 0 0;
+            margin: 0 5px;
+        }
+
+        .tab-button:hover {
+            color: #1abc9c;
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            color: #1abc9c;
+            font-weight: bold;
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #1abc9c;
+            animation: tabUnderline 0.3s forwards;
+        }
+
+        @keyframes tabUnderline {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Tab content styling */
+        .tab-content {
+            display: none;
+            padding: 15px 0;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header for Code Block */
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #252525;
+            padding: 8px 15px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid #333;
+            border-bottom: none;
+        }
+
+        .file-info { font-size: 0.85em; color: #888; }
+
+        /* Copy Button Styling */
+        .copy-button {
+            background: transparent;
+            border: 1px solid #444;
+            color: #ccc;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-button:hover {
+            border-color: #1abc9c;
+            color: #1abc9c;
+        }
+
+        .copy-button.success {
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        /* Styling for the code block container */
+        .code-block-container {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+
+        .code-block {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 15px;
+            overflow-x: auto;
+            max-height: 70vh;
+            font-size: 0.95em;
+            line-height: 1.5;
+            tab-size: 4;
+            white-space: pre;
+            margin: 0;
+        }
+
+        /* Download section styling */
+        .download-item {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        .download-info h3 {
+            color: #1abc9c;
+            margin: 0 0 5px 0;
+        }
+
+        .download-info p {
+            font-size: 0.9em;
+            color: #ccc;
+            margin: 0;
+        }
+
+        .download-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .download-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>--- NCT Legacy Explorer ---</h1>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(event, 'code')">Code</button>
+            <button class="tab-button" onclick="switchTab(event, 'download')">Download</button>
+        </div>
+
+        <div id="code-tab-content" class="tab-content active">
+            <div class="code-header">
+                <span class="file-info">nct-legacy.html</span>
+                <button class="copy-button" onclick="copyToClipboard(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy Code
+                </button>
+            </div>
+            <div class="code-block-container">
+                <pre id="sourceCode" class="code-block">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;NCT v2.11 | Legacy Edition&lt;/title&gt;
+    &lt;link rel=&quot;icon&quot; href=&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48c3R5bGU+cGF0aHtmaWxsOiNEMEJDRkZ9QG1lZGlhIChwcmVmZXJzLWNvbG9yLXNjaGVtZTpkYXJrKXtwYXRoe2ZpbGw6I2ZmZnx9fTwvc3R5bGU+PHBhdGggZD0iTTcgMnYxMWgzdjlsNy0xMmgtNGw0LTh6Ii8+PC9zdmc+&quot;&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Google+Sans:wght@400;500;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+    &lt;script type=&quot;application/ld+json&quot;&gt;
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;WebApplication&quot;,
+    &quot;name&quot;: &quot;NCT v2.11 | Legacy Edition&quot;,
+    &quot;url&quot;: &quot;https://amit.is-a.dev/nct-legacy&quot;,
+    &quot;image&quot;: &quot;https://amit.is-a.dev/nctlogo.png&quot;,
+    &quot;description&quot;: &quot;Number conversion tool&quot;,
+    &quot;applicationCategory&quot;: &quot;EducationalApplication&quot;,
+    &quot;operatingSystem&quot;: &quot;Any&quot;
+  }
+&lt;/script&gt;
+    &lt;style&gt;
+        /* --- MATERIAL DESIGN 3 TOKENS --- */
+        :root {
+            --md-sys-color-background: #141218;
+            --md-sys-color-surface: #1D1B20;
+            --md-sys-color-surface-container: #211F26;
+            --md-sys-color-surface-container-high: #2B2930;
+            
+            /* Primary */
+            --md-sys-color-primary: #D0BCFF;
+            --md-sys-color-on-primary: #381E72;
+            --md-sys-color-primary-container: #4F378B;
+            --md-sys-color-on-primary-container: #EADDFF;
+
+            /* Text */
+            --md-sys-color-on-surface: #E6E1E5;
+            --md-sys-color-on-surface-variant: #CAC4D0;
+            --md-sys-color-outline: #938F99;
+
+            /* Error */
+            --md-sys-color-error: #F2B8B5;
+            --md-sys-color-error-container: #8C1D18;
+
+            /* Success/Accent */
+            --md-sys-color-tertiary: #B6C4FF;
+            --md-sys-color-success: #4ade80;
+            
+            /* Dimensions */
+            --radius-xl: 28px;
+            --radius-l: 16px;
+            --radius-m: 12px;
+            --radius-s: 8px;
+
+            --font-main: &#x27;Google Sans&#x27;, &#x27;Roboto&#x27;, sans-serif;
+            --font-code: &#x27;Roboto Mono&#x27;, monospace;
+            
+            /* Animation */
+            --ease-elastic: cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, rgba(208, 188, 255, 0.05) 0%, transparent 60%);
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-grow: 1;
+        }
+
+        /* --- HEADER &amp; NAV --- */
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 16px 0;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo span { color: var(--md-sys-color-primary); }
+
+        /* Navigation Tabs with Animation */
+        .nav-tabs {
+            position: relative;
+            display: flex;
+            background: var(--md-sys-color-surface-container);
+            padding: 4px;
+            border-radius: 32px;
+            width: fit-content;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-glider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: 110px; 
+            background: var(--md-sys-color-primary-container);
+            border-radius: 28px;
+            transition: transform 0.3s var(--ease-elastic);
+            z-index: 1;
+        }
+
+        .nav-tab {
+            position: relative;
+            padding: 10px 24px;
+            border-radius: 24px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+            z-index: 2;
+            width: 110px; 
+        }
+
+        .nav-tab.active { color: var(--md-sys-color-on-primary-container); }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tools-btn {
+            background: transparent;
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface);
+            padding: 8px 16px;
+            border-radius: var(--radius-l);
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s;
+        }
+        .tools-btn:active { transform: scale(0.95); }
+        .tools-btn:hover { background: rgba(255,255,255,0.05); }
+
+        /* --- SECTIONS --- */
+        .app-section {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .app-section.active { display: flex; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CONVERTER STAGE --- */
+        .converter-stage {
+            display: grid;
+            grid-template-columns: 1fr 64px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .material-card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+            position: relative;
+            transition: transform 0.4s var(--ease-elastic), box-shadow 0.2s;
+            border: 1px solid transparent;
+            z-index: 1;
+        }
+
+        .material-card:focus-within {
+            background-color: var(--md-sys-color-surface-container-high);
+            border-color: var(--md-sys-color-outline);
+        }
+
+        /* CARD HEADER &amp; CUSTOM DROPDOWN */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            padding-bottom: 12px;
+            z-index: 10;
+        }
+
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-select-wrapper {
+            position: relative;
+            min-width: 150px;
+            user-select: none;
+        }
+        .custom-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface);
+            font-weight: 500;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .custom-select-trigger:hover { color: var(--md-sys-color-primary); }
+        .arrow { font-size: 0.7rem; transition: transform 0.3s; }
+        
+        .custom-options {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: var(--radius-m);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.2s var(--ease-elastic);
+            min-width: 180px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+        .custom-select-wrapper.open .custom-options {
+            opacity: 1; visibility: visible; pointer-events: all; transform: translateY(0);
+        }
+        .custom-select-wrapper.open .arrow { transform: rotate(180deg); }
+        
+        .custom-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface-variant);
+            transition: 0.2s;
+        }
+        .custom-option:hover { background: rgba(255,255,255,0.05); color: var(--md-sys-color-on-surface); }
+        .custom-option.selected { color: var(--md-sys-color-primary); background: rgba(208, 188, 255, 0.1); }
+
+        /* INPUT AREA */
+        .input-area {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface);
+            font-size: 2.2rem;
+            font-family: var(--font-main);
+            resize: none;
+            outline: none;
+            line-height: 1.2;
+            z-index: 1;
+        }
+        .input-area::placeholder { color: var(--md-sys-color-on-surface-variant); opacity: 0.3; }
+
+        /* Error Chip */
+        .error-chip {
+            position: absolute;
+            bottom: 80px;
+            left: 24px;
+            background: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-error);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .error-chip.visible { opacity: 1; transform: translateY(0); }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .char-count { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); }
+
+        /* Icons &amp; Buttons */
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); color: var(--md-sys-color-on-surface); transform: scale(1.1); }
+        .icon-btn:active { transform: scale(0.9); }
+        
+        /* Copy Button Animation */
+        .icon-btn.success svg {
+            animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--md-sys-color-success);
+        }
+        @keyframes check-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Trash Shake Animation */
+        @keyframes trash-shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .icon-btn.shaking {
+            animation: trash-shake 0.4s ease-in-out;
+            color: var(--md-sys-color-error);
+        }
+
+        /* Swap Button */
+        .swap-container { display: flex; justify-content: center; align-items: center; z-index: 2; }
+        .swap-fab {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            background-color: var(--md-sys-color-surface-container-high);
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s var(--ease-elastic);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .swap-fab:hover {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            transform: rotate(180deg) scale(1.1);
+            border-color: transparent;
+        }
+
+        /* --- SWAP ANIMATION CLASSES --- */
+        .anim-move-right { transform: translateX(calc(100% + 16px)); }
+        .anim-move-left { transform: translateX(calc(-100% - 16px)); }
+        .anim-move-down { transform: translateY(calc(100% + 16px)); }
+        .anim-move-up { transform: translateY(calc(-100% - 16px)); }
+
+        /* --- DYNAMIC CALCULATOR --- */
+        .calc-wrapper {
+            background: var(--md-sys-color-surface-container);
+            padding: 24px;
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .calc-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .calc-ctrl-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 12px;
+        }
+        .calc-ctrl-group label {
+            font-size: 0.8rem;
+            color: var(--md-sys-color-primary);
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin: 0;
+        }
+        
+        .calc-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .calc-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Simple Fade Out */
+        .calc-row.removing {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .calc-input-wrapper {
+            flex-grow: 1;
+            position: relative;
+        }
+        .calc-input {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid transparent;
+            color: var(--md-sys-color-on-surface);
+            padding: 16px;
+            border-radius: 12px;
+            font-family: var(--font-code);
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .calc-input:focus { border-color: var(--md-sys-color-primary); background: rgba(0,0,0,0.4); }
+        .calc-input.invalid { border-color: var(--md-sys-color-error); }
+        
+        .calc-remove-btn {
+            background: var(--md-sys-color-surface-container-high);
+            border: none;
+            color: var(--md-sys-color-error);
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .calc-remove-btn:hover { background: var(--md-sys-color-error-container); color: #fff; }
+
+        /* The Divider Area */
+        .calc-actions {
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--md-sys-color-outline);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .add-row-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            width: fit-content;
+            text-align: left;
+            transition: 0.2s;
+            margin-bottom: 20px; /* Space before divider */
+        }
+        .add-row-btn:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: rgba(208, 188, 255, 0.05); }
+
+        .calc-result-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto; /* Forces result to the right */
+        }
+
+        .visualize-btn {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-right: auto; /* Keeps it left-aligned in actions */
+        }
+        .visualize-btn:hover { filter: brightness(1.2); }
+        .visualize-btn:active { transform: scale(0.95); }
+        @keyframes popIn { from{transform: scale(0.8); opacity:0} to{transform: scale(1); opacity:1} }
+
+        .calc-result-display { text-align: right; }
+        .res-label { font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); }
+        .res-value { font-size: 2.2rem; color: var(--md-sys-color-primary); font-family: var(--font-code); margin-top: 5px; font-weight: 700; }
+
+
+        /* --- VISUALIZER PANEL --- */
+        .calc-visualizer {
+            background: #111;
+            border-radius: var(--radius-m);
+            padding: 20px;
+            margin-top: 20px;
+            display: none; 
+            border: 1px solid var(--md-sys-color-outline);
+            overflow-x: auto;
+        }
+        .calc-visualizer.active { display: block; animation: slideIn 0.4s var(--ease-elastic); }
+        
+        .viz-grid {
+            display: grid;
+            font-family: var(--font-code);
+            font-size: 1.2rem;
+            color: var(--md-sys-color-on-surface);
+            gap: 4px;
+        }
+        .viz-row { display: contents; }
+        .viz-cell {
+            padding: 4px 8px;
+            text-align: center;
+            position: relative;
+        }
+        .viz-cell.carry { color: var(--md-sys-color-tertiary); font-size: 0.8rem; height: 20px; }
+        .viz-cell.operator { color: var(--md-sys-color-primary); }
+        .viz-cell.border-bottom { border-bottom: 2px solid var(--md-sys-color-outline); }
+        .viz-cell.active-col { background: rgba(208, 188, 255, 0.15); border-radius: 4px; }
+        .viz-cell.result { color: var(--md-sys-color-primary); font-weight: bold; }
+
+        .viz-info {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+            font-family: var(--font-code);
+            min-height: 20px;
+        }
+
+        /* --- CONVERTER STEPS PANEL --- */
+        .steps-container {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: var(--radius-l);
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: none;
+        }
+        .steps-container.visible { display: block; animation: fadeIn 0.5s; }
+        
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        
+        .steps-content {
+            font-family: var(--font-code);
+            color: var(--md-sys-color-tertiary);
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* --- HISTORY TAPE --- */
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--md-sys-color-outline);
+            padding-top: 20px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .history-list {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 200px; overflow-y: auto;
+            transition: opacity 0.3s;
+        }
+        
+        /* History Item Animation: Slide Out to Right */
+        .history-list.clearing .history-item {
+            animation: slide-out-right 0.3s forwards;
+        }
+        @keyframes slide-out-right {
+            to { transform: translateX(50px); opacity: 0; }
+        }
+
+        .history-item {
+            display: flex; justify-content: space-between;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            align-items: center;
+        }
+        .history-item:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+        .hist-val { color: var(--md-sys-color-on-surface); }
+        .hist-meta { font-size: 0.75rem; color: var(--md-sys-color-outline); margin-right: 10px; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--md-sys-color-outline);
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .footer-link {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .footer-link:hover { text-decoration: underline; color: var(--md-sys-color-tertiary); }
+
+        /* --- MODAL (LEGACY &amp; CHEATSHEET) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: var(--md-sys-color-surface-container);
+            width: 90%; max-width: 500px;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--md-sys-color-outline);
+            transform: scale(0.9);
+            transition: transform 0.3s var(--ease-elastic);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            padding-bottom: 12px;
+            flex-shrink: 0;
+        }
+        .modal-header h3 { margin: 0; color: var(--md-sys-color-primary); }
+        .close-modal {
+            background: none; border: none; color: var(--md-sys-color-on-surface);
+            font-size: 1.5rem; cursor: pointer;
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            padding-right: 5px; /* Space for scrollbar */
+        }
+
+        /* History Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid var(--md-sys-color-outline);
+            margin-bottom: 20px;
+        }
+        .timeline-item::before {
+            content: &#x27;&#x27;; position: absolute; left: -6px; top: 0;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--md-sys-color-primary);
+        }
+        .version-tag {
+            font-size: 0.8rem; font-weight: bold; color: var(--md-sys-color-tertiary);
+            margin-bottom: 4px; display: inline-block; background: rgba(255,255,255,0.1);
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .version-tag.current { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .timeline-desc { font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); margin: 0; }
+
+        /* Sidebar (Cheat Sheet) */
+        .sidebar {
+            position: fixed; top: 0; right: -320px;
+            width: 300px; height: 100%;
+            background: var(--md-sys-color-surface-container-high);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            padding: 24px;
+            transition: 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar.open { right: 0; }
+        .sidebar h3 { color: var(--md-sys-color-primary); margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .cheat-table { width: 100%; border-collapse: collapse; font-family: var(--font-code); font-size: 0.8rem; }
+        .cheat-table th, .cheat-table td { text-align: left; padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .close-sidebar {
+            position: absolute; top: 10px; right: 10px;
+            background: none; border: none; color: var(--md-sys-color-on-surface);
+            font-size: 1.5rem; cursor: pointer;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .converter-stage { grid-template-columns: 1fr; grid-template-rows: 1fr 64px 1fr; gap: 8px; }
+            .material-card { height: 260px; }
+            .swap-container { transform: rotate(90deg); }
+            .swap-fab:hover { transform: rotate(180deg); }
+            .header-top { flex-direction: column; gap: 10px; }
+            .calc-header { flex-direction: column; gap: 10px; }
+            .calc-result-area { margin-left: 0; justify-content: flex-end; width: 100%; }
+            .visualize-btn { margin-right: 0; margin-bottom: 10px; }
+            .calc-actions { flex-direction: column-reverse; align-items: stretch; }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;header class=&quot;app-container&quot;&gt;
+        &lt;div class=&quot;header-top&quot;&gt;
+            &lt;div class=&quot;logo&quot;&gt;
+                &lt;svg width=&quot;32&quot; height=&quot;32&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;var(--md-sys-color-primary)&quot;&gt;&lt;path d=&quot;M7 2v11h3v9l7-12h-4l4-8z&quot;/&gt;&lt;/svg&gt;
+                NCT &lt;span&gt;v2.11&lt;/span&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Animated Navigation --&gt;
+            &lt;div class=&quot;nav-tabs&quot;&gt;
+                &lt;div class=&quot;nav-glider&quot; id=&quot;navGlider&quot;&gt;&lt;/div&gt;
+                &lt;button class=&quot;nav-tab active&quot; onclick=&quot;switchTab(&#x27;converter&#x27;, 0)&quot;&gt;Converter&lt;/button&gt;
+                &lt;button class=&quot;nav-tab&quot; onclick=&quot;switchTab(&#x27;calculator&#x27;, 1)&quot;&gt;Calculator&lt;/button&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;header-actions&quot;&gt;
+                &lt;button class=&quot;tools-btn&quot; onclick=&quot;toggleHistory()&quot;&gt;
+                    &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z&quot;/&gt;&lt;/svg&gt;
+                    Versions
+                &lt;/button&gt;
+                &lt;button class=&quot;tools-btn&quot; onclick=&quot;toggleSidebar()&quot;&gt;
+                    &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z&quot;/&gt;&lt;/svg&gt;
+                    Cheat Sheet
+                &lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main class=&quot;app-container&quot;&gt;
+        
+        &lt;!-- SECTION 1: CONVERTER --&gt;
+        &lt;section id=&quot;converter-section&quot; class=&quot;app-section active&quot;&gt;
+            
+            &lt;div class=&quot;converter-stage&quot;&gt;
+                &lt;!-- SOURCE CARD --&gt;
+                &lt;div class=&quot;material-card&quot; id=&quot;cardSource&quot;&gt;
+                    &lt;div class=&quot;card-header&quot;&gt;
+                        &lt;span class=&quot;input-label&quot;&gt;Input&lt;/span&gt;
+                        &lt;div class=&quot;custom-select-wrapper&quot; id=&quot;sourceSelectWrapper&quot;&gt;
+                            &lt;div class=&quot;custom-select-trigger&quot;&gt;
+                                &lt;span class=&quot;selection-text&quot;&gt;Decimal&lt;/span&gt;
+                                &lt;span class=&quot;arrow&quot;&gt;▼&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div class=&quot;custom-options&quot;&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;2&quot;&gt;Binary&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;8&quot;&gt;Octal&lt;/div&gt;
+                                &lt;div class=&quot;custom-option selected&quot; data-value=&quot;10&quot;&gt;Decimal&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;16&quot;&gt;Hexadecimal&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;select id=&quot;fromBase&quot; style=&quot;display:none&quot;&gt;
+                                &lt;option value=&quot;2&quot;&gt;Binary&lt;/option&gt;
+                                &lt;option value=&quot;8&quot;&gt;Octal&lt;/option&gt;
+                                &lt;option value=&quot;10&quot; selected&gt;Decimal&lt;/option&gt;
+                                &lt;option value=&quot;16&quot;&gt;Hexadecimal&lt;/option&gt;
+                            &lt;/select&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;textarea id=&quot;inputVal&quot; class=&quot;input-area&quot; placeholder=&quot;0&quot; spellcheck=&quot;false&quot;&gt;&lt;/textarea&gt;
+                    &lt;div id=&quot;errorChip&quot; class=&quot;error-chip&quot;&gt;⚠️ Invalid character for this base&lt;/div&gt;
+                    
+                    &lt;div class=&quot;card-footer&quot;&gt;
+                        &lt;div class=&quot;char-count&quot; id=&quot;sourceCount&quot;&gt;0 chars&lt;/div&gt;
+                        &lt;div class=&quot;icon-actions&quot;&gt;
+                            &lt;button class=&quot;icon-btn&quot; onclick=&quot;clearAll()&quot; title=&quot;Clear&quot;&gt;
+                                &lt;svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z&quot;/&gt;&lt;/svg&gt;
+                            &lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- SWAP --&gt;
+                &lt;div class=&quot;swap-container&quot;&gt;
+                    &lt;button class=&quot;swap-fab&quot; id=&quot;swapBtn&quot; title=&quot;Swap (Alt+S)&quot;&gt;
+                        &lt;svg width=&quot;24&quot; height=&quot;24&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z&quot;/&gt;&lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+
+                &lt;!-- TARGET CARD --&gt;
+                &lt;div class=&quot;material-card&quot; id=&quot;cardTarget&quot;&gt;
+                    &lt;div class=&quot;card-header&quot;&gt;
+                        &lt;span class=&quot;input-label&quot;&gt;Result&lt;/span&gt;
+                        &lt;div class=&quot;custom-select-wrapper&quot; id=&quot;targetSelectWrapper&quot;&gt;
+                            &lt;div class=&quot;custom-select-trigger&quot;&gt;
+                                &lt;span class=&quot;selection-text&quot;&gt;Binary&lt;/span&gt;
+                                &lt;span class=&quot;arrow&quot;&gt;▼&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div class=&quot;custom-options&quot;&gt;
+                                &lt;div class=&quot;custom-option selected&quot; data-value=&quot;2&quot;&gt;Binary&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;8&quot;&gt;Octal&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;10&quot;&gt;Decimal&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;16&quot;&gt;Hexadecimal&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;select id=&quot;toBase&quot; style=&quot;display:none&quot;&gt;
+                                &lt;option value=&quot;2&quot; selected&gt;Binary&lt;/option&gt;
+                                &lt;option value=&quot;8&quot;&gt;Octal&lt;/option&gt;
+                                &lt;option value=&quot;10&quot;&gt;Decimal&lt;/option&gt;
+                                &lt;option value=&quot;16&quot;&gt;Hexadecimal&lt;/option&gt;
+                            &lt;/select&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;textarea id=&quot;outputVal&quot; class=&quot;input-area&quot; readonly placeholder=&quot;...&quot; spellcheck=&quot;false&quot;&gt;&lt;/textarea&gt;
+                    
+                    &lt;div class=&quot;card-footer&quot;&gt;
+                        &lt;div class=&quot;char-count&quot;&gt;Result&lt;/div&gt;
+                        &lt;div class=&quot;icon-actions&quot;&gt;
+                            &lt;button class=&quot;icon-btn&quot; onclick=&quot;speakResult()&quot; title=&quot;Speak&quot;&gt;
+                                &lt;svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z&quot;/&gt;&lt;/svg&gt;
+                            &lt;/button&gt;
+                            &lt;button class=&quot;icon-btn&quot; id=&quot;copyBtn&quot; onclick=&quot;copyToClipboard(&#x27;outputVal&#x27;, &#x27;copyBtn&#x27;)&quot; title=&quot;Copy (Ctrl+Enter)&quot;&gt;
+                                &lt;svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z&quot;/&gt;&lt;/svg&gt;
+                            &lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- STEPS PANEL WITH COPY BUTTON --&gt;
+            &lt;div class=&quot;steps-container&quot; id=&quot;stepsContainer&quot;&gt;
+                &lt;div class=&quot;steps-header&quot;&gt;
+                    &lt;h4 style=&quot;color:var(--md-sys-color-primary); margin:0;&quot;&gt;Calculation Steps&lt;/h4&gt;
+                    &lt;button class=&quot;icon-btn&quot; id=&quot;copyStepsBtn&quot; onclick=&quot;copyStepsText()&quot; title=&quot;Copy Steps&quot;&gt;
+                        &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z&quot;/&gt;&lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;steps-content&quot; id=&quot;stepsOutput&quot;&gt;Waiting for input...&lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;history-section&quot;&gt;
+                &lt;div class=&quot;history-header&quot; style=&quot;display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;&quot;&gt;
+                    &lt;h4 style=&quot;color:var(--md-sys-color-on-surface-variant); margin:0;&quot;&gt;Recent History&lt;/h4&gt;
+                    &lt;button class=&quot;icon-btn&quot; id=&quot;clearHistBtn&quot; onclick=&quot;clearHistory()&quot; title=&quot;Clear History&quot;&gt;
+                        &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z&quot;/&gt;&lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;history-list&quot; id=&quot;historyList&quot;&gt;
+                    &lt;div style=&quot;padding:10px; color:#555; text-align:center;&quot;&gt;No history yet&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+        &lt;/section&gt;
+
+        &lt;!-- SECTION 2: DYNAMIC CALCULATOR --&gt;
+        &lt;section id=&quot;calculator-section&quot; class=&quot;app-section&quot;&gt;
+            &lt;div class=&quot;calc-wrapper&quot;&gt;
+                
+                &lt;div class=&quot;calc-header&quot;&gt;
+                    &lt;div class=&quot;calc-ctrl-group&quot;&gt;
+                        &lt;label&gt;Base Mode&lt;/label&gt;
+                        &lt;div class=&quot;custom-select-wrapper&quot; id=&quot;calcBaseWrapper&quot; style=&quot;flex:1&quot;&gt;
+                            &lt;div class=&quot;custom-select-trigger&quot;&gt;
+                                &lt;span class=&quot;selection-text&quot;&gt;Decimal (Base 10)&lt;/span&gt;
+                                &lt;span class=&quot;arrow&quot;&gt;▼&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div class=&quot;custom-options&quot;&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;2&quot;&gt;Binary (Base 2)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;8&quot;&gt;Octal (Base 8)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option selected&quot; data-value=&quot;10&quot;&gt;Decimal (Base 10)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;16&quot;&gt;Hex (Base 16)&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;select id=&quot;calcBase&quot; style=&quot;display:none&quot; onchange=&quot;validateAllRows()&quot;&gt;
+                                &lt;option value=&quot;2&quot;&gt;Binary&lt;/option&gt;
+                                &lt;option value=&quot;8&quot;&gt;Octal&lt;/option&gt;
+                                &lt;option value=&quot;10&quot; selected&gt;Decimal&lt;/option&gt;
+                                &lt;option value=&quot;16&quot;&gt;Hex&lt;/option&gt;
+                            &lt;/select&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;calc-ctrl-group&quot;&gt;
+                        &lt;label&gt;Operation&lt;/label&gt;
+                        &lt;div class=&quot;custom-select-wrapper&quot; id=&quot;calcOpWrapper&quot; style=&quot;flex:1&quot;&gt;
+                            &lt;div class=&quot;custom-select-trigger&quot;&gt;
+                                &lt;span class=&quot;selection-text&quot;&gt;Addition (+)&lt;/span&gt;
+                                &lt;span class=&quot;arrow&quot;&gt;▼&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div class=&quot;custom-options&quot;&gt;
+                                &lt;div class=&quot;custom-option selected&quot; data-value=&quot;add&quot;&gt;Addition (+)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;sub&quot;&gt;Subtraction (-)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;mul&quot;&gt;Multiplication (×)&lt;/div&gt;
+                                &lt;div class=&quot;custom-option&quot; data-value=&quot;div&quot;&gt;Division (÷)&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;select id=&quot;calcOp&quot; style=&quot;display:none&quot; onchange=&quot;runCalculation()&quot;&gt;
+                                &lt;option value=&quot;add&quot; selected&gt;Addition&lt;/option&gt;
+                                &lt;option value=&quot;sub&quot;&gt;Subtraction&lt;/option&gt;
+                                &lt;option value=&quot;mul&quot;&gt;Multiplication&lt;/option&gt;
+                                &lt;option value=&quot;div&quot;&gt;Division&lt;/option&gt;
+                            &lt;/select&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div id=&quot;calcRows&quot; class=&quot;calc-rows&quot;&gt;
+                    &lt;!-- Dynamic Rows Injected Here --&gt;
+                &lt;/div&gt;
+
+                &lt;!-- ADD ROW BUTTON (Left Aligned) --&gt;
+                &lt;button class=&quot;add-row-btn&quot; onclick=&quot;addCalcRow()&quot;&gt;+ Add Number&lt;/button&gt;
+
+                &lt;div class=&quot;calc-actions&quot;&gt;
+                    &lt;button class=&quot;visualize-btn&quot; id=&quot;vizBtn&quot; onclick=&quot;visualizeCalculation()&quot;&gt;
+                        &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;currentColor&quot;&gt;&lt;path d=&quot;M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z&quot;/&gt;&lt;/svg&gt;
+                        Visualize
+                    &lt;/button&gt;
+                    
+                    &lt;div class=&quot;calc-result-area&quot;&gt;
+                        &lt;div class=&quot;calc-result-display&quot;&gt;
+                            &lt;div class=&quot;res-label&quot;&gt;Result&lt;/div&gt;
+                            &lt;div class=&quot;res-value&quot; id=&quot;calcResult&quot;&gt;0&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- BIT-BY-BIT VISUALIZER PANEL --&gt;
+                &lt;div class=&quot;calc-visualizer&quot; id=&quot;visualizerPanel&quot;&gt;
+                    &lt;h4 style=&quot;color:var(--md-sys-color-primary); margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;&quot;&gt;Calculation Steps&lt;/h4&gt;
+                    &lt;div class=&quot;viz-grid&quot; id=&quot;vizGrid&quot;&gt;
+                        &lt;!-- Grid injected here --&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;viz-info&quot; id=&quot;vizInfo&quot;&gt;Click visualize to start...&lt;/div&gt;
+                &lt;/div&gt;
+                
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+    &lt;/main&gt;
+
+    &lt;!-- PROJECT LEGACY MODAL --&gt;
+    &lt;div class=&quot;modal-overlay&quot; id=&quot;historyModal&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+            &lt;div class=&quot;modal-header&quot;&gt;
+                &lt;h3&gt;Project Legacy&lt;/h3&gt;
+                &lt;button class=&quot;close-modal&quot; onclick=&quot;toggleHistory()&quot;&gt;×&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;modal-body&quot;&gt;
+                &lt;div class=&quot;history-timeline&quot;&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v1.0 (2024)&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Initial High School Project. Single file, manual conversion logic, animated background.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v2.0&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Modularized Logic &amp; URL State. Moved away from switch cases to a Base-N engine.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v2.1&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Material You UI. Glassmorphism, animated cards, and custom dropdowns.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v2.2&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Dynamic Calculator. Added list-based arithmetic with strict validation.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v2.3 - v2.8&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Visualizer Engine. Bit-by-bit animation, step explanations, and history tape.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag&quot;&gt;v2.10&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Professional Polish. Optimized UX layout, legacy tracking, and performance tuning.&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;timeline-item&quot;&gt;
+                        &lt;div class=&quot;version-tag current&quot;&gt;v2.11 (2026)&lt;/div&gt;
+                        &lt;p class=&quot;timeline-desc&quot;&gt;Ultimate Refinement. Enhanced animations, layout stability, and smart controls.&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- SIDEBAR CHEATSHEET --&gt;
+    &lt;aside class=&quot;sidebar&quot; id=&quot;sidebar&quot;&gt;
+        &lt;button class=&quot;close-sidebar&quot; onclick=&quot;toggleSidebar()&quot;&gt;×&lt;/button&gt;
+        &lt;h3&gt;Cheat Sheet&lt;/h3&gt;
+        
+        &lt;h4&gt;Powers of 2&lt;/h4&gt;
+        &lt;table class=&quot;cheat-table&quot; style=&quot;margin-bottom:20px;&quot;&gt;
+            &lt;tr&gt;&lt;td&gt;2⁰&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2¹&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2²&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2³&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2⁴&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2⁵&lt;/td&gt;&lt;td&gt;32&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2⁶&lt;/td&gt;&lt;td&gt;64&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2⁷&lt;/td&gt;&lt;td&gt;128&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2⁸&lt;/td&gt;&lt;td&gt;256&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;2¹⁰&lt;/td&gt;&lt;td&gt;1024&lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+
+        &lt;h4&gt;Hex Lookup&lt;/h4&gt;
+        &lt;table class=&quot;cheat-table&quot;&gt;
+            &lt;tr&gt;&lt;th&gt;Dec&lt;/th&gt;&lt;th&gt;Hex&lt;/th&gt;&lt;th&gt;Bin&lt;/th&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;0000&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;0001&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;10&lt;/td&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;1010&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;11&lt;/td&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;1011&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;12&lt;/td&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;1100&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;13&lt;/td&gt;&lt;td&gt;D&lt;/td&gt;&lt;td&gt;1101&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;E&lt;/td&gt;&lt;td&gt;1110&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;15&lt;/td&gt;&lt;td&gt;F&lt;/td&gt;&lt;td&gt;1111&lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/aside&gt;
+
+    &lt;footer&gt;
+        &lt;div class=&quot;footer-content&quot;&gt;
+            &lt;p&gt;&amp;copy; 2026 &lt;strong&gt;Amit Dutta&lt;/strong&gt;. All rights reserved.&lt;/p&gt;
+            &lt;div class=&quot;footer-links&quot;&gt;
+                &lt;a href=&quot;https://amit.is-a.dev&quot; target=&quot;_blank&quot; class=&quot;footer-link&quot;&gt;amit.is-a.dev&lt;/a&gt;
+                &lt;span&gt;•&lt;/span&gt;
+                &lt;a href=&quot;https://github.com/notamitgamer&quot; target=&quot;_blank&quot; class=&quot;footer-link&quot;&gt;GitHub&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/footer&gt;
+
+    &lt;script&gt;
+        document.addEventListener(&#x27;DOMContentLoaded&#x27;, () =&gt; {
+            setupCustomDropdown(&#x27;sourceSelectWrapper&#x27;, &#x27;fromBase&#x27;);
+            setupCustomDropdown(&#x27;targetSelectWrapper&#x27;, &#x27;toBase&#x27;);
+            setupCustomDropdown(&#x27;calcBaseWrapper&#x27;, &#x27;calcBase&#x27;);
+            setupCustomDropdown(&#x27;calcOpWrapper&#x27;, &#x27;calcOp&#x27;);
+            
+            setupEventListeners();
+            
+            // Initialize Calculator
+            addCalcRow();
+            addCalcRow();
+            
+            renderHistory();
+
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if(params.has(&#x27;val&#x27;)) {
+                    document.getElementById(&#x27;inputVal&#x27;).value = params.get(&#x27;val&#x27;);
+                    if(params.has(&#x27;from&#x27;)) {
+                        const val = params.get(&#x27;from&#x27;);
+                        document.getElementById(&#x27;fromBase&#x27;).value = val;
+                        updateDropdownUI(&#x27;sourceSelectWrapper&#x27;, val);
+                    }
+                    if(params.has(&#x27;to&#x27;)) {
+                        const val = params.get(&#x27;to&#x27;);
+                        document.getElementById(&#x27;toBase&#x27;).value = val;
+                        updateDropdownUI(&#x27;targetSelectWrapper&#x27;, val);
+                    }
+                    convert();
+                }
+            } catch(e) {}
+            
+            document.addEventListener(&#x27;click&#x27;, (e) =&gt; {
+                const sidebar = document.getElementById(&#x27;sidebar&#x27;);
+                const historyModal = document.getElementById(&#x27;historyModal&#x27;);
+                const toolsBtns = document.querySelectorAll(&#x27;.tools-btn&#x27;);
+                let clickedBtn = false;
+                toolsBtns.forEach(btn =&gt; { if(btn.contains(e.target)) clickedBtn = true; });
+
+                if (!sidebar.contains(e.target) &amp;&amp; !clickedBtn &amp;&amp; sidebar.classList.contains(&#x27;open&#x27;)) {
+                    toggleSidebar();
+                }
+                if (e.target === historyModal) {
+                    toggleHistory();
+                }
+            });
+        });
+
+        /* --- NAVIGATION --- */
+        function switchTab(tabName, index) {
+            document.querySelectorAll(&#x27;.app-section&#x27;).forEach(el =&gt; el.classList.remove(&#x27;active&#x27;));
+            document.getElementById(tabName + &#x27;-section&#x27;).classList.add(&#x27;active&#x27;);
+            
+            document.querySelectorAll(&#x27;.nav-tab&#x27;).forEach(el =&gt; el.classList.remove(&#x27;active&#x27;));
+            const tabs = document.querySelectorAll(&#x27;.nav-tab&#x27;);
+            tabs[index].classList.add(&#x27;active&#x27;);
+            
+            const glider = document.getElementById(&#x27;navGlider&#x27;);
+            glider.style.transform = `translateX(${index * 100}%)`;
+        }
+
+        function toggleSidebar() {
+            document.getElementById(&#x27;sidebar&#x27;).classList.toggle(&#x27;open&#x27;);
+        }
+
+        function toggleHistory() {
+            const modal = document.getElementById(&#x27;historyModal&#x27;);
+            modal.classList.toggle(&#x27;open&#x27;);
+        }
+
+        /* --- DROPDOWN LOGIC --- */
+        function setupCustomDropdown(wrapperId, nativeSelectId) {
+            const wrapper = document.getElementById(wrapperId);
+            const nativeSelect = document.getElementById(nativeSelectId);
+            const trigger = wrapper.querySelector(&#x27;.custom-select-trigger&#x27;);
+            const triggerText = trigger.querySelector(&#x27;.selection-text&#x27;);
+            const options = wrapper.querySelectorAll(&#x27;.custom-option&#x27;);
+
+            trigger.addEventListener(&#x27;click&#x27;, (e) =&gt; {
+                e.stopPropagation();
+                document.querySelectorAll(&#x27;.custom-select-wrapper&#x27;).forEach(w =&gt; {
+                    if(w !== wrapper) w.classList.remove(&#x27;open&#x27;);
+                });
+                wrapper.classList.toggle(&#x27;open&#x27;);
+            });
+
+            options.forEach(opt =&gt; {
+                opt.addEventListener(&#x27;click&#x27;, (e) =&gt; {
+                    e.stopPropagation();
+                    wrapper.querySelectorAll(&#x27;.custom-option&#x27;).forEach(o =&gt; o.classList.remove(&#x27;selected&#x27;));
+                    opt.classList.add(&#x27;selected&#x27;);
+                    triggerText.textContent = opt.textContent;
+                    wrapper.classList.remove(&#x27;open&#x27;);
+                    
+                    nativeSelect.value = opt.getAttribute(&#x27;data-value&#x27;);
+                    nativeSelect.dispatchEvent(new Event(&#x27;change&#x27;));
+                });
+            });
+
+            document.addEventListener(&#x27;click&#x27;, () =&gt; {
+                wrapper.classList.remove(&#x27;open&#x27;);
+            });
+        }
+        
+        function updateDropdownUI(wrapperId, value) {
+            const wrapper = document.getElementById(wrapperId);
+            const triggerText = wrapper.querySelector(&#x27;.selection-text&#x27;);
+            const options = wrapper.querySelectorAll(&#x27;.custom-option&#x27;);
+            
+            options.forEach(opt =&gt; {
+                if(opt.getAttribute(&#x27;data-value&#x27;) === value) {
+                    opt.classList.add(&#x27;selected&#x27;);
+                    triggerText.textContent = opt.textContent;
+                } else {
+                    opt.classList.remove(&#x27;selected&#x27;);
+                }
+            });
+        }
+
+        /* --- CONVERTER LOGIC --- */
+        function convert() {
+            const inputVal = document.getElementById(&#x27;inputVal&#x27;).value;
+            const outputEl = document.getElementById(&#x27;outputVal&#x27;);
+            const errorChip = document.getElementById(&#x27;errorChip&#x27;);
+            const fromBase = parseInt(document.getElementById(&#x27;fromBase&#x27;).value);
+            const toBase = parseInt(document.getElementById(&#x27;toBase&#x27;).value);
+
+            document.getElementById(&#x27;sourceCount&#x27;).textContent = `${inputVal.length} chars`;
+            errorChip.classList.remove(&#x27;visible&#x27;);
+
+            if(!inputVal) { 
+                outputEl.value = &#x27;&#x27;; 
+                document.getElementById(&#x27;stepsContainer&#x27;).classList.remove(&#x27;visible&#x27;);
+                updateURL(&#x27;&#x27;);
+                return; 
+            }
+
+            const normalized = inputVal.trim().toUpperCase();
+            const validChars = &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.&quot;.substring(0, fromBase) + &quot;.&quot;;
+            const regex = new RegExp(`^[${validChars}]+$`);
+            
+            if(!regex.test(normalized)) {
+                errorChip.classList.add(&#x27;visible&#x27;);
+                outputEl.value = &quot;Error&quot;;
+                document.getElementById(&#x27;stepsContainer&#x27;).classList.remove(&#x27;visible&#x27;);
+                return;
+            }
+
+            try {
+                updateURL(normalized, fromBase, toBase);
+
+                const parts = normalized.split(&#x27;.&#x27;);
+                const decInt = parseInt(parts[0], fromBase);
+                let decTotal = decInt;
+                
+                const result = decTotal.toString(toBase).toUpperCase();
+                outputEl.value = result;
+
+                generateSteps(normalized, fromBase, toBase, decTotal, result);
+                addToHistory(normalized, result, fromBase, toBase);
+
+            } catch(e) {
+                outputEl.value = &quot;Error&quot;;
+            }
+        }
+
+        function generateSteps(input, from, to, decimal, result) {
+            const container = document.getElementById(&#x27;stepsContainer&#x27;);
+            const output = document.getElementById(&#x27;stepsOutput&#x27;);
+            container.classList.add(&#x27;visible&#x27;);
+            
+            let log = `Converting ${input} (Base ${from}) to Base ${to}\n`;
+            log += `------------------------------------------\n`;
+            
+            if(from !== 10) {
+                log += `1. Convert to Decimal:\n   `;
+                const digits = input.split(&#x27;.&#x27;)[0].split(&#x27;&#x27;).reverse();
+                digits.forEach((d, i) =&gt; {
+                    log += `${d}×${from}^${i} + `;
+                });
+                log = log.slice(0, -3); // Remove last +
+                log += ` = ${decimal}\n\n`;
+            } else {
+                log += `1. Already Decimal: ${decimal}\n\n`;
+            }
+
+            if(to !== 10) {
+                log += `2. Convert Decimal ${decimal} to Base ${to}:\n`;
+                let temp = decimal;
+                while(temp &gt; 0) {
+                    let rem = temp % to;
+                    let quot = Math.floor(temp / to);
+                    log += `   ${temp} ÷ ${to} = ${quot} [Rem: ${rem.toString(to).toUpperCase()}]\n`;
+                    temp = quot;
+                }
+                log += `   Read remainders bottom-up: ${result}`;
+            } else {
+                log += `2. Result is Decimal: ${result}`;
+            }
+            output.textContent = log;
+        }
+
+        function updateURL(val, from, to) {
+            try {
+                const url = new URL(window.location);
+                if(val) {
+                    url.searchParams.set(&#x27;val&#x27;, val);
+                    url.searchParams.set(&#x27;from&#x27;, from);
+                    url.searchParams.set(&#x27;to&#x27;, to);
+                    window.history.replaceState({}, &#x27;&#x27;, url);
+                } else {
+                    const cleanUrl = window.location.pathname;
+                    window.history.replaceState({}, &#x27;&#x27;, cleanUrl);
+                }
+            } catch(e) {}
+        }
+
+        /* --- HISTORY LOGIC --- */
+        function addToHistory(inVal, outVal, from, to) {
+            const key = &quot;nct_history&quot;;
+            let history = JSON.parse(localStorage.getItem(key) || &quot;[]&quot;);
+            if(history.length &gt; 0 &amp;&amp; history[0].inVal === inVal &amp;&amp; history[0].to === to) return;
+            history.unshift({ inVal, outVal, from, to });
+            if(history.length &gt; 10) history.pop();
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById(&#x27;historyList&#x27;);
+            const history = JSON.parse(localStorage.getItem(&quot;nct_history&quot;) || &quot;[]&quot;);
+            if(history.length === 0) {
+                list.innerHTML = &#x27;&lt;div style=&quot;padding:10px; color:#555; text-align:center;&quot;&gt;No history yet&lt;/div&gt;&#x27;;
+                return;
+            }
+            list.innerHTML = &#x27;&#x27;;
+            history.forEach(item =&gt; {
+                const div = document.createElement(&#x27;div&#x27;);
+                div.className = &#x27;history-item&#x27;;
+                div.innerHTML = `&lt;div&gt;&lt;span class=&quot;hist-meta&quot;&gt;Base ${item.from} → ${item.to}&lt;/span&gt;&lt;span class=&quot;hist-val&quot;&gt;${item.inVal} = ${item.outVal}&lt;/span&gt;&lt;/div&gt;`;
+                div.onclick = () =&gt; {
+                    document.getElementById(&#x27;inputVal&#x27;).value = item.inVal;
+                    document.getElementById(&#x27;fromBase&#x27;).value = item.from;
+                    document.getElementById(&#x27;toBase&#x27;).value = item.to;
+                    updateDropdownUI(&#x27;sourceSelectWrapper&#x27;, item.from.toString());
+                    updateDropdownUI(&#x27;targetSelectWrapper&#x27;, item.to.toString());
+                    convert();
+                };
+                list.appendChild(div);
+            });
+        }
+        
+        function clearHistory() {
+            const list = document.getElementById(&#x27;historyList&#x27;);
+            const btn = document.getElementById(&#x27;clearHistBtn&#x27;);
+            
+            if(list.children.length === 0 || list.innerText.includes(&quot;No history&quot;)) return;
+            
+            // Trigger Shake Animation on Button
+            btn.classList.add(&#x27;shaking&#x27;);
+            
+            // Trigger Slide Out Animation on List
+            list.classList.add(&#x27;clearing&#x27;);
+            
+            setTimeout(() =&gt; {
+                localStorage.removeItem(&quot;nct_history&quot;);
+                renderHistory();
+                list.classList.remove(&#x27;clearing&#x27;);
+                btn.classList.remove(&#x27;shaking&#x27;);
+            }, 400); // Duration matches CSS animation
+        }
+
+        /* --- DYNAMIC CALCULATOR LOGIC --- */
+        function addCalcRow() {
+            const container = document.getElementById(&#x27;calcRows&#x27;);
+            const div = document.createElement(&#x27;div&#x27;);
+            div.className = &#x27;calc-row&#x27;;
+            div.innerHTML = `
+                &lt;div class=&quot;calc-input-wrapper&quot;&gt;
+                    &lt;input type=&quot;text&quot; class=&quot;calc-input&quot; placeholder=&quot;Enter number...&quot; oninput=&quot;validateRow(this); runCalculation()&quot;&gt;
+                &lt;/div&gt;
+                &lt;button class=&quot;calc-remove-btn&quot; onclick=&quot;removeRow(this)&quot; title=&quot;Remove&quot;&gt;×&lt;/button&gt;
+            `;
+            container.appendChild(div);
+            div.querySelector(&#x27;input&#x27;).focus();
+        }
+
+        function removeRow(btn) {
+            const row = btn.parentElement;
+            if(document.querySelectorAll(&#x27;.calc-row&#x27;).length &gt; 1) {
+                row.classList.add(&#x27;removing&#x27;);
+                setTimeout(() =&gt; {
+                    row.remove();
+                    runCalculation();
+                }, 300);
+            }
+        }
+
+        function validateRow(input) {
+            const base = parseInt(document.getElementById(&#x27;calcBase&#x27;).value);
+            const val = input.value.trim().toUpperCase();
+            if(!val) {
+                input.classList.remove(&#x27;invalid&#x27;);
+                return true;
+            }
+            const validChars = &quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.&quot;.substring(0, base) + &quot;.&quot;;
+            const regex = new RegExp(`^[${validChars}]+$`);
+            if(!regex.test(val)) {
+                input.classList.add(&#x27;invalid&#x27;);
+                return false;
+            } else {
+                input.classList.remove(&#x27;invalid&#x27;);
+                return true;
+            }
+        }
+
+        function validateAllRows() {
+            document.querySelectorAll(&#x27;.calc-input&#x27;).forEach(input =&gt; validateRow(input));
+            runCalculation();
+        }
+
+        function runCalculation() {
+            const base = parseInt(document.getElementById(&#x27;calcBase&#x27;).value);
+            const op = document.getElementById(&#x27;calcOp&#x27;).value;
+            const inputs = document.querySelectorAll(&#x27;.calc-input&#x27;);
+            const vizBtn = document.getElementById(&#x27;vizBtn&#x27;);
+            let total = null;
+            let error = false;
+
+            inputs.forEach(input =&gt; {
+                if(input.classList.contains(&#x27;invalid&#x27;)) { error = true; return; }
+                const valStr = input.value.trim().toUpperCase();
+                if(!valStr) return;
+                const val = parseInt(valStr, base);
+                if(isNaN(val)) return;
+                if(total === null) { total = val; } else {
+                    if(op === &#x27;add&#x27;) total += val;
+                    if(op === &#x27;sub&#x27;) total -= val;
+                    if(op === &#x27;mul&#x27;) total *= val;
+                    if(op === &#x27;div&#x27;) total = Math.floor(total / val);
+                }
+            });
+
+            const resEl = document.getElementById(&#x27;calcResult&#x27;);
+            if(error) {
+                resEl.textContent = &quot;Invalid Input&quot;;
+                resEl.style.color = &quot;var(--md-sys-color-error)&quot;;
+                vizBtn.style.display = &#x27;none&#x27;;
+            } else if(total === null) {
+                resEl.textContent = &quot;0&quot;;
+                resEl.style.color = &quot;var(--md-sys-color-primary)&quot;;
+                vizBtn.style.display = &#x27;none&#x27;;
+            } else {
+                resEl.textContent = total.toString(base).toUpperCase();
+                resEl.style.color = &quot;var(--md-sys-color-primary)&quot;;
+                vizBtn.style.display = (op === &#x27;add&#x27;) ? &#x27;flex&#x27; : &#x27;none&#x27;;
+            }
+            document.getElementById(&#x27;visualizerPanel&#x27;).classList.remove(&#x27;active&#x27;);
+        }
+
+        /* --- VISUALIZER LOGIC (Multi-Base) --- */
+        function visualizeCalculation() {
+            const base = parseInt(document.getElementById(&#x27;calcBase&#x27;).value);
+            const op = document.getElementById(&#x27;calcOp&#x27;).value;
+            const panel = document.getElementById(&#x27;visualizerPanel&#x27;);
+            const grid = document.getElementById(&#x27;vizGrid&#x27;);
+            const info = document.getElementById(&#x27;vizInfo&#x27;);
+            
+            if(op !== &#x27;add&#x27;) return;
+
+            const inputs = [];
+            let isValid = true;
+            document.querySelectorAll(&#x27;.calc-input&#x27;).forEach(inp =&gt; {
+                if(inp.value.trim()) {
+                     const val = parseInt(inp.value.trim(), base);
+                     if(isNaN(val)) isValid = false;
+                     inputs.push(val);
+                }
+            });
+
+            if(!isValid || inputs.length &lt; 2) {
+                alert(&quot;Enter at least two numbers.&quot;);
+                return;
+            }
+
+            panel.classList.add(&#x27;active&#x27;);
+            grid.innerHTML = &#x27;&#x27;;
+            
+            const digitArrays = inputs.map(n =&gt; n.toString(base).toUpperCase().split(&#x27;&#x27;));
+            const maxLen = Math.max(...digitArrays.map(arr =&gt; arr.length)) + 1;
+            
+            const paddedArrays = digitArrays.map(arr =&gt; {
+                const padding = new Array(maxLen - arr.length).fill(&#x27;0&#x27;);
+                return padding.concat(arr);
+            });
+            
+            grid.style.gridTemplateColumns = `repeat(${maxLen}, 1fr)`;
+            
+            for(let i=0; i&lt;maxLen; i++) {
+                const cell = document.createElement(&#x27;div&#x27;);
+                cell.className = &#x27;viz-cell carry&#x27;;
+                cell.id = `carry-${i}`;
+                grid.appendChild(cell);
+            }
+            
+            paddedArrays.forEach((rowDigits, rIdx) =&gt; {
+                for(let i=0; i&lt;maxLen; i++) {
+                    const cell = document.createElement(&#x27;div&#x27;);
+                    cell.className = &#x27;viz-cell&#x27;;
+                    if(rIdx === paddedArrays.length -1) cell.classList.add(&#x27;border-bottom&#x27;);
+                    const val = rowDigits[i];
+                    cell.textContent = val;
+                    if(i === 0 &amp;&amp; rIdx &gt; 0) {
+                        cell.classList.add(&#x27;operator&#x27;);
+                        cell.innerHTML = `+ ${val}`;
+                    }
+                    grid.appendChild(cell);
+                }
+            });
+
+            for(let i=0; i&lt;maxLen; i++) {
+                const cell = document.createElement(&#x27;div&#x27;);
+                cell.className = &#x27;viz-cell result&#x27;;
+                cell.id = `res-${i}`;
+                cell.textContent = &#x27;?&#x27;;
+                grid.appendChild(cell);
+            }
+
+            let carry = 0;
+            let colIdx = maxLen - 1;
+
+            function step() {
+                if(colIdx &lt; 0) {
+                    info.textContent = &quot;Complete.&quot;;
+                    return;
+                }
+                document.querySelectorAll(&#x27;.active-col&#x27;).forEach(el =&gt; el.classList.remove(&#x27;active-col&#x27;));
+                const resCell = document.getElementById(`res-${colIdx}`);
+                resCell.classList.add(&#x27;active-col&#x27;);
+                
+                let sum = carry;
+                const digitVals = [];
+                paddedArrays.forEach(row =&gt; {
+                    const char = row[colIdx];
+                    const val = parseInt(char, base);
+                    sum += val;
+                    digitVals.push(val.toString(base).toUpperCase());
+                });
+
+                const writeVal = sum % base;
+                const newCarry = Math.floor(sum / base);
+
+                resCell.textContent = writeVal.toString(base).toUpperCase();
+                if(newCarry &gt; 0 &amp;&amp; colIdx &gt; 0) {
+                    document.getElementById(`carry-${colIdx-1}`).textContent = newCarry.toString(base).toUpperCase();
+                }
+                
+                const eqStr = `${digitVals.join(&#x27;+&#x27;)} + ${carry}(c) = ${sum}`;
+                const writeStr = writeVal.toString(base).toUpperCase();
+                const carryStr = newCarry.toString(base).toUpperCase();
+                info.textContent = `Col ${maxLen - colIdx}: ${eqStr} (Base ${base}). Write ${writeStr}, Carry ${carryStr}`;
+
+                carry = newCarry;
+                colIdx--;
+                setTimeout(step, 800);
+            }
+            step();
+        }
+
+        /* --- UTILS &amp; SWAP --- */
+        function setupEventListeners() {
+            document.addEventListener(&#x27;keydown&#x27;, (e) =&gt; {
+                if(e.ctrlKey &amp;&amp; e.key === &#x27;Enter&#x27;) copyToClipboard(&#x27;outputVal&#x27;, &#x27;copyBtn&#x27;);
+                if(e.altKey &amp;&amp; e.key === &#x27;s&#x27;) document.getElementById(&#x27;swapBtn&#x27;).click();
+            });
+
+            document.getElementById(&#x27;inputVal&#x27;).addEventListener(&#x27;input&#x27;, convert);
+            document.getElementById(&#x27;fromBase&#x27;).addEventListener(&#x27;change&#x27;, convert);
+            document.getElementById(&#x27;toBase&#x27;).addEventListener(&#x27;change&#x27;, convert);
+
+            document.getElementById(&#x27;swapBtn&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+                const cardSource = document.getElementById(&#x27;cardSource&#x27;);
+                const cardTarget = document.getElementById(&#x27;cardTarget&#x27;);
+                const isMobile = window.innerWidth &lt;= 768;
+
+                if(isMobile) {
+                    cardSource.classList.add(&#x27;anim-move-down&#x27;);
+                    cardTarget.classList.add(&#x27;anim-move-up&#x27;);
+                } else {
+                    cardSource.classList.add(&#x27;anim-move-right&#x27;);
+                    cardTarget.classList.add(&#x27;anim-move-left&#x27;);
+                }
+
+                setTimeout(() =&gt; {
+                    const inEl = document.getElementById(&#x27;inputVal&#x27;);
+                    const outEl = document.getElementById(&#x27;outputVal&#x27;);
+                    const from = document.getElementById(&#x27;fromBase&#x27;);
+                    const to = document.getElementById(&#x27;toBase&#x27;);
+
+                    const tempVal = inEl.value;
+                    inEl.value = outEl.value;
+                    const tempBase = from.value;
+                    from.value = to.value;
+                    to.value = tempBase;
+                    
+                    updateDropdownUI(&#x27;sourceSelectWrapper&#x27;, from.value);
+                    updateDropdownUI(&#x27;targetSelectWrapper&#x27;, to.value);
+
+                    cardSource.classList.remove(&#x27;anim-move-down&#x27;, &#x27;anim-move-right&#x27;);
+                    cardTarget.classList.remove(&#x27;anim-move-up&#x27;, &#x27;anim-move-left&#x27;);
+                    convert();
+                }, 400); 
+            });
+        }
+
+        function speakResult() {
+            const txt = document.getElementById(&#x27;outputVal&#x27;).value;
+            if(!txt) return;
+            let spoken = txt;
+            if(document.getElementById(&#x27;toBase&#x27;).value == 2) {
+                spoken = txt.split(&#x27;&#x27;).join(&#x27; &#x27;); 
+            }
+            const utt = new SpeechSynthesisUtterance(spoken);
+            window.speechSynthesis.speak(utt);
+        }
+
+        function copyToClipboard(id, btnId) {
+            const el = document.getElementById(id);
+            if(el) {
+                el.select();
+                document.execCommand(&#x27;copy&#x27;);
+            }
+            const btn = document.getElementById(btnId);
+            if(btn) {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `&lt;svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;var(--md-sys-color-success)&quot;&gt;&lt;path d=&quot;M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z&quot;/&gt;&lt;/svg&gt;`;
+                btn.classList.add(&#x27;success&#x27;);
+                setTimeout(() =&gt; { 
+                    btn.innerHTML = originalHTML; 
+                    btn.classList.remove(&#x27;success&#x27;);
+                }, 2000);
+            }
+        }
+        
+        function copyStepsText() {
+            const stepsText = document.getElementById(&#x27;stepsOutput&#x27;).innerText;
+            navigator.clipboard.writeText(stepsText).then(() =&gt; {
+                const btn = document.getElementById(&#x27;copyStepsBtn&#x27;);
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `&lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;var(--md-sys-color-success)&quot;&gt;&lt;path d=&quot;M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z&quot;/&gt;&lt;/svg&gt;`;
+                btn.classList.add(&#x27;success&#x27;);
+                setTimeout(() =&gt; { 
+                    btn.innerHTML = originalHTML; 
+                    btn.classList.remove(&#x27;success&#x27;);
+                }, 2000);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById(&#x27;inputVal&#x27;).value = &#x27;&#x27;;
+            document.getElementById(&#x27;outputVal&#x27;).value = &#x27;&#x27;;
+            document.getElementById(&#x27;sourceCount&#x27;).textContent = &#x27;0 chars&#x27;;
+            document.getElementById(&#x27;errorChip&#x27;).classList.remove(&#x27;visible&#x27;);
+            document.getElementById(&#x27;stepsContainer&#x27;).classList.remove(&#x27;visible&#x27;);
+            updateURL(&#x27;&#x27;);
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+            </div>
+        </div>
+
+        <div id="download-tab-content" class="tab-content">
+            <div class="download-item">
+                <div class="download-info">
+                    <h3>nct-legacy.html</h3>
+                    <p>Standalone production code of the Number Conversion Tool.</p>
+                </div>
+                <!-- Force download via download attribute -->
+                <a href="https://github.com/notamitgamer/NCT/releases/download/v2.11/nct-legacy.html" class="download-button">Download File</a>
+            </div>
+            <div class="download-item">
+                <div class="download-info">
+                    <h3>GitHub Repository</h3>
+                    <p>View source and contribute on GitHub.</p>
+                </div>
+                <a href="https://github.com/notamitgamer/nct-legacy" target="_blank" class="download-button" style="background-color: #333;">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(evt, tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show current
+            document.getElementById(tabId + '-tab-content').classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        async function copyToClipboard(btn) {
+            const code = document.getElementById('sourceCode').innerText;
+            try {
+                await navigator.clipboard.writeText(code);
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span>✓ Copied!</span>';
+                btn.classList.add('success');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('success');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy code: ', err);
+            }
+        }
+    </script>
+
+</body>
+</html>

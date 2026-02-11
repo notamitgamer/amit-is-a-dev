@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="canonical" href="https://amit.is-a.dev/nct-legacy.html" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCT v2.11 | Legacy Edition</title>
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48c3R5bGU+cGF0aHtmaWxsOiNEMEJDRkZ9QG1lZGlhIChwcmVmZXJzLWNvbG9yLXNjaGVtZTpkYXJrKXtwYXRoe2ZpbGw6I2ZmZnx9fTwvc3R5bGU+PHBhdGggZD0iTTcgMnYxMWgzdjlsNy0xMmgtNGw0LTh6Ii8+PC9zdmc+">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "NCT v2.11 | Legacy Edition",
+    "url": "https://amit.is-a.dev/nct-legacy",
+    "image": "https://amit.is-a.dev/nctlogo.png",
+    "description": "Number conversion tool",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any"
+  }
+</script>
+    <style>
+        /* --- MATERIAL DESIGN 3 TOKENS --- */
+        :root {
+            --md-sys-color-background: #141218;
+            --md-sys-color-surface: #1D1B20;
+            --md-sys-color-surface-container: #211F26;
+            --md-sys-color-surface-container-high: #2B2930;
+            
+            /* Primary */
+            --md-sys-color-primary: #D0BCFF;
+            --md-sys-color-on-primary: #381E72;
+            --md-sys-color-primary-container: #4F378B;
+            --md-sys-color-on-primary-container: #EADDFF;
+
+            /* Text */
+            --md-sys-color-on-surface: #E6E1E5;
+            --md-sys-color-on-surface-variant: #CAC4D0;
+            --md-sys-color-outline: #938F99;
+
+            /* Error */
+            --md-sys-color-error: #F2B8B5;
+            --md-sys-color-error-container: #8C1D18;
+
+            /* Success/Accent */
+            --md-sys-color-tertiary: #B6C4FF;
+            --md-sys-color-success: #4ade80;
+            
+            /* Dimensions */
+            --radius-xl: 28px;
+            --radius-l: 16px;
+            --radius-m: 12px;
+            --radius-s: 8px;
+
+            --font-main: 'Google Sans', 'Roboto', sans-serif;
+            --font-code: 'Roboto Mono', monospace;
+            
+            /* Animation */
+            --ease-elastic: cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            font-family: var(--font-main);
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            width: 100%;
+            background-image: radial-gradient(circle at 50% 0%, rgba(208, 188, 255, 0.05) 0%, transparent 60%);
+        }
+
+        /* --- LAYOUT --- */
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-grow: 1;
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 16px 0;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo span { color: var(--md-sys-color-primary); }
+
+        /* Navigation Tabs with Animation */
+        .nav-tabs {
+            position: relative;
+            display: flex;
+            background: var(--md-sys-color-surface-container);
+            padding: 4px;
+            border-radius: 32px;
+            width: fit-content;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-glider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: 110px; 
+            background: var(--md-sys-color-primary-container);
+            border-radius: 28px;
+            transition: transform 0.3s var(--ease-elastic);
+            z-index: 1;
+        }
+
+        .nav-tab {
+            position: relative;
+            padding: 10px 24px;
+            border-radius: 24px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+            z-index: 2;
+            width: 110px; 
+        }
+
+        .nav-tab.active { color: var(--md-sys-color-on-primary-container); }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tools-btn {
+            background: transparent;
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface);
+            padding: 8px 16px;
+            border-radius: var(--radius-l);
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s;
+            white-space: nowrap; /* Prevent internal wrapping */
+        }
+        .tools-btn:active { transform: scale(0.95); }
+        .tools-btn:hover { background: rgba(255,255,255,0.05); }
+
+        /* --- SECTIONS --- */
+        .app-section {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .app-section.active { display: flex; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CONVERTER STAGE --- */
+        .converter-stage {
+            display: grid;
+            grid-template-columns: 1fr 64px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .material-card {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+            position: relative;
+            transition: transform 0.4s var(--ease-elastic), box-shadow 0.2s;
+            border: 1px solid transparent;
+            z-index: 1;
+            min-width: 0; /* Prevents Grid Blowout */
+        }
+
+        .material-card:focus-within {
+            background-color: var(--md-sys-color-surface-container-high);
+            border-color: var(--md-sys-color-outline);
+        }
+
+        /* CARD HEADER & CUSTOM DROPDOWN */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            padding-bottom: 12px;
+            z-index: 10;
+        }
+
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-select-wrapper {
+            position: relative;
+            min-width: 150px;
+            user-select: none;
+        }
+        .custom-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface);
+            font-weight: 500;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .custom-select-trigger:hover { color: var(--md-sys-color-primary); }
+        .arrow { font-size: 0.7rem; transition: transform 0.3s; }
+        
+        .custom-options {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: var(--radius-m);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.2s var(--ease-elastic);
+            min-width: 180px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+        .custom-select-wrapper.open .custom-options {
+            opacity: 1; visibility: visible; pointer-events: all; transform: translateY(0);
+        }
+        .custom-select-wrapper.open .arrow { transform: rotate(180deg); }
+        
+        .custom-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface-variant);
+            transition: 0.2s;
+        }
+        .custom-option:hover { background: rgba(255,255,255,0.05); color: var(--md-sys-color-on-surface); }
+        .custom-option.selected { color: var(--md-sys-color-primary); background: rgba(208, 188, 255, 0.1); }
+
+        /* INPUT AREA */
+        .input-area {
+            flex-grow: 1;
+            width: 100%;
+            max-width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface);
+            font-size: 2.2rem;
+            font-family: var(--font-main);
+            resize: none;
+            outline: none;
+            line-height: 1.2;
+            z-index: 1;
+            word-break: break-all; /* Ensure continuous numbers wrap */
+        }
+        .input-area::placeholder { color: var(--md-sys-color-on-surface-variant); opacity: 0.3; }
+
+        /* Error Chip */
+        .error-chip {
+            position: absolute;
+            bottom: 80px;
+            left: 24px;
+            background: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-error);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .error-chip.visible { opacity: 1; transform: translateY(0); }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .char-count { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); }
+
+        /* Icons & Buttons */
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); color: var(--md-sys-color-on-surface); transform: scale(1.1); }
+        .icon-btn:active { transform: scale(0.9); }
+        
+        /* Copy Button Animation */
+        .icon-btn.success svg {
+            animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--md-sys-color-success);
+        }
+        @keyframes check-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Trash Shake Animation */
+        @keyframes trash-shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .icon-btn.shaking {
+            animation: trash-shake 0.4s ease-in-out;
+            color: var(--md-sys-color-error);
+        }
+
+        /* Swap Button */
+        .swap-container { display: flex; justify-content: center; align-items: center; z-index: 2; }
+        .swap-fab {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            background-color: var(--md-sys-color-surface-container-high);
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s var(--ease-elastic);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .swap-fab:hover {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            transform: rotate(180deg) scale(1.1);
+            border-color: transparent;
+        }
+
+        /* --- SWAP ANIMATION CLASSES --- */
+        .anim-move-right { transform: translateX(calc(100% + 16px)); }
+        .anim-move-left { transform: translateX(calc(-100% - 16px)); }
+        .anim-move-down { transform: translateY(calc(100% + 16px)); }
+        .anim-move-up { transform: translateY(calc(-100% - 16px)); }
+
+        /* --- DYNAMIC CALCULATOR --- */
+        .calc-wrapper {
+            background: var(--md-sys-color-surface-container);
+            padding: 24px;
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .calc-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .calc-ctrl-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 12px;
+        }
+        .calc-ctrl-group label {
+            font-size: 0.8rem;
+            color: var(--md-sys-color-primary);
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin: 0;
+        }
+        
+        .calc-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .calc-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Simple Fade Out */
+        .calc-row.removing {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .calc-input-wrapper {
+            flex-grow: 1;
+            position: relative;
+        }
+        .calc-input {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid transparent;
+            color: var(--md-sys-color-on-surface);
+            padding: 16px;
+            border-radius: 12px;
+            font-family: var(--font-code);
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .calc-input:focus { border-color: var(--md-sys-color-primary); background: rgba(0,0,0,0.4); }
+        .calc-input.invalid { border-color: var(--md-sys-color-error); }
+        
+        .calc-remove-btn {
+            background: var(--md-sys-color-surface-container-high);
+            border: none;
+            color: var(--md-sys-color-error);
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .calc-remove-btn:hover { background: var(--md-sys-color-error-container); color: #fff; }
+
+        /* The Divider Area */
+        .calc-actions {
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--md-sys-color-outline);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .add-row-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed var(--md-sys-color-outline);
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            width: fit-content;
+            text-align: left;
+            transition: 0.2s;
+            margin-bottom: 20px; /* Space before divider */
+        }
+        .add-row-btn:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: rgba(208, 188, 255, 0.05); }
+
+        .calc-result-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto; /* Forces result to the right */
+        }
+
+        .visualize-btn {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex; /* Always visible if result exists */
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-right: auto; /* Keeps it left-aligned in actions */
+        }
+        .visualize-btn:hover { filter: brightness(1.2); }
+        .visualize-btn:active { transform: scale(0.95); }
+        @keyframes popIn { from{transform: scale(0.8); opacity:0} to{transform: scale(1); opacity:1} }
+
+        .calc-result-display { text-align: right; }
+        .res-label { font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); }
+        .res-value { font-size: 2.2rem; color: var(--md-sys-color-primary); font-family: var(--font-code); margin-top: 5px; font-weight: 700; }
+
+
+        /* --- VISUALIZER PANEL --- */
+        .calc-visualizer {
+            background: #111;
+            border-radius: var(--radius-m);
+            padding: 20px;
+            margin-top: 20px;
+            display: none; 
+            border: 1px solid var(--md-sys-color-outline);
+            overflow-x: auto;
+        }
+        .calc-visualizer.active { display: block; animation: slideIn 0.4s var(--ease-elastic); }
+        
+        .viz-grid {
+            display: grid;
+            font-family: var(--font-code);
+            font-size: 1.2rem;
+            color: var(--md-sys-color-on-surface);
+            gap: 4px;
+        }
+        .viz-row { display: contents; }
+        .viz-cell {
+            padding: 4px 8px;
+            text-align: center;
+            position: relative;
+        }
+        .viz-cell.carry { color: var(--md-sys-color-tertiary); font-size: 0.8rem; height: 20px; }
+        .viz-cell.borrow { color: var(--md-sys-color-error); font-size: 0.8rem; height: 20px; } /* NEW */
+        .viz-cell.operator { color: var(--md-sys-color-primary); }
+        .viz-cell.border-bottom { border-bottom: 2px solid var(--md-sys-color-outline); }
+        .viz-cell.active-col { background: rgba(208, 188, 255, 0.15); border-radius: 4px; }
+        .viz-cell.result { color: var(--md-sys-color-primary); font-weight: bold; }
+
+        .viz-info {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+            font-family: var(--font-code);
+            min-height: 20px;
+            white-space: pre-wrap; /* For multiline text */
+        }
+
+        /* --- CONVERTER STEPS PANEL --- */
+        .steps-container {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: var(--radius-l);
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: none;
+        }
+        .steps-container.visible { display: block; animation: fadeIn 0.5s; }
+        
+        .steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        
+        .steps-content {
+            font-family: var(--font-code);
+            color: var(--md-sys-color-tertiary);
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* --- HISTORY TAPE --- */
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--md-sys-color-outline);
+            padding-top: 20px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .history-list {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 200px; overflow-y: auto;
+            transition: opacity 0.3s;
+        }
+        
+        /* History Item Animation: Slide Out to Right */
+        .history-list.clearing .history-item {
+            animation: slide-out-right 0.3s forwards;
+        }
+        @keyframes slide-out-right {
+            to { transform: translateX(50px); opacity: 0; }
+        }
+
+        .history-item {
+            display: flex; justify-content: space-between;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            align-items: center;
+        }
+        .history-item:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+        .hist-val { color: var(--md-sys-color-on-surface); }
+        .hist-meta { font-size: 0.75rem; color: var(--md-sys-color-outline); margin-right: 10px; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--md-sys-color-outline);
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .footer-link {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .footer-link:hover { text-decoration: underline; color: var(--md-sys-color-tertiary); }
+
+        /* --- MODAL (LEGACY & CHEATSHEET) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: var(--md-sys-color-surface-container);
+            width: 90%; max-width: 500px;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--md-sys-color-outline);
+            transform: scale(0.9);
+            transition: transform 0.3s var(--ease-elastic);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            padding-bottom: 12px;
+            flex-shrink: 0;
+        }
+        .modal-header h3 { margin: 0; color: var(--md-sys-color-primary); }
+        .close-modal {
+            background: none; border: none; color: var(--md-sys-color-on-surface);
+            font-size: 1.5rem; cursor: pointer;
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            padding-right: 5px; /* Space for scrollbar */
+        }
+
+        /* History Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid var(--md-sys-color-outline);
+            margin-bottom: 20px;
+        }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -6px; top: 0;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--md-sys-color-primary);
+        }
+        .version-tag {
+            font-size: 0.8rem; font-weight: bold; color: var(--md-sys-color-tertiary);
+            margin-bottom: 4px; display: inline-block; background: rgba(255,255,255,0.1);
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .version-tag.current { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .timeline-desc { font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); margin: 0; }
+
+        /* Sidebar (Cheat Sheet) */
+        .sidebar {
+            position: fixed; top: 0; right: -320px;
+            width: 300px; height: 100%;
+            background: var(--md-sys-color-surface-container-high);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            padding: 24px;
+            transition: 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar.open { right: 0; }
+        .sidebar h3 { color: var(--md-sys-color-primary); margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .cheat-table { width: 100%; border-collapse: collapse; font-family: var(--font-code); font-size: 0.8rem; }
+        .cheat-table th, .cheat-table td { text-align: left; padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .close-sidebar {
+            position: absolute; top: 10px; right: 10px;
+            background: none; border: none; color: var(--md-sys-color-on-surface);
+            font-size: 1.5rem; cursor: pointer;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .app-container { padding: 16px; }
+            .converter-stage { grid-template-columns: 1fr; grid-template-rows: 1fr 64px 1fr; gap: 8px; }
+            .material-card { height: 260px; padding: 16px; /* Tighter padding for mobile */ }
+            .input-area { font-size: 1.8rem; /* Smaller text for mobile */ }
+            .swap-container { transform: rotate(90deg); }
+            .swap-fab:hover { transform: rotate(180deg); }
+            .header-top { flex-direction: column; gap: 16px; }
+            .header-actions { flex-wrap: wrap; justify-content: center; }
+            .calc-header { flex-direction: column; gap: 10px; }
+            
+            /* --- UPDATED MOBILE LAYOUT FOR VISUALIZER BTN --- */
+            .calc-actions { 
+                flex-direction: row; 
+                align-items: center; 
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .visualize-btn { 
+                margin-right: 0; 
+                margin-bottom: 0;
+                flex-shrink: 0; 
+            }
+            .calc-result-area { 
+                width: auto; 
+                margin-left: auto;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-container">
+        <div class="header-top">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--md-sys-color-primary)"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                NCT <span>v2.11</span>
+            </div>
+            
+            <!-- Animated Navigation -->
+            <div class="nav-tabs">
+                <div class="nav-glider" id="navGlider"></div>
+                <button class="nav-tab active" onclick="switchTab('converter', 0)">Converter</button>
+                <button class="nav-tab" onclick="switchTab('calculator', 1)">Calculator</button>
+            </div>
+
+            <div class="header-actions">
+                <button class="tools-btn" onclick="window.open('https://amit.is-a.dev/code-nct-legacy', '_blank')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+    </svg>
+    Source Code
+</button>
+
+                <button class="tools-btn" onclick="toggleHistory()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    Versions
+                </button>
+                <button class="tools-btn" onclick="toggleSidebar()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+                    Cheat Sheet
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+        
+        <!-- SECTION 1: CONVERTER -->
+        <section id="converter-section" class="app-section active">
+            
+            <div class="converter-stage">
+                <!-- SOURCE CARD -->
+                <div class="material-card" id="cardSource">
+                    <div class="card-header">
+                        <span class="input-label">Input</span>
+                        <div class="custom-select-wrapper" id="sourceSelectWrapper">
+                            <div class="custom-select-trigger">
+                                <span class="selection-text">Decimal</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="custom-options">
+                                <div class="custom-option" data-value="2">Binary</div>
+                                <div class="custom-option" data-value="8">Octal</div>
+                                <div class="custom-option selected" data-value="10">Decimal</div>
+                                <div class="custom-option" data-value="16">Hexadecimal</div>
+                            </div>
+                            <select id="fromBase" style="display:none">
+                                <option value="2">Binary</option>
+                                <option value="8">Octal</option>
+                                <option value="10" selected>Decimal</option>
+                                <option value="16">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <textarea id="inputVal" class="input-area" placeholder="0" spellcheck="false"></textarea>
+                    <div id="errorChip" class="error-chip">⚠️ Invalid character for this base</div>
+                    
+                    <div class="card-footer">
+                        <div class="char-count" id="sourceCount">0 chars</div>
+                        <div class="icon-actions">
+                            <button class="icon-btn" onclick="clearAll()" title="Clear">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWAP -->
+                <div class="swap-container">
+                    <button class="swap-fab" id="swapBtn" title="Swap (Alt+S)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+                    </button>
+                </div>
+
+                <!-- TARGET CARD -->
+                <div class="material-card" id="cardTarget">
+                    <div class="card-header">
+                        <span class="input-label">Result</span>
+                        <div class="custom-select-wrapper" id="targetSelectWrapper">
+                            <div class="custom-select-trigger">
+                                <span class="selection-text">Binary</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="custom-options">
+                                <div class="custom-option selected" data-value="2">Binary</div>
+                                <div class="custom-option" data-value="8">Octal</div>
+                                <div class="custom-option" data-value="10">Decimal</div>
+                                <div class="custom-option" data-value="16">Hexadecimal</div>
+                            </div>
+                            <select id="toBase" style="display:none">
+                                <option value="2" selected>Binary</option>
+                                <option value="8">Octal</option>
+                                <option value="10">Decimal</option>
+                                <option value="16">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <textarea id="outputVal" class="input-area" readonly placeholder="..." spellcheck="false"></textarea>
+                    
+                    <div class="card-footer">
+                        <div class="char-count">Result</div>
+                        <div class="icon-actions">
+                            <button class="icon-btn" onclick="speakResult()" title="Speak">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                            </button>
+                            <button class="icon-btn" id="copyBtn" onclick="copyToClipboard('outputVal', 'copyBtn')" title="Copy (Ctrl+Enter)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEPS PANEL WITH COPY BUTTON -->
+            <div class="steps-container" id="stepsContainer">
+                <div class="steps-header">
+                    <h4 style="color:var(--md-sys-color-primary); margin:0;">Calculation Steps</h4>
+                    <button class="icon-btn" id="copyStepsBtn" onclick="copyStepsText()" title="Copy Steps">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                </div>
+                <div class="steps-content" id="stepsOutput">Waiting for input...</div>
+            </div>
+
+            <div class="history-section">
+                <div class="history-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="color:var(--md-sys-color-on-surface-variant); margin:0;">Recent History</h4>
+                    <button class="icon-btn" id="clearHistBtn" onclick="clearHistory()" title="Clear History">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div style="padding:10px; color:#555; text-align:center;">No history yet</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 2: DYNAMIC CALCULATOR -->
+        <section id="calculator-section" class="app-section">
+            <div class="calc-wrapper">
+                
+                <div class="calc-header">
+                    <div class="calc-ctrl-group">
+                        <label>Base Mode</label>
+                        <div class="custom-select-wrapper" id="calcBaseWrapper" style="flex:1">
+                            <div class="custom-select-trigger">
+                                <span class="selection-text">Decimal (Base 10)</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="custom-options">
+                                <div class="custom-option" data-value="2">Binary (Base 2)</div>
+                                <div class="custom-option" data-value="8">Octal (Base 8)</div>
+                                <div class="custom-option selected" data-value="10">Decimal (Base 10)</div>
+                                <div class="custom-option" data-value="16">Hex (Base 16)</div>
+                            </div>
+                            <select id="calcBase" style="display:none" onchange="validateAllRows()">
+                                <option value="2">Binary</option>
+                                <option value="8">Octal</option>
+                                <option value="10" selected>Decimal</option>
+                                <option value="16">Hex</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="calc-ctrl-group">
+                        <label>Operation</label>
+                        <div class="custom-select-wrapper" id="calcOpWrapper" style="flex:1">
+                            <div class="custom-select-trigger">
+                                <span class="selection-text">Addition (+)</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="custom-options">
+                                <div class="custom-option selected" data-value="add">Addition (+)</div>
+                                <div class="custom-option" data-value="sub">Subtraction (-)</div>
+                                <div class="custom-option" data-value="mul">Multiplication (×)</div>
+                                <div class="custom-option" data-value="div">Division (÷)</div>
+                            </div>
+                            <select id="calcOp" style="display:none" onchange="runCalculation()">
+                                <option value="add" selected>Addition</option>
+                                <option value="sub">Subtraction</option>
+                                <option value="mul">Multiplication</option>
+                                <option value="div">Division</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="calcRows" class="calc-rows">
+                    <!-- Dynamic Rows Injected Here -->
+                </div>
+
+                <!-- ADD ROW BUTTON (Left Aligned) -->
+                <button class="add-row-btn" onclick="addCalcRow()">+ Add Number</button>
+
+                <div class="calc-actions">
+                    <button class="visualize-btn" id="vizBtn" onclick="visualizeCalculation()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        Visualize
+                    </button>
+                    
+                    <div class="calc-result-area">
+                        <div class="calc-result-display">
+                            <div class="res-label">Result</div>
+                            <div class="res-value" id="calcResult">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BIT-BY-BIT VISUALIZER PANEL -->
+                <div class="calc-visualizer" id="visualizerPanel">
+                    <h4 style="color:var(--md-sys-color-primary); margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">Calculation Steps</h4>
+                    <div class="viz-grid" id="vizGrid">
+                        <!-- Grid injected here -->
+                    </div>
+                    <div class="viz-info" id="vizInfo">Click visualize to start...</div>
+                </div>
+                
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PROJECT LEGACY MODAL -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Project Legacy</h3>
+                <button class="close-modal" onclick="toggleHistory()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-timeline">
+                    <div class="timeline-item">
+                        <div class="version-tag">v1.0 (2024)</div>
+                        <p class="timeline-desc">Initial High School Project. Single file, manual conversion logic, animated background.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag">v2.0</div>
+                        <p class="timeline-desc">Modularized Logic & URL State. Moved away from switch cases to a Base-N engine.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag">v2.1</div>
+                        <p class="timeline-desc">Material You UI. Glassmorphism, animated cards, and custom dropdowns.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag">v2.2</div>
+                        <p class="timeline-desc">Dynamic Calculator. Added list-based arithmetic with strict validation.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag">v2.3 - v2.8</div>
+                        <p class="timeline-desc">Visualizer Engine. Bit-by-bit animation, step explanations, and history tape.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag">v2.10</div>
+                        <p class="timeline-desc">Professional Polish. Optimized UX layout, legacy tracking, and performance tuning.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="version-tag current">v2.11 (2026)</div>
+                        <p class="timeline-desc">Ultimate Refinement. Enhanced animations, layout stability, and smart controls.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR CHEATSHEET -->
+    <aside class="sidebar" id="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+        <h3>Cheat Sheet</h3>
+        
+        <h4>Powers of 2</h4>
+        <table class="cheat-table" style="margin-bottom:20px;">
+            <tr><td>2⁰</td><td>1</td></tr>
+            <tr><td>2¹</td><td>2</td></tr>
+            <tr><td>2²</td><td>4</td></tr>
+            <tr><td>2³</td><td>8</td></tr>
+            <tr><td>2⁴</td><td>16</td></tr>
+            <tr><td>2⁵</td><td>32</td></tr>
+            <tr><td>2⁶</td><td>64</td></tr>
+            <tr><td>2⁷</td><td>128</td></tr>
+            <tr><td>2⁸</td><td>256</td></tr>
+            <tr><td>2¹⁰</td><td>1024</td></tr>
+        </table>
+
+        <h4>Hex Lookup</h4>
+        <table class="cheat-table">
+            <tr><th>Dec</th><th>Hex</th><th>Bin</th></tr>
+            <tr><td>0</td><td>0</td><td>0000</td></tr>
+            <tr><td>1</td><td>1</td><td>0001</td></tr>
+            <tr><td>10</td><td>A</td><td>1010</td></tr>
+            <tr><td>11</td><td>B</td><td>1011</td></tr>
+            <tr><td>12</td><td>C</td><td>1100</td></tr>
+            <tr><td>13</td><td>D</td><td>1101</td></tr>
+            <tr><td>14</td><td>E</td><td>1110</td></tr>
+            <tr><td>15</td><td>F</td><td>1111</td></tr>
+        </table>
+    </aside>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 <strong>Amit Dutta</strong>. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://amit.is-a.dev" target="_blank" class="footer-link">amit.is-a.dev</a>
+                <span>•</span>
+                <a href="https://github.com/notamitgamer" target="_blank" class="footer-link">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCustomDropdown('sourceSelectWrapper', 'fromBase');
+            setupCustomDropdown('targetSelectWrapper', 'toBase');
+            setupCustomDropdown('calcBaseWrapper', 'calcBase');
+            setupCustomDropdown('calcOpWrapper', 'calcOp');
+            
+            setupEventListeners();
+            
+            // Initialize Calculator
+            addCalcRow();
+            addCalcRow();
+            
+            renderHistory();
+
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if(params.has('val')) {
+                    document.getElementById('inputVal').value = params.get('val');
+                    if(params.has('from')) {
+                        const val = params.get('from');
+                        document.getElementById('fromBase').value = val;
+                        updateDropdownUI('sourceSelectWrapper', val);
+                    }
+                    if(params.has('to')) {
+                        const val = params.get('to');
+                        document.getElementById('toBase').value = val;
+                        updateDropdownUI('targetSelectWrapper', val);
+                    }
+                    convert();
+                }
+            } catch(e) {}
+            
+            document.addEventListener('click', (e) => {
+                const sidebar = document.getElementById('sidebar');
+                const historyModal = document.getElementById('historyModal');
+                const toolsBtns = document.querySelectorAll('.tools-btn');
+                let clickedBtn = false;
+                toolsBtns.forEach(btn => { if(btn.contains(e.target)) clickedBtn = true; });
+
+                if (!sidebar.contains(e.target) && !clickedBtn && sidebar.classList.contains('open')) {
+                    toggleSidebar();
+                }
+                if (e.target === historyModal) {
+                    toggleHistory();
+                }
+            });
+        });
+
+        /* --- NAVIGATION --- */
+        function switchTab(tabName, index) {
+            document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + '-section').classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs[index].classList.add('active');
+            
+            const glider = document.getElementById('navGlider');
+            glider.style.transform = `translateX(${index * 100}%)`;
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleHistory() {
+            const modal = document.getElementById('historyModal');
+            modal.classList.toggle('open');
+        }
+
+        /* --- DROPDOWN LOGIC --- */
+        function setupCustomDropdown(wrapperId, nativeSelectId) {
+            const wrapper = document.getElementById(wrapperId);
+            const nativeSelect = document.getElementById(nativeSelectId);
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const triggerText = trigger.querySelector('.selection-text');
+            const options = wrapper.querySelectorAll('.custom-option');
+
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+                    if(w !== wrapper) w.classList.remove('open');
+                });
+                wrapper.classList.toggle('open');
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    wrapper.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    triggerText.textContent = opt.textContent;
+                    wrapper.classList.remove('open');
+                    
+                    nativeSelect.value = opt.getAttribute('data-value');
+                    nativeSelect.dispatchEvent(new Event('change'));
+                });
+            });
+
+            document.addEventListener('click', () => {
+                wrapper.classList.remove('open');
+            });
+        }
+        
+        function updateDropdownUI(wrapperId, value) {
+            const wrapper = document.getElementById(wrapperId);
+            const triggerText = wrapper.querySelector('.selection-text');
+            const options = wrapper.querySelectorAll('.custom-option');
+            
+            options.forEach(opt => {
+                if(opt.getAttribute('data-value') === value) {
+                    opt.classList.add('selected');
+                    triggerText.textContent = opt.textContent;
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        /* --- CONVERTER LOGIC --- */
+        function convert() {
+            const inputVal = document.getElementById('inputVal').value;
+            const outputEl = document.getElementById('outputVal');
+            const errorChip = document.getElementById('errorChip');
+            const fromBase = parseInt(document.getElementById('fromBase').value);
+            const toBase = parseInt(document.getElementById('toBase').value);
+
+            document.getElementById('sourceCount').textContent = `${inputVal.length} chars`;
+            errorChip.classList.remove('visible');
+
+            if(!inputVal) { 
+                outputEl.value = ''; 
+                document.getElementById('stepsContainer').classList.remove('visible');
+                updateURL('');
+                return; 
+            }
+
+            const normalized = inputVal.trim().toUpperCase();
+            const validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.".substring(0, fromBase) + ".";
+            const regex = new RegExp(`^[${validChars}]+$`);
+            
+            if(!regex.test(normalized)) {
+                errorChip.classList.add('visible');
+                outputEl.value = "Error";
+                document.getElementById('stepsContainer').classList.remove('visible');
+                return;
+            }
+
+            try {
+                updateURL(normalized, fromBase, toBase);
+
+                const parts = normalized.split('.');
+                const decInt = parseInt(parts[0], fromBase);
+                let decTotal = decInt;
+                
+                const result = decTotal.toString(toBase).toUpperCase();
+                outputEl.value = result;
+
+                generateSteps(normalized, fromBase, toBase, decTotal, result);
+                addToHistory(normalized, result, fromBase, toBase);
+
+            } catch(e) {
+                outputEl.value = "Error";
+            }
+        }
+
+        function generateSteps(input, from, to, decimal, result) {
+            const container = document.getElementById('stepsContainer');
+            const output = document.getElementById('stepsOutput');
+            container.classList.add('visible');
+            
+            let log = `Converting ${input} (Base ${from}) to Base ${to}\n`;
+            log += `------------------------------------------\n`;
+            
+            if(from !== 10) {
+                log += `1. Convert to Decimal:\n   `;
+                const digits = input.split('.')[0].split('').reverse();
+                digits.forEach((d, i) => {
+                    log += `${d}×${from}^${i} + `;
+                });
+                log = log.slice(0, -3); // Remove last +
+                log += ` = ${decimal}\n\n`;
+            } else {
+                log += `1. Already Decimal: ${decimal}\n\n`;
+            }
+
+            if(to !== 10) {
+                log += `2. Convert Decimal ${decimal} to Base ${to}:\n`;
+                let temp = decimal;
+                while(temp > 0) {
+                    let rem = temp % to;
+                    let quot = Math.floor(temp / to);
+                    log += `   ${temp} ÷ ${to} = ${quot} [Rem: ${rem.toString(to).toUpperCase()}]\n`;
+                    temp = quot;
+                }
+                log += `   Read remainders bottom-up: ${result}`;
+            } else {
+                log += `2. Result is Decimal: ${result}`;
+            }
+            output.textContent = log;
+        }
+
+        function updateURL(val, from, to) {
+            try {
+                const url = new URL(window.location);
+                if(val) {
+                    url.searchParams.set('val', val);
+                    url.searchParams.set('from', from);
+                    url.searchParams.set('to', to);
+                    window.history.replaceState({}, '', url);
+                } else {
+                    const cleanUrl = window.location.pathname;
+                    window.history.replaceState({}, '', cleanUrl);
+                }
+            } catch(e) {}
+        }
+
+        /* --- HISTORY LOGIC --- */
+        function addToHistory(inVal, outVal, from, to) {
+            const key = "nct_history";
+            let history = JSON.parse(localStorage.getItem(key) || "[]");
+            if(history.length > 0 && history[0].inVal === inVal && history[0].to === to) return;
+            history.unshift({ inVal, outVal, from, to });
+            if(history.length > 10) history.pop();
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem("nct_history") || "[]");
+            if(history.length === 0) {
+                list.innerHTML = '<div style="padding:10px; color:#555; text-align:center;">No history yet</div>';
+                return;
+            }
+            list.innerHTML = '';
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<div><span class="hist-meta">Base ${item.from} → ${item.to}</span><span class="hist-val">${item.inVal} = ${item.outVal}</span></div>`;
+                div.onclick = () => {
+                    document.getElementById('inputVal').value = item.inVal;
+                    document.getElementById('fromBase').value = item.from;
+                    document.getElementById('toBase').value = item.to;
+                    updateDropdownUI('sourceSelectWrapper', item.from.toString());
+                    updateDropdownUI('targetSelectWrapper', item.to.toString());
+                    convert();
+                };
+                list.appendChild(div);
+            });
+        }
+        
+        function clearHistory() {
+            const list = document.getElementById('historyList');
+            const btn = document.getElementById('clearHistBtn');
+            
+            if(list.children.length === 0 || list.innerText.includes("No history")) return;
+            
+            // Trigger Shake Animation on Button
+            btn.classList.add('shaking');
+            
+            // Trigger Slide Out Animation on List
+            list.classList.add('clearing');
+            
+            setTimeout(() => {
+                localStorage.removeItem("nct_history");
+                renderHistory();
+                list.classList.remove('clearing');
+                btn.classList.remove('shaking');
+            }, 400); // Duration matches CSS animation
+        }
+
+        /* --- DYNAMIC CALCULATOR LOGIC --- */
+        function addCalcRow() {
+            const container = document.getElementById('calcRows');
+            const div = document.createElement('div');
+            div.className = 'calc-row';
+            div.innerHTML = `
+                <div class="calc-input-wrapper">
+                    <input type="text" class="calc-input" placeholder="Enter number..." oninput="validateRow(this); runCalculation()">
+                </div>
+                <button class="calc-remove-btn" onclick="removeRow(this)" title="Remove">×</button>
+            `;
+            container.appendChild(div);
+            div.querySelector('input').focus();
+        }
+
+        function removeRow(btn) {
+            const row = btn.parentElement;
+            if(document.querySelectorAll('.calc-row').length > 1) {
+                row.classList.add('removing');
+                setTimeout(() => {
+                    row.remove();
+                    runCalculation();
+                }, 300);
+            }
+        }
+
+        function validateRow(input) {
+            const base = parseInt(document.getElementById('calcBase').value);
+            const val = input.value.trim().toUpperCase();
+            if(!val) {
+                input.classList.remove('invalid');
+                return true;
+            }
+            const validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.".substring(0, base) + ".";
+            const regex = new RegExp(`^[${validChars}]+$`);
+            if(!regex.test(val)) {
+                input.classList.add('invalid');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                return true;
+            }
+        }
+
+        function validateAllRows() {
+            document.querySelectorAll('.calc-input').forEach(input => validateRow(input));
+            runCalculation();
+        }
+
+        function runCalculation() {
+            const base = parseInt(document.getElementById('calcBase').value);
+            const op = document.getElementById('calcOp').value;
+            const inputs = document.querySelectorAll('.calc-input');
+            const vizBtn = document.getElementById('vizBtn');
+            let total = null;
+            let error = false;
+
+            inputs.forEach(input => {
+                if(input.classList.contains('invalid')) { error = true; return; }
+                const valStr = input.value.trim().toUpperCase();
+                if(!valStr) return;
+                const val = parseInt(valStr, base);
+                if(isNaN(val)) return;
+                if(total === null) { total = val; } else {
+                    if(op === 'add') total += val;
+                    if(op === 'sub') total -= val;
+                    if(op === 'mul') total *= val;
+                    if(op === 'div') total = Math.floor(total / val);
+                }
+            });
+
+            const resEl = document.getElementById('calcResult');
+            if(error) {
+                resEl.textContent = "Invalid Input";
+                resEl.style.color = "var(--md-sys-color-error)";
+                // vizBtn.style.display = 'none'; // Replaced to always show if result valid
+            } else if(total === null) {
+                resEl.textContent = "0";
+                resEl.style.color = "var(--md-sys-color-primary)";
+                // vizBtn.style.display = 'none'; // Replaced
+            } else {
+                resEl.textContent = total.toString(base).toUpperCase();
+                resEl.style.color = "var(--md-sys-color-primary)";
+            }
+            // Always show visualize button if we have result
+            if(!error && total !== null) {
+                vizBtn.style.display = 'flex';
+            } else {
+                vizBtn.style.display = 'none';
+            }
+            document.getElementById('visualizerPanel').classList.remove('active');
+        }
+
+        /* --- VISUALIZER LOGIC (Multi-Base) --- */
+        function visualizeCalculation() {
+            const base = parseInt(document.getElementById('calcBase').value);
+            const op = document.getElementById('calcOp').value;
+            const panel = document.getElementById('visualizerPanel');
+            const grid = document.getElementById('vizGrid');
+            const info = document.getElementById('vizInfo');
+            
+            const inputs = [];
+            let isValid = true;
+            document.querySelectorAll('.calc-input').forEach(inp => {
+                if(inp.value.trim()) {
+                     const val = parseInt(inp.value.trim(), base);
+                     if(isNaN(val)) isValid = false;
+                     inputs.push(val);
+                }
+            });
+
+            if(!isValid || inputs.length < 2) {
+                alert("Enter at least two numbers.");
+                return;
+            }
+
+            panel.classList.add('active');
+            grid.innerHTML = '';
+            info.textContent = ''; // Clear previous
+
+            // === ADDITION (Existing Grid) ===
+            if (op === 'add') {
+                const digitArrays = inputs.map(n => n.toString(base).toUpperCase().split(''));
+                const maxLen = Math.max(...digitArrays.map(arr => arr.length)) + 1;
+                
+                const paddedArrays = digitArrays.map(arr => {
+                    const padding = new Array(maxLen - arr.length).fill('0');
+                    return padding.concat(arr);
+                });
+                
+                grid.style.gridTemplateColumns = `repeat(${maxLen}, 1fr)`;
+                
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell carry';
+                    cell.id = `carry-${i}`;
+                    grid.appendChild(cell);
+                }
+                
+                paddedArrays.forEach((rowDigits, rIdx) => {
+                    for(let i=0; i<maxLen; i++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'viz-cell';
+                        if(rIdx === paddedArrays.length -1) cell.classList.add('border-bottom');
+                        const val = rowDigits[i];
+                        cell.textContent = val;
+                        if(i === 0 && rIdx > 0) {
+                            cell.classList.add('operator');
+                            cell.innerHTML = `+ ${val}`;
+                        }
+                        grid.appendChild(cell);
+                    }
+                });
+
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell result';
+                    cell.id = `res-${i}`;
+                    cell.textContent = '?';
+                    grid.appendChild(cell);
+                }
+
+                let carry = 0;
+                let colIdx = maxLen - 1;
+
+                function stepAdd() {
+                    if(colIdx < 0) {
+                        info.textContent = "Addition Complete.";
+                        return;
+                    }
+                    document.querySelectorAll('.active-col').forEach(el => el.classList.remove('active-col'));
+                    const resCell = document.getElementById(`res-${colIdx}`);
+                    resCell.classList.add('active-col');
+                    
+                    let sum = carry;
+                    const digitVals = [];
+                    paddedArrays.forEach(row => {
+                        const char = row[colIdx];
+                        const val = parseInt(char, base);
+                        sum += val;
+                        digitVals.push(val.toString(base).toUpperCase());
+                    });
+
+                    const writeVal = sum % base;
+                    const newCarry = Math.floor(sum / base);
+
+                    resCell.textContent = writeVal.toString(base).toUpperCase();
+                    if(newCarry > 0 && colIdx > 0) {
+                        document.getElementById(`carry-${colIdx-1}`).textContent = newCarry.toString(base).toUpperCase();
+                    }
+                    
+                    const eqStr = `${digitVals.join('+')} + ${carry}(c) = ${sum}`;
+                    const writeStr = writeVal.toString(base).toUpperCase();
+                    const carryStr = newCarry.toString(base).toUpperCase();
+                    info.textContent = `Col ${maxLen - colIdx}: ${eqStr} (Base ${base}). Write ${writeStr}, Carry ${carryStr}`;
+
+                    carry = newCarry;
+                    colIdx--;
+                    setTimeout(stepAdd, 1000);
+                }
+                stepAdd();
+            
+            // === SUBTRACTION (Grid with Borrows) ===
+            } else if (op === 'sub') {
+                if(inputs.length > 2) {
+                    info.textContent = "Visualizer supports max 2 numbers for Subtraction.";
+                    return;
+                }
+                const num1 = inputs[0];
+                const num2 = inputs[1];
+
+                if(num1 < num2) {
+                    info.textContent = "Visualization requires Positive Result (Num1 >= Num2).";
+                    return;
+                }
+
+                const arr1 = num1.toString(base).toUpperCase().split('');
+                const arr2 = num2.toString(base).toUpperCase().split('');
+                const maxLen = Math.max(arr1.length, arr2.length);
+
+                const p1 = new Array(maxLen - arr1.length).fill('0').concat(arr1);
+                const p2 = new Array(maxLen - arr2.length).fill('0').concat(arr2);
+
+                grid.style.gridTemplateColumns = `repeat(${maxLen}, 1fr)`;
+
+                // Row 0: Borrows
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell borrow';
+                    cell.id = `borrow-${i}`;
+                    grid.appendChild(cell);
+                }
+                // Row 1: Minuend
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell';
+                    cell.textContent = p1[i];
+                    grid.appendChild(cell);
+                }
+                // Row 2: Subtrahend
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell border-bottom';
+                    cell.textContent = p2[i];
+                    if(i === 0) {
+                        cell.classList.add('operator');
+                        cell.innerHTML = `- ${p2[i]}`;
+                    }
+                    grid.appendChild(cell);
+                }
+                // Row 3: Result
+                for(let i=0; i<maxLen; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'viz-cell result';
+                    cell.id = `res-sub-${i}`;
+                    cell.textContent = '?';
+                    grid.appendChild(cell);
+                }
+
+                let borrow = 0;
+                let colIdx = maxLen - 1;
+
+                function stepSub() {
+                    if(colIdx < 0) {
+                        info.textContent = "Subtraction Complete.";
+                        return;
+                    }
+                    document.querySelectorAll('.active-col').forEach(el => el.classList.remove('active-col'));
+                    const resCell = document.getElementById(`res-sub-${colIdx}`);
+                    resCell.classList.add('active-col');
+
+                    let val1 = parseInt(p1[colIdx], base);
+                    let val2 = parseInt(p2[colIdx], base);
+                    
+                    // Apply borrow from previous step
+                    let effectiveVal1 = val1 - borrow;
+                    
+                    let diff = effectiveVal1 - val2;
+                    let nextBorrow = 0;
+
+                    if (diff < 0) {
+                        diff += base;
+                        nextBorrow = 1;
+                    }
+
+                    resCell.textContent = diff.toString(base).toUpperCase();
+                    
+                    if(nextBorrow > 0 && colIdx > 0) {
+                        document.getElementById(`borrow-${colIdx-1}`).textContent = "1";
+                    }
+
+                    const debugStr = `(${val1} - ${borrow}) - ${val2}`;
+                    const resStr = diff.toString(base).toUpperCase();
+                    info.textContent = `Col ${maxLen - colIdx}: ${debugStr}. Result ${resStr} (Base ${base}). ${nextBorrow ? 'Borrowed from Left.' : ''}`;
+
+                    borrow = nextBorrow;
+                    colIdx--;
+                    setTimeout(stepSub, 1200);
+                }
+                stepSub();
+
+            // === MULTIPLICATION (Text Steps) ===
+            } else if (op === 'mul') {
+                 if(inputs.length > 2) {
+                    info.textContent = "Visualizer supports max 2 numbers for Multiplication.";
+                    return;
+                }
+                grid.style.display = 'none'; // Hide grid for text mode
+                info.style.whiteSpace = 'pre-wrap';
+                
+                const num1 = inputs[0];
+                const num2 = inputs[1];
+                let output = `Multiplying ${num1.toString(base).toUpperCase()} × ${num2.toString(base).toUpperCase()} (Base ${base})\n`;
+                output += `-------------------------------------------------\n`;
+
+                const d1 = num1.toString(base).toUpperCase();
+                const d2 = num2.toString(base).toUpperCase();
+                
+                // Show Partial Products
+                const digits2 = d2.split('').reverse();
+                let partials = [];
+                
+                digits2.forEach((digitChar, i) => {
+                    const digitVal = parseInt(digitChar, base);
+                    const product = num1 * digitVal;
+                    const shift = "0".repeat(i);
+                    const pStr = product.toString(base).toUpperCase();
+                    
+                    output += `Digit ${digitChar}: ${d1} × ${digitChar} = ${pStr}`;
+                    if(i > 0) output += ` (shift ${i}: ${pStr}${shift})`;
+                    output += "\n";
+                    partials.push(product * Math.pow(base, i));
+                });
+
+                const total = partials.reduce((a,b) => a+b, 0);
+                output += `-------------------------------------------------\n`;
+                output += `Sum of Partials: ${total.toString(base).toUpperCase()}`;
+                
+                info.textContent = output;
+                grid.style.display = 'grid'; // Reset for others
+
+            // === DIVISION (Text Steps) ===
+            } else if (op === 'div') {
+                 if(inputs.length > 2) {
+                    info.textContent = "Visualizer supports max 2 numbers for Division.";
+                    return;
+                }
+                grid.style.display = 'none';
+                info.style.whiteSpace = 'pre-wrap';
+                
+                const dividend = inputs[0];
+                const divisor = inputs[1];
+
+                if(divisor === 0) {
+                    info.textContent = "Cannot divide by Zero.";
+                    grid.style.display = 'grid';
+                    return;
+                }
+
+                let output = `Dividing ${dividend.toString(base).toUpperCase()} ÷ ${divisor.toString(base).toUpperCase()} (Base ${base})\n`;
+                output += `-------------------------------------------------\n`;
+
+                const quotient = Math.floor(dividend / divisor);
+                const remainder = dividend % divisor;
+
+                // Simple Euclidean explanation
+                output += `1. Integer Division in Decimal:\n`;
+                output += `   ${dividend} ÷ ${divisor} = ${quotient} (Quotient)\n`;
+                output += `   Remainder: ${remainder}\n\n`;
+                
+                output += `2. Convert Results to Base ${base}:\n`;
+                output += `   Quotient:  ${quotient.toString(base).toUpperCase()}\n`;
+                output += `   Remainder: ${remainder.toString(base).toUpperCase()}\n`;
+                output += `-------------------------------------------------\n`;
+                output += `Result: ${quotient.toString(base).toUpperCase()} r${remainder.toString(base).toUpperCase()}`;
+
+                info.textContent = output;
+                grid.style.display = 'grid';
+            }
+        }
+
+        /* --- UTILS & SWAP --- */
+        function setupEventListeners() {
+            document.addEventListener('keydown', (e) => {
+                if(e.ctrlKey && e.key === 'Enter') copyToClipboard('outputVal', 'copyBtn');
+                if(e.altKey && e.key === 's') document.getElementById('swapBtn').click();
+            });
+
+            document.getElementById('inputVal').addEventListener('input', convert);
+            document.getElementById('fromBase').addEventListener('change', convert);
+            document.getElementById('toBase').addEventListener('change', convert);
+
+            document.getElementById('swapBtn').addEventListener('click', () => {
+                const cardSource = document.getElementById('cardSource');
+                const cardTarget = document.getElementById('cardTarget');
+                const isMobile = window.innerWidth <= 768;
+
+                if(isMobile) {
+                    cardSource.classList.add('anim-move-down');
+                    cardTarget.classList.add('anim-move-up');
+                } else {
+                    cardSource.classList.add('anim-move-right');
+                    cardTarget.classList.add('anim-move-left');
+                }
+
+                setTimeout(() => {
+                    const inEl = document.getElementById('inputVal');
+                    const outEl = document.getElementById('outputVal');
+                    const from = document.getElementById('fromBase');
+                    const to = document.getElementById('toBase');
+
+                    const tempVal = inEl.value;
+                    inEl.value = outEl.value;
+                    const tempBase = from.value;
+                    from.value = to.value;
+                    to.value = tempBase;
+                    
+                    updateDropdownUI('sourceSelectWrapper', from.value);
+                    updateDropdownUI('targetSelectWrapper', to.value);
+
+                    cardSource.classList.remove('anim-move-down', 'anim-move-right');
+                    cardTarget.classList.remove('anim-move-up', 'anim-move-left');
+                    convert();
+                }, 400); 
+            });
+        }
+
+        function speakResult() {
+            const txt = document.getElementById('outputVal').value;
+            if(!txt) return;
+            let spoken = txt;
+            if(document.getElementById('toBase').value == 2) {
+                spoken = txt.split('').join(' '); 
+            }
+            const utt = new SpeechSynthesisUtterance(spoken);
+            window.speechSynthesis.speak(utt);
+        }
+
+        function copyToClipboard(id, btnId) {
+            const el = document.getElementById(id);
+            if(el) {
+                el.select();
+                document.execCommand('copy');
+            }
+            const btn = document.getElementById(btnId);
+            if(btn) {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--md-sys-color-success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+                btn.classList.add('success');
+                setTimeout(() => { 
+                    btn.innerHTML = originalHTML; 
+                    btn.classList.remove('success');
+                }, 2000);
+            }
+        }
+        
+        function copyStepsText() {
+            const stepsText = document.getElementById('stepsOutput').innerText;
+            navigator.clipboard.writeText(stepsText).then(() => {
+                const btn = document.getElementById('copyStepsBtn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="var(--md-sys-color-success)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+                btn.classList.add('success');
+                setTimeout(() => { 
+                    btn.innerHTML = originalHTML; 
+                    btn.classList.remove('success');
+                }, 2000);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('inputVal').value = '';
+            document.getElementById('outputVal').value = '';
+            document.getElementById('sourceCount').textContent = '0 chars';
+            document.getElementById('errorChip').classList.remove('visible');
+            document.getElementById('stepsContainer').classList.remove('visible');
+            updateURL('');
+        }
+    </script>
+</body>
+</html>

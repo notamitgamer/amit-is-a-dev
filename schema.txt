@@ -1,0 +1,186 @@
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://amit.is-a.dev/#website",
+          "url": "https://amit.is-a.dev/",
+          "name": "Amit Dutta",
+          "alternateName": ["notamitgamer"],
+          "publisher": { "@id": "https://amit.is-a.dev/#person" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://www.wikidata.org/wiki/Q138028719",
+          "mainEntityOfPage": "https://amit.is-a.dev/",
+          "name": "Amit Dutta",
+          "alternateName": "notamitgamer",
+          "identifier": "kg:/g/11yzcqs5ff",
+          "url": "https://amit.is-a.dev/",
+          "image": {
+            "@type": "ImageObject",
+            "@id": "https://amit.is-a.dev/#image",
+            "url": "https://amit.is-a.dev/mypic.png",
+            "caption": "Amit Dutta (notamitgamer)"
+          },
+          "description": "Amit Dutta (notamitgamer) is a software developer and B.Sc. Computer Science student at Acharya Prafulla Chandra College specializing in Python and C programming.",
+          "gender": "http://schema.org/Male",
+          "birthDate": "2006-07-05",
+          "birthPlace": {
+            "@type": "Place",
+            "name": "Kolkata, West Bengal, India"
+          },
+          "jobTitle": "Software Developer",
+          "knowsAbout": ["C programming", "Python", "Web Development", "AI"],
+          "alumniOf": [
+            {
+              "@type": "CollegeOrUniversity",
+              "@id": "https://www.wikidata.org/wiki/Q104841961",
+              "name": "Acharya Prafulla Chandra College",
+              "sameAs": "https://apccollege.ac.in/"
+            }
+          ],
+          "sameAs": [
+            "https://www.wikidata.org/wiki/Q138028719",
+            "https://www.wikidata.org/wiki/User:Notamitgamer",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/Mojic",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/Githrun",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/Ada",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/CloudCompiler",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/ADPKG",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/ESAL",
+            "https://meta.wikimedia.org/wiki/User:Notamitgamer/BSc",
+            "https://github.com/notamitgamer",
+            "https://www.linkedin.com/in/notamitgamer",
+            "https://twitter.com/notamitgamer",
+            "https://www.facebook.com/notamitgamer",
+            "https://www.instagram.com/notamitgamer",
+            "https://www.reddit.com/user/notamitgamer",
+            "https://www.npmjs.com/~notamitgamer",
+            "https://news.ycombinator.com/user?id=notamitgamer",
+            "https://holopin.io/@notamitgamer"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Mojic",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows, Linux, MacOS",
+          "description": "C source code obfuscator using a password-seeded rolling cipher.",
+          "url": "https://amit.is-a.dev/mojic",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/mojic",
+          "subjectOf": {
+            "@type": "SocialMediaPosting",
+            "headline": "Show HN: Mojic – C source code obfuscator",
+            "url": "https://news.ycombinator.com/item?id=46941800",
+            "datePublished": "2026-02-09T12:00:00+05:30",
+            "author": { 
+              "@type": "Person", 
+              "name": "notamitgamer",
+              "url": "https://amit.is-a.dev/" 
+            },
+            "image": "https://news.ycombinator.com/y18.svg"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Githrun",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows, Linux, MacOS",
+          "description": "Run Python scripts directly from GitHub URLs.",
+          "url": "https://amit.is-a.dev/githrun",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/githrun",
+          "subjectOf": {
+            "@type": "SocialMediaPosting",
+            "headline": "Show HN: Githrun – Run Python scripts from GitHub URLs",
+            "url": "https://news.ycombinator.com/item?id=46941796",
+            "datePublished": "2026-02-09T12:00:00+05:30",
+            "author": { 
+              "@type": "Person", 
+              "name": "notamitgamer",
+              "url": "https://amit.is-a.dev/" 
+            },
+            "image": "https://news.ycombinator.com/y18.svg"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Ada AI",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "AssistantApplication",
+          "operatingSystem": "Web",
+          "url": "https://ada.amit.is-a.dev/",
+          "description": "AI-driven platform bridging systems programming and AI.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/ada-web",
+          "subjectOf": {
+            "@type": "SocialMediaPosting",
+            "headline": "Show HN: Ada – AI Code Assistant",
+            "url": "https://news.ycombinator.com/item?id=46601360",
+            "datePublished": "2026-01-13T12:00:00+05:30",
+            "author": { 
+              "@type": "Person", 
+              "name": "notamitgamer",
+              "url": "https://amit.is-a.dev/" 
+            },
+            "image": "https://news.ycombinator.com/y18.svg"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "WBSU B.Sc Coursework",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://amit.is-a.dev/bsc",
+          "description": "Comprehensive coursework for B.Sc. Computer Science Honours at West Bengal State University.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/bsc"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "ADPKG",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Cross-platform",
+          "description": "Python library for math, stats, and data manipulation.",
+          "url": "https://github.com/notamitgamer/adpkg",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "ESAL-1.0",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://esal.amit.is-a.dev",
+          "description": "Educational Source-Available License (ESAL-1.0) for academic integrity.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Cloud Compiler",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://compiler.amit.is-a.dev",
+          "description": "Browser-based compiler with server-side execution via WebSockets.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/cloud-compiler"
+        }
+      ]
+    }
+    </script>
