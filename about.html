@@ -529,7 +529,7 @@
                             A remote code compilation service. Provides a sanitized, containerized environment for compiling and executing untrusted C/C++ code.
                         </p>
                          <div class="mt-2 pt-6 border-t border-[#c3c8bc]/30">
-                            <a href="compiler-docs.html" class="inline-flex items-center gap-2 text-[#3d6a00] font-bold hover:gap-3 transition-all">
+                            <a href="https://compiler.amit.is-a.dev/docs" class="inline-flex items-center gap-2 text-[#3d6a00] font-bold hover:gap-3 transition-all">
                                 Service API <span class="text-xl">→</span>
                             </a>
                         </div>
@@ -572,20 +572,20 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
                     <div>
                         <!-- Typing Target 1 -->
-                        <h3 class="text-xl font-bold text-white mb-6 typing-text" data-text="> System_Manifest"></h3>
+                        <h3 class="text-xl font-bold text-white mb-6 typing-text" data-text="> Low_Level_Environment_Config"></h3>
                         <p class="text-[#a0a0a0] text-sm mb-6 leading-relaxed">
-                            I build for compilation speed and thermal efficiency. My rig is designed to handle C/C++ compilation loads without throttling.
+                            Engineered for deterministic performance and minimized thermal throttling. This environment is specifically calibrated to reduce overhead during heavy LLVM/GCC compilation cycles, ensuring high-throughput builds for C++ and Python-based AI systems.
                         </p>
                         <div class="space-y-4">
                             <div class="bg-[#1e1e1e] p-4 rounded-lg border-l-4 border-[#bcfa86]">
                                 <span class="text-[10px] uppercase tracking-widest text-[#bcfa86] block mb-1">Compute Core</span>
                                 <span class="text-white">Intel i5 12th Gen <span class="text-[#74796d] text-[10px] ml-2 live-stat" data-type="cpu">[Load: --%]</span></span>
-                                <span class="text-[#a0a0a0] text-xs block mt-1">Sufficient threads for heavy compilation.</span>
+                                <span class="text-[#a0a0a0] text-xs block mt-1">Optimized for parallelized multi-threaded compilation and branch prediction efficiency.</span>
                             </div>
                             <div class="bg-[#1e1e1e] p-4 rounded-lg border-l-4 border-[#3d6a00]">
                                 <span class="text-[10px] uppercase tracking-widest text-[#bcfa86] block mb-1">Thermal Solution</span>
                                 <span class="text-white">Ant Esports Cabinet <span class="text-[#74796d] text-[10px] ml-2 live-stat" data-type="fan">[Fan: --RPM]</span></span>
-                                <span class="text-[#a0a0a0] text-xs block mt-1">Specific airflow pathing for Gen4 SSD cooling.</span>
+                                <span class="text-[#a0a0a0] text-xs block mt-1">Strategic thermal management to prevent frequency scaling during extended I/O-intensive workloads.</span>
                             </div>
                         </div>
                     </div>
@@ -594,21 +594,33 @@
                         <h3 class="text-xl font-bold text-white mb-2 typing-text" data-text="> Specs_List"></h3>
                         <ul class="space-y-3 text-sm text-[#a0a0a0]">
                             <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Memory</span>
-                                <span class="text-white">16GB 3200MHz <span class="text-[10px] text-[#555] live-stat" data-type="mem">[Free: --GB]</span></span>
-                            </li>
-                            <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Storage</span>
-                                <span class="text-white">NVMe Gen 4 <span class="text-[10px] text-[#555] live-stat" data-type="disk">[IO: --MB/s]</span></span>
-                            </li>
-                            <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Graphics</span>
-                                <span class="text-white">Low-Profile (GT 710)</span>
-                            </li>
-                            <li class="flex justify-between border-b border-white/10 pb-2">
-                                <span>Power</span>
-                                <span class="text-white">800W Frontech</span>
-                            </li>
+                            <span>Compute Core</span>
+                            <span class="text-white">i5-10400F (6C/12T) <span class="text-[10px] text-[#555] live-stat" data-type="cpu">[Load: --%]</span></span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Mainboard</span>
+                            <span class="text-white">Gigabyte H610M S2</span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Memory</span>
+                            <span class="text-white">16GB Corsair 3200MHz <span class="text-[10px] text-[#555] live-stat" data-type="mem">[Free: --GB]</span></span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Storage</span>
+                            <span class="text-white">512GB EVM NVMe <span class="text-[10px] text-[#555] live-stat" data-type="disk">[IO: --MB/s]</span></span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Graphics</span>
+                            <span class="text-white">Gigabyte GT 710 (2GB)</span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Power</span>
+                            <span class="text-white">800W Frontech + Zebronics UPS</span>
+                        </li>
+                        <li class="flex justify-between border-b border-white/10 pb-2">
+                            <span>Display</span>
+                            <span class="text-white">18.5" Samsung LED (HDMI)</span>
+                        </li>
                         </ul>
                     </div>
                 </div>
@@ -904,7 +916,7 @@
                         <i class="font-mono text-[10px] text-[#74796d]">License</i>
                     </div>
                     <p class="text-sm text-[#43483e] mb-4">Educational Software & Academic License (v1.0). A strict anti-plagiarism license designed for academic submissions.</p>
-                    <a href="license" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View License →</a>
+                    <a href="https://esal.amit.is-a.dev" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View License →</a>
                 </div>
                 <div class="m3-card shape-medium p-6 bg-white hover:bg-[#f4f7f0]">
                     <div class="flex justify-between items-center mb-4">
@@ -936,7 +948,7 @@
                         <i class="font-mono text-[10px] text-[#74796d]">Utility</i>
                     </div>
                     <p class="text-sm text-[#43483e] mb-4">Original Number Conversion Tool. Convert between Binary, Decimal, Octal, and Hex.</p>
-                    <a href="#" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View Tool →</a>
+                    <a href="codenct.html" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View Tool →</a>
                 </div>
             </div>
         </section>
