@@ -1,39 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url>
-  <loc>https://amit.is-a.dev/</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>1.00</priority>
-</url>
-<url>
-  <loc>https://amit.is-a.dev/codenct</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://amit.is-a.dev/bsc</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-
-<url>
-  <loc>https://ada.amit.is-a.dev/</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://compiler.amit.is-a.dev/</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>https://esal.amit.is-a.dev/</loc>
-  <lastmod>2026-01-07T07:27:44+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://amit.is-a.dev/about.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/bsc.html</loc>
+    <lastmod>2026-02-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/code-nct-legacy.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/codenct.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/code_gallery.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/githrun.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/grant_of_permission.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/logger.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/mojic.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/mojicDocs.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/nct-legacy.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://amit.is-a.dev/programiz_letter.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/docs.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/terms.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/ada-web/docs.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/ada-web/index.html</loc>
+    <lastmod>2026-02-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ada.amit.is-a.dev/ada-web/terms.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://compiler.amit.is-a.dev/public/c.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://compiler.amit.is-a.dev/public/cpp.html</loc>
+    <lastmod>2026-01-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://compiler.amit.is-a.dev/public/docs.html</loc>
+    <lastmod>2026-01-14</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://compiler.amit.is-a.dev/public/index.html</loc>
+    <lastmod>2026-01-14</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://compiler.amit.is-a.dev/public/python.html</loc>
+    <lastmod>2026-01-14</lastmod>
+    <priority>0.8</priority>
+  </url>
 </urlset>

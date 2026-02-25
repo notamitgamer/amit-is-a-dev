@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp Logger | Self-Hosted Setup Guide</title>
+    
+    <!-- SVG Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='30' fill='%23006C4C'/%3E%3Cpath d='M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H45L30 70V35Z' fill='white'/%3E%3Ccircle cx='42' cy='45' r='3' fill='%23006C4C'/%3E%3Ccircle cx='50' cy='45' r='3' fill='%23006C4C'/%3E%3Ccircle cx='58' cy='45' r='3' fill='%23006C4C'/%3E%3C/svg%3E">
+
+    <!-- Fonts: Google Sans & Roboto Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            /* M3 Theme Colors - Mint/Forest */
+            --header-bg: #006C4C; /* Primary Green */
+            --header-text: #ffffff;
+            
+            --primary: #006C4C;
+            --on-primary: #FFFFFF;
+            --primary-container: #89F8C7;
+            --on-primary-container: #002114;
+            
+            --secondary: #4D6357;
+            --secondary-container: #CFE9D9;
+            
+            --surface: #FBFDF9;
+            --surface-container: #ECEEEB;
+            --surface-dim: #D9DBD9;
+            
+            --text-main: #191C1A;
+            --text-light: #404944;
+            
+            --border-color: #e0e4e0;
+            
+            /* Code Colors */
+            --code-block-bg: #1A1C1E;
+            --code-block-text: #E3E3E3;
+            --inline-code-bg: rgba(0, 108, 76, 0.08); /* Light green tint */
+            --inline-code-text: #005238; /* Dark green for visibility */
+            
+            --error: #BA1A1A;
+            --warning-bg: #FFF8E1;
+            --warning-text: #5D4037;
+            
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            
+            --font-main: 'Google Sans', 'Roboto', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { overflow-x: hidden; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #b0b5b0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body {
+            font-family: var(--font-main);
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--surface);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeInPage 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInPage { to { opacity: 1; } }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Logo Area */
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .logo svg { height: 28px; width: 28px; fill: white; }
+
+        /* Header Right (GitHub) */
+        .header-right { display: flex; align-items: center; }
+
+        .github-icon-btn {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .github-icon-btn:hover { background-color: rgba(255,255,255,0.15); }
+
+        /* --- MOBILE TOGGLE --- */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mobile-toggle span { font-size: 28px; }
+
+        /* --- LAYOUT --- */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            position: relative;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: var(--sidebar-width);
+            padding: 2rem 1.5rem;
+            border-right: 1px solid var(--border-color);
+            position: sticky;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            background: var(--surface);
+            flex-shrink: 0;
+            scrollbar-width: thin;
+        }
+
+        aside h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            margin-top: 2rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        aside h3:first-child { margin-top: 0; }
+
+        aside ul { list-style: none; padding: 0; margin: 0; }
+        aside li { margin-bottom: 4px; }
+
+        aside a {
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        aside a:hover {
+            background-color: var(--surface-container);
+            color: var(--text-main);
+        }
+        
+        aside a.active {
+            background-color: var(--primary-container);
+            color: var(--on-primary-container);
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            padding: 3rem 4rem;
+            width: 0; 
+            min-width: 0;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.2; word-wrap: break-word; }
+        h2 { 
+            font-size: 1.75rem; margin-top: 0; margin-bottom: 1.5rem; 
+            color: var(--text-main); font-weight: 400;
+            padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);
+        }
+        h3 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; font-weight: 500; color: var(--text-main); }
+        h4 { font-size: 1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+        p { margin-bottom: 1.2rem; color: var(--text-light); font-size: 1rem; line-height: 1.7; word-wrap: break-word; }
+        
+        section { margin-bottom: 4rem; scroll-margin-top: 100px; }
+
+        /* Badges */
+        .badges { display: flex; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .badge {
+            padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;
+            background: var(--surface-container); color: var(--text-light); display: inline-flex; align-items: center; gap: 6px;
+        }
+        .badge.new { background: var(--primary-container); color: var(--on-primary-container); }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 2rem; }
+        
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 24px;
+            transition: 0.2s;
+        }
+        .card:hover { 
+            border-color: var(--primary); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            transform: translateY(-2px);
+        }
+        .card-icon { font-size: 32px; color: var(--primary); margin-bottom: 16px; }
+        .card h4 { margin-top: 0; color: var(--text-main); text-transform: none; font-size: 1.1rem; }
+        .card p { margin-bottom: 0; font-size: 0.9rem; }
+
+        /* Comparison Table */
+        .compare-box { padding: 24px; border-radius: 24px; height: 100%; }
+        .compare-bad { background: var(--warning-bg); color: var(--warning-text); }
+        .compare-good { background: var(--secondary-container); color: var(--on-primary-container); }
+        .compare-list { list-style: none; padding: 0; margin: 0; }
+        .compare-list li { 
+            position: relative; padding-left: 28px; margin-bottom: 12px; font-size: 0.95rem; 
+            color: inherit;
+        }
+        .compare-list li::before {
+            font-family: 'Material Symbols Rounded';
+            position: absolute; left: 0; top: 1px; font-size: 20px;
+        }
+        .compare-bad li::before { content: 'close'; color: var(--error); }
+        .compare-good li::before { content: 'check'; color: var(--primary); }
+
+        /* Steps */
+        .step-list { list-style: none; padding: 0; }
+        .step-item { display: flex; gap: 24px; margin-bottom: 40px; }
+        .step-number {
+            width: 48px; height: 48px; flex-shrink: 0;
+            background: var(--primary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 500;
+        }
+        .step-content { flex: 1; padding-top: 8px; min-width: 0; }
+        .step-title { font-size: 1.25rem; font-weight: 500; color: var(--text-main); margin-bottom: 8px; }
+
+        /* Code Styles */
+        .code-wrapper {
+            position: relative; margin: 1.5rem 0; border-radius: 12px; overflow: hidden;
+            background: var(--code-block-bg); border: 1px solid var(--border-color);
+        }
+        
+        pre { margin: 0; padding: 1.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        pre code { 
+            font-family: var(--font-mono); 
+            color: var(--code-block-text); 
+            font-size: 0.9rem;
+            background: transparent; 
+            padding: 0;
+            word-break: normal;
+        }
+        
+        code {
+            font-family: var(--font-mono);
+            color: var(--inline-code-text);
+            background: var(--inline-code-bg);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .copy-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 4px 12px; border-radius: 8px;
+            font-size: 12px; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; font-family: var(--font-main);
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* Hosting Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+        .tab-btn {
+            background: var(--surface-container); border: none; padding: 10px 24px;
+            border-radius: 24px; font-family: var(--font-main); font-weight: 500;
+            cursor: pointer; color: var(--text-light); white-space: nowrap; transition: 0.2s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-pane { display: none; animation: fadeInPage 0.3s; }
+        .tab-pane.active { display: block; }
+
+        /* Action List */
+        .action-list { 
+            background: var(--surface-container); border-radius: 16px; padding: 20px; 
+            margin: 16px 0;
+        }
+        
+        .action-item { margin-bottom: 12px; font-size: 0.95rem; }
+        .action-item:last-child { margin-bottom: 0; }
+        
+        div.action-item { display: flex; gap: 12px; align-items: flex-start; }
+        li.action-item { display: block; position: relative; list-style: none; }
+
+        .action-item strong { min-width: auto; display: inline-block; }
+        .check-icon { color: var(--primary); font-size: 20px; margin-top: 2px; flex-shrink: 0; }
+
+        /* Alert/Tip */
+        .alert {
+            padding: 16px; border-radius: 16px; margin: 20px 0;
+            display: flex; gap: 16px; font-size: 0.95rem;
+        }
+        .alert-info { background: #E3F2FD; color: #0D47A1; }
+        .alert-warn { background: #FFF3E0; color: #E65100; }
+        .alert icon { font-family: 'Material Symbols Rounded'; font-size: 24px; flex-shrink: 0; }
+        
+        /* FAQ Accordion */
+        details.faq-item {
+            background: var(--surface-container);
+            border-radius: 16px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            transition: background 0.2s;
+        }
+        details.faq-item[open] { background: #E2E4E0; }
+        summary.faq-question {
+            padding: 16px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+        }
+        summary.faq-question::-webkit-details-marker { display: none; }
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .faq-chevron { transition: transform 0.2s; }
+        details[open] .faq-chevron { transform: rotate(180deg); }
+        .faq-category {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin: 24px 0 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Footer Styling (New) */
+        footer {
+            background-color: var(--on-primary-container); /* Darkest Green */
+            color: #d0d6d3;
+            padding: 4rem 1.5rem 2rem;
+            margin-top: auto; /* Push to bottom */
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .footer-logo {
+            color: white; font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+        }
+        .footer-logo svg { fill: white; width: 24px; height: 24px; }
+        .footer-links a { color: #89F8C7; text-decoration: none; margin-right: 20px; font-size: 0.95rem; }
+        .footer-links a:hover { text-decoration: underline; }
+        .footer-bottom {
+            max-width: 1400px; margin: 40px auto 0; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center; font-size: 0.85rem; color: #8d9390;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .mobile-toggle { display: flex; }
+            
+            aside {
+                position: fixed; top: var(--header-height); left: 0; width: 85%; max-width: 320px;
+                height: calc(100vh - var(--header-height));
+                z-index: 999; transform: translateX(-100%); border-right: none;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+            }
+            aside.open { transform: translateX(0); }
+            
+            .sidebar-overlay {
+                display: none; position: fixed; inset: 0; z-index: 998;
+                background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s;
+                top: var(--header-height);
+            }
+            aside.open + .sidebar-overlay { display: block; opacity: 1; }
+
+            main { padding: 2rem 1.25rem; max-width: 100%; width: 100%; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .footer-content { grid-template-columns: 1fr; gap: 30px; }
+            h1 { font-size: 2rem; }
+            
+            .header-content { padding: 0; }
+            .logo span { font-size: 1.1rem; }
+            
+            .step-item { gap: 16px; align-items: flex-start; }
+            .step-number { width: 36px; height: 36px; font-size: 16px; margin-top: 0; }
+            .step-content { padding-top: 0; } 
+            
+            div.action-item { flex-direction: column; gap: 4px; }
+            .action-item strong { min-width: auto; color: var(--primary); margin-bottom: 2px; }
+            
+            .code-wrapper { margin: 1.5rem -8px; border-radius: 8px; }
+            pre { padding: 1rem; }
+            
+            .github-icon-btn { width: 36px; height: 36px; }
+
+            code {
+                word-break: break-all;
+                display: inline;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <button class="mobile-toggle" id="menuToggle">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
+                <a href="#" class="logo" onclick="window.scrollTo(0,0)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="30" fill="white"/><path d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H45L30 70V35Z" fill="#006C4C"/><circle cx="42" cy="45" r="3" fill="white"/><circle cx="50" cy="45" r="3" fill="white"/><circle cx="58" cy="45" r="3" fill="white"/></svg>
+                    <span>WhatsApp Logger</span>
+                </a>
+            </div>
+            <div class="header-right">
+                <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-" class="github-icon-btn" target="_blank" aria-label="View on GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside id="sidebar">
+            <h3>Overview</h3>
+            <ul>
+                <li><a href="#intro" class="active" onclick="nav(this)">Introduction</a></li>
+                <li><a href="#features" onclick="nav(this)">New Features</a></li>
+                <li><a href="#architecture" onclick="nav(this)">How it Works</a></li>
+                <li><a href="#comparison" onclick="nav(this)">Why Self-Host?</a></li>
+            </ul>
+
+            <h3>Getting Started</h3>
+            <ul>
+                <li><a href="#prerequisites" onclick="nav(this)">Prerequisites</a></li>
+                <li><a href="#setup-firebase" onclick="nav(this)">1. The Vault (Firebase)</a></li>
+                <li><a href="#setup-render" onclick="nav(this)">2. The Engine (Render)</a></li>
+                <li><a href="#setup-link" onclick="nav(this)">3. Linking Device</a></li>
+            </ul>
+
+            <h3>Frontend & Hosting</h3>
+            <ul>
+                <li><a href="#setup-frontend" onclick="nav(this)">4. Frontend Setup</a></li>
+                <li><a href="javascript:void(0)" onclick="nav(this); jumpToTab('gh-pages')">Option A: GitHub Pages</a></li>
+                <li><a href="javascript:void(0)" onclick="nav(this); jumpToTab('netlify')">Option B: Netlify</a></li>
+                <li><a href="javascript:void(0)" onclick="nav(this); jumpToTab('firebase-host')">Option C: Firebase</a></li>
+            </ul>
+            
+            <h3>User Guide</h3>
+            <ul>
+                <li><a href="#app-security" onclick="nav(this)">Security & Auth</a></li>
+                <li><a href="#app-features" onclick="nav(this)">Using the App</a></li>
+            </ul>
+            
+            <h3>Maintenance</h3>
+            <ul>
+                <li><a href="#uptime" onclick="nav(this)">Keep it Alive</a></li>
+                <li><a href="#troubleshooting" onclick="nav(this)">Troubleshooting</a></li>
+                <li><a href="#faq" onclick="nav(this)">FAQ</a></li>
+                <li><a href="#community" onclick="nav(this)">Community & Support</a></li>
+            </ul>
+        </aside>
+        
+        <!-- Overlay for mobile sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <main>
+            <section id="intro">
+                <h1>Own Your Data. Forever.</h1>
+                <p><strong>A privacy-first, self-hosted archive for your WhatsApp conversations.</strong></p>
+                
+                <div class="badges">
+                    <span class="badge new"><span class="material-symbols-rounded" style="font-size:16px">verified</span> v3.10.4 Secure Update</span>
+                    <span class="badge"><span class="material-symbols-rounded" style="font-size:16px">lock</span> End-to-End Encrypted</span>
+                    <span class="badge"><span class="material-symbols-rounded" style="font-size:16px">money_off</span> 100% Free</span>
+                </div>
+
+                <p>WhatsApp Logger is a "Companion Device" that runs in the cloud. It connects to your WhatsApp account just like WhatsApp Web, but instead of just displaying messages, it <strong>saves them permanently</strong> to your private database.</p>
+                <p>This means even if a sender deletes a message ("This message was deleted"), you still have the original copy in your archive. It runs 24/7 in the cloud, so your phone doesn't need to be online.</p>
+            </section>
+
+            <section id="features">
+                <h2>What's New in v3.10.4?</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">fingerprint</span></div>
+                        <h4>App Security</h4>
+                        <p>Secure your local archive with a 6-digit PIN or Biometric Fingerprint unlock. Includes lockout timers for failed attempts.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">install_mobile</span></div>
+                        <h4>Installable PWA</h4>
+                        <p>Install directly to your home screen. Works offline, feels native, and includes a full-screen immersive mode.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">palette</span></div>
+                        <h4>Customization</h4>
+                        <p>Toggle Dark Mode, change chat wallpapers, and adjust font sizes to your liking.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">lock_reset</span></div>
+                        <h4>Secure Reset</h4>
+                        <p>Forgot your PIN? Reset it securely using your backend server credentials (<code>AUTH_USER</code>/<code>AUTH_PASS</code>).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>Architecture: The Privacy Triangle</h2>
+                <p>Understanding how your data flows is key to trusting the system. You own all three points of this triangle.</p>
+                
+                <div class="action-list">
+                    <div class="action-item">
+                        <span class="check-icon material-symbols-rounded">cloud_upload</span>
+                        <div><strong>1. The Source (WhatsApp):</strong> Messages are encrypted and sent to your Render Server via the official Linked Device protocol.</div>
+                    </div>
+                    <div class="action-item">
+                        <span class="check-icon material-symbols-rounded">dns</span>
+                        <div><strong>2. The Processor (Render):</strong> Your private server processes the message and immediately pushes it to your database. It does not log or save anything itself.</div>
+                    </div>
+                    <div class="action-item">
+                        <span class="check-icon material-symbols-rounded">database</span>
+                        <div><strong>3. The Vault (Firebase):</strong> Your personal Google database stores the logs. Only you hold the API keys to read this data.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h2>Why Self-Host?</h2>
+                <p>Why go through this setup instead of downloading a "Recover Deleted Massages" app from the Play Store?</p>
+                
+                <div class="grid-2">
+                    <div class="compare-box compare-bad">
+                        <h4 style="color:var(--warning-text); margin-bottom:16px;">Typical Store Apps</h4>
+                        <ul class="compare-list">
+                            <li><strong>Spyware Risk:</strong> Often upload contacts/data to sell ads.</li>
+                            <li><strong>Battery Drain:</strong> Must run in background 24/7 on your phone.</li>
+                            <li><strong>Unreliable:</strong> If phone kills the app, you miss messages.</li>
+                            <li><strong>Local Only:</strong> If you lose your phone, you lose your logs.</li>
+                        </ul>
+                    </div>
+                    <div class="compare-box compare-good">
+                        <h4 style="color:var(--primary); margin-bottom:16px;">WhatsApp Logger</h4>
+                        <ul class="compare-list">
+                            <li><strong>Zero Battery Drain:</strong> Runs in the cloud, not your phone.</li>
+                            <li><strong>100% Private:</strong> Open source code. You own the database.</li>
+                            <li><strong>Perfect Capture:</strong> Catches everything, even if phone is off.</li>
+                            <li><strong>Cloud Backup:</strong> Logs survive even if you destroy your phone.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="prerequisites">
+                <h2>Prerequisites</h2>
+                <p>You don't need coding skills, just these free accounts:</p>
+                <div class="badges">
+                    <span class="badge">GitHub Account</span>
+                    <span class="badge">Google Account</span>
+                    <span class="badge">Render.com Account</span>
+                    <span class="badge">UptimeRobot Account</span>
+                </div>
+            </section>
+
+            <section id="setup-firebase">
+                <h2>Step 1: The Vault (Firebase)</h2>
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Create Database</div>
+                            <p>Go to <a href="https://console.firebase.google.com/" target="_blank" style="color:var(--primary)">Firebase Console</a> -> Add Project "MyLogger".</p>
+                            <p>Go to <strong>Build -> Firestore Database -> Create Database</strong>. Select <strong>Production Mode</strong>.</p>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Set Privacy Rules</div>
+                            <p>Go to the <strong>Rules</strong> tab. Replace everything with this strict code:</p>
+                            <div class="code-wrapper">
+                                <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+<pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      // 1. Allow Read: Required for the frontend to view chats
+      allow read: if true;
+
+      // 2. Allow Update: For "Rename Chat" feature only
+      allow update: if true;
+
+      // 3. Block Create/Delete: Only Backend (Render) can add/remove data
+      allow create, delete: if false;
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Get Service Key</div>
+                            <p>Click Gear Icon -> Project Settings -> Service Accounts -> <strong>Generate new private key</strong>.</p>
+                            <p>Save this JSON file. Open it and copy the entire content.</p>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="setup-render">
+                <h2>Step 2: The Engine (Render)</h2>
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Fork & Deploy</div>
+                            <p>Go to the <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-" target="_blank" style="color:var(--primary)">GitHub Repo</a> and click <strong>Fork</strong>.</p>
+                            <p>Go to <a href="https://render.com" target="_blank" style="color:var(--primary)">Render</a> -> New Web Service -> Select your forked repo.</p>
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Environment Variables</div>
+                            <p>Scroll down to <strong>Environment Variables</strong> and add these three:</p>
+                            <div class="action-list">
+                                <div class="action-item">
+                                    <strong>FIREBASE_SERVICE_ACCOUNT</strong>
+                                    <span>Paste the full JSON content from Step 1.</span>
+                                </div>
+                                <div class="action-item">
+                                    <strong>AUTH_USER</strong>
+                                    <span>Set a username (e.g., admin).</span>
+                                </div>
+                                <div class="action-item">
+                                    <strong>AUTH_PASS</strong>
+                                    <span>Set a password. Used for login & PIN resets.</span>
+                                </div>
+                            </div>
+                            <p>Click <strong>Create Web Service</strong>.</p>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="setup-link">
+                <h2>Step 3: Link Device</h2>
+                <p>Once Render says "Live", open your Render URL (e.g., <code>https://myapp.onrender.com</code>).</p>
+                <ol class="action-list">
+                    <li class="action-item">1. Login with your <code>AUTH_USER</code> and <code>AUTH_PASS</code>.</li>
+                    <li class="action-item">2. You will see a QR Code.</li>
+                    <li class="action-item">3. Open WhatsApp on phone -> Linked Devices -> Link a Device.</li>
+                    <li class="action-item">4. Scan the QR code. Refresh page to confirm "System Operational".</li>
+                </ol>
+            </section>
+
+            <section id="setup-frontend">
+                <h2>Step 4: Frontend Setup</h2>
+                <p>This is the actual App interface. You need to configure it before hosting.</p>
+                
+                <div class="alert alert-info">
+                    <span class="material-symbols-rounded">edit</span>
+                    <div>
+                        <strong>Config Required:</strong> Open the provided <code>index.html</code>, Scroll to the bottom and fill in:
+                        <ul>
+                            <li><code>RENDER_BACKEND_URL</code>: Your Render URL (no trailing slash).</li>
+                            <li><code>firebaseConfig</code>: Get this from Firebase Console -> Project Settings -> General -> Your Apps.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Choose Hosting Method</h3>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="openTab('gh-pages', this)">GitHub Pages (Easiest)</button>
+                    <button class="tab-btn" onclick="openTab('netlify', this)">Netlify</button>
+                    <button class="tab-btn" onclick="openTab('firebase-host', this)">Firebase Hosting</button>
+                </div>
+
+                <div id="gh-pages" class="tab-pane active">
+                    <p><strong>Zero cost, zero setup.</strong></p>
+                    <ol class="action-list">
+                        <li class="action-item">1. Create a public GitHub repo named <code>my-logger-ui</code>.</li>
+                        <li class="action-item">2. Upload your configured <code>index.html</code>, <code>icon.svg</code>, and <code>manifest.json</code>.</li>
+                        <li class="action-item">3. Go to Repo Settings -> <strong>Pages</strong> sidebar.</li>
+                        <li class="action-item">4. Set Branch to <code>main</code> and save.</li>
+                        <li class="action-item">5. Your app is live at <code>username.github.io/my-logger-ui</code>.</li>
+                    </ol>
+                </div>
+
+                <div id="netlify" class="tab-pane">
+                    <p><strong>Drag and drop simplicity.</strong></p>
+                    <ol class="action-list">
+                        <li class="action-item">1. Put <code>index.html</code>, <code>icon.svg</code>, and <code>manifest.json</code> in a folder.</li>
+                        <li class="action-item">2. Go to <a href="https://app.netlify.com/drop" target="_blank" style="color:var(--primary)">Netlify Drop</a></li>
+                        <li class="action-item">3. Drag the folder onto the page.</li>
+                        <li class="action-item">4. Done. You get a secure link instantly.</li>
+                    </ol>
+                </div>
+
+                <div id="firebase-host" class="tab-pane">
+                    <p><strong>Professional choice. Recommended for custom domains.</strong></p>
+                    <p>This method requires using the command line but offers the most professional results with free SSL for custom domains.</p>
+                    
+                    <h4>Phase 1: Installation & Init</h4>
+                    <div class="code-wrapper">
+                        <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+<pre><code># 1. Install Firebase Tools (requires Node.js)
+npm install -g firebase-tools
+
+# 2. Login to Google
+firebase login
+
+# 3. Initialize Project
+firebase init hosting
+# -> Select "Use an existing project"
+# -> Select your "MyLogger" project
+# -> Type "public" for public directory
+# -> Type "y" (yes) for single-page app
+# -> Type "n" (no) for automatic builds</code></pre>
+                    </div>
+
+                    <h4>Phase 2: Deployment</h4>
+                    <p>Move your configured files (<code>index.html</code>, <code>icon.svg</code>, <code>manifest.json</code>) into the newly created <code>public</code> folder.</p>
+                    <div class="code-wrapper">
+<pre><code>firebase deploy</code></pre>
+                    </div>
+                    
+                    <h4>Phase 3: Custom Domain (Detailed)</h4>
+                    <ol class="action-list">
+                        <li class="action-item">1. <strong>Purchase Domain:</strong> Go to a registrar like Namecheap or GoDaddy and buy your domain (e.g., <code>mylogger.com</code>).</li>
+                        <li class="action-item">2. <strong>Start Setup:</strong> Go to Firebase Console -> Hosting -> <strong>Add Custom Domain</strong> and enter your domain.</li>
+                        <li class="action-item">3. <strong>Verify Ownership:</strong> Firebase will show a value for a <strong>TXT Record</strong>. Copy this value.</li>
+                        <li class="action-item">4. <strong>Update DNS:</strong> Log in to your Domain Registrar, find "DNS Management" or "Advanced DNS".
+                            <br>- Add a new record: Type <strong>TXT</strong>.
+                            <br>- Host: <code>@</code> (or blank).
+                            <br>- Value: Paste the code from Firebase.
+                            <br>- Save and wait 5 minutes.
+                        </li>
+                        <li class="action-item">5. <strong>Point to Firebase:</strong> Once verified, Firebase provides <strong>A Records</strong> (IP addresses).
+                            <br>- Delete any existing A records in your registrar.
+                            <br>- Add the new A records from Firebase (usually two IP addresses).
+                        </li>
+                        <li class="action-item">6. <strong>Finish:</strong> Wait up to 24 hours (usually 1 hour) for the SSL certificate to generate. Your site is now secure at your custom domain.</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <section id="app-security">
+                <h2>User Guide: App Security</h2>
+                <p>The frontend includes advanced security features to protect your local device from prying eyes. These features run entirely on your device (Local Storage).</p>
+                
+                <div class="alert alert-warn">
+                    <span class="material-symbols-rounded">phonelink_lock</span>
+                    <div>
+                        <strong>PWA Requirement:</strong> For Biometric Authentication (Fingerprint/FaceID) to work, you usually need to install the app as a PWA (Add to Home Screen) and serve it over HTTPS.
+                    </div>
+                </div>
+
+                <h3>1. Setting up 6-Digit PIN</h3>
+                <ol class="action-list">
+                    <li class="action-item">1. Open the App and click the <strong>Settings Gear</strong> <span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle">settings</span> in the sidebar.</li>
+                    <li class="action-item">2. Find the <strong>App Security</strong> section.</li>
+                    <li class="action-item">3. Toggle <strong>PIN Lock</strong>.</li>
+                    <li class="action-item">4. Enter a 6-digit PIN when prompted. Confirm it by entering it again.</li>
+                    <li class="action-item">5. <strong>Done!</strong> Now every time you open the app, it will require this PIN.</li>
+                </ol>
+
+                <h3>2. Enabling Biometrics</h3>
+                <ol class="action-list">
+                    <li class="action-item">1. Ensure your device has a fingerprint or face scanner set up.</li>
+                    <li class="action-item">2. In App Settings, Toggle <strong>Fingerprint Lock</strong>.</li>
+                    <li class="action-item">3. Your browser/OS will prompt you to verify your identity.</li>
+                    <li class="action-item">4. Once verified, the app will prioritize Biometrics on the lock screen.</li>
+                </ol>
+                
+                <h3>3. Emergency Reset (Forgot PIN?)</h3>
+                <p>If you forget your local PIN, you can reset it using your server credentials.</p>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Step 1</h4>
+                        <p>On the Lock Screen, click <strong>"Forgot PIN / Use Password"</strong> at the bottom.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Step 2</h4>
+                        <p>Enter your <strong>AUTH_USER</strong> and <strong>AUTH_PASS</strong> (the same ones you set in Render).</p>
+                    </div>
+                </div>
+                <p>This will wipe the local security settings and let you in. It does <strong>not</strong> delete your chats.</p>
+            </section>
+
+            <section id="app-features">
+                <h2>User Guide: Features & Tips</h2>
+                
+                <h3>Global vs. Chat Search</h3>
+                <ul class="compare-list">
+                    <li><strong>Sidebar Search:</strong> Filters your contact list. Use this to find a specific person or group name.</li>
+                    <li><strong>In-Chat Search:</strong> Inside a chat, click the <strong>Menu (⋮)</strong> -> <strong>Search in Chat</strong>. This highlights specific words within that conversation history.</li>
+                </ul>
+
+                <h3>Using the Calendar</h3>
+                <p>Looking for messages from a specific day?</p>
+                <ol class="action-list">
+                    <li class="action-item">1. Open a Chat.</li>
+                    <li class="action-item">2. Click <strong>Menu (⋮)</strong> -> <strong>Search by Date</strong>.</li>
+                    <li class="action-item">3. Select a date on the calendar.</li>
+                    <li class="action-item">4. The chat will jump to the first message of that day and flash yellow.</li>
+                </ol>
+
+                <h3>Renaming Contacts</h3>
+                <p>Since the logger saves contacts by phone number, you might want to give them real names.</p>
+                <div class="code-wrapper" style="background:var(--surface-container); border:none; padding:16px; color:var(--text-light)">
+                    Click <strong>Menu (⋮)</strong> -> <strong>Rename</strong>. This alias is saved to your Firebase database, so it syncs across all your devices.
+                </div>
+
+                <h3>Download Chat Logs</h3>
+                <p>You can export any conversation to a simple text file. Click <strong>Menu (⋮)</strong> -> <strong>Download</strong>. It generates a <code>.txt</code> file formatted with timestamps and sender names.</p>
+            </section>
+
+            <section id="uptime">
+                <h2>Step 5: Keep it Alive</h2>
+                <div class="alert alert-warn">
+                    <span class="material-symbols-rounded">warning</span>
+                    <div><strong>Crucial Step:</strong> Render puts free servers to sleep after 15 mins of inactivity. If it sleeps, you miss messages.</div>
+                </div>
+                <p>Use a free pinger service to wake it up.</p>
+                <ol class="action-list">
+                    <li class="action-item">1. Go to <a href="https://uptimerobot.com" target="_blank" style="color:var(--primary)">UptimeRobot</a>.</li>
+                    <li class="action-item">2. Add Monitor -> Type <strong>HTTP(s)</strong>.</li>
+                    <li class="action-item">3. URL: <code>Your-Render-URL/ping</code>.</li>
+                    <li class="action-item">4. Interval: <strong>5 minutes</strong>.</li>
+                </ol>
+            </section>
+
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>"No chats found"</h4>
+                        <p>The logger only records messages sent <strong>after</strong> you link it. Send a message to yourself to test.</p>
+                    </div>
+                    <div class="card">
+                        <h4>"Auth Error" in App</h4>
+                        <p>Check that <code>RENDER_BACKEND_URL</code> in <code>index.html</code> matches your Render URL exactly (https://...).</p>
+                    </div>
+                    <div class="card">
+                        <h4>QR Code not loading</h4>
+                        <p>Your Render server might be sleeping. Wait 30 seconds for it to wake up, or check Render logs.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Permission Denied</h4>
+                        <p>Check your Firebase Rules (Step 1). Ensure <code>allow create</code> is false but <code>allow update</code> is true.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="faq">
+                <h2>Frequency Asked Questions</h2>
+                
+                <div class="faq-category">General</div>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Is this really free? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Yes. Render, Firebase, and UptimeRobot all have generous free tiers that are sufficient for personal use. You will typically never pay anything.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Is my data safe? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Absolutely. The entire system is self-hosted. You own the database (Firebase) and the server (Render). The developers of this tool have zero access to your data.</div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary class="faq-question">Does the developer see my chats? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No. The code connects directly from your Render server to your Firebase database using your personal API keys. There is no middleman server.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Is this legal? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">The tool uses standard WhatsApp Web protocols to function as a linked device. It is intended for personal archiving of your own conversations.</div>
+                </details>
+
+                <div class="faq-category">Features & Limitations</div>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Does it save photos/videos? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No. To keep the project free (Firebase offers limited storage), the logger only saves text content. Media files would fill up your free tier storage very quickly.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Does it save View Once messages? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No. WhatsApp does not send the content of "View Once" media to linked devices/web clients, so the logger cannot see them.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Does it save WhatsApp Status? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No, it cannot save WhatsApp statuses at this time. If you would like to add this feature to this project, please submit a pull request by uploading the updated code to <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-/pulls" target="_blank" style="color:var(--primary)">Github</a>.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Can I reply from the dashboard? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No. This tool is designed strictly as a read-only archive to ensure maximum safety and simplicity.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Does it work with Group Chats? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Yes! It automatically archives messages from any group you are part of, including messages sent by other participants.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Can I export my chats? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Yes. Inside any chat on the dashboard, open the menu (three dots) and select "Download" to get a .txt file of the conversation.</div>
+                </details>
+
+                <div class="faq-category">Technical Setup</div>
+
+                <details class="faq-item">
+                    <summary class="faq-question">What is Render? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Render is a cloud hosting platform. It provides the computer (server) that runs your logger 24/7 so your phone doesn't have to.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">What is Firebase? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Firebase is Google's database service. While Render processes the messages, Firebase acts as the permanent hard drive where logs are stored.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Do I need my phone on 24/7? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">No. Once you scan the QR code, the logger works independently via WhatsApp's Multi-Device feature. Your phone can be off for up to 14 days.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">What if Render sleeps? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">If the server sleeps, you will miss messages sent during that time. This is why setting up UptimeRobot (Step 5) is critical—it keeps the server awake.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">How do I update the logger? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">In your Render dashboard, go to your service and click "Manual Deploy" -> "Deploy latest commit" to pull the newest code from GitHub.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Can I host this on a Raspberry Pi? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Yes. The backend is standard Node.js. You can clone the repo and run <code>npm install && npm start</code>. You still need Firebase for the database.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">How much storage do I have? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">The Firebase Free Tier (Spark Plan) gives you 1 GiB of storage. Since we only store text, this is enough for millions of messages.</div>
+                </details>
+
+                <div class="faq-category">Troubleshooting</div>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Why is the QR code not loading? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">Your Render server might be starting up or deploying. Wait 30 seconds and refresh the page. Check Render logs if the issue persists.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Why does it say "No chats found"? <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">The logger starts empty. It only records messages that arrive *after* you have linked it. Send a message to your phone to see it appear.</div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">I forgot my App PIN/Password <span class="material-symbols-rounded faq-chevron">expand_more</span></summary>
+                    <div class="faq-answer">On the lock screen, click "Forgot PIN". You can reset your local security using the server credentials (<code>AUTH_USER</code> and <code>AUTH_PASS</code>) you set in Render.</div>
+                </details>
+
+            </section>
+            
+            <section id="community">
+                <h2>Community & Support</h2>
+                <p>This project is open-source and relies on the community to stay safe and effective.</p>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">gavel</span></div>
+                        <h4>Code of Conduct</h4>
+                        <p>We pledge to make participation a harassment-free experience for everyone. Abusive behavior will not be tolerated.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><span class="material-symbols-rounded">bug_report</span></div>
+                        <h4>Security Policy</h4>
+                        <p><strong>Strict No-Logging Policy:</strong> Never submit code that logs message content to the console. If you find a vulnerability, do NOT open a public issue.</p>
+                    </div>
+                </div>
+
+                <h3>Contact Channels</h3>
+                <div class="action-list">
+                    <div class="action-item">
+                        <span class="check-icon material-symbols-rounded">security</span>
+                        <div>
+                            <strong>Security & Fast Fixes</strong>
+                            <span>For vulnerabilities or urgent issues.</span>
+                            <a href="mailto:amitdutta4255@gmail.com" style="color:var(--primary); font-weight:500;">amitdutta4255@gmail.com</a>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <span class="check-icon material-symbols-rounded">mail</span>
+                        <div>
+                            <strong>General Inquiries</strong>
+                            <span>For questions, conduct reports, or non-urgent bugs.</span>
+                            <a href="mailto:mail@amit.is-a.dev" style="color:var(--primary); font-weight:500;">mail@amit.is-a.dev</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="30" fill="white"/><path d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H45L30 70V35Z" fill="#006C4C"/><circle cx="42" cy="45" r="3" fill="white"/><circle cx="50" cy="45" r="3" fill="white"/><circle cx="58" cy="45" r="3" fill="white"/></svg>
+                    <span>WhatsApp Logger</span>
+                </div>
+                <p style="color:#8d9390; font-size:0.9rem; margin-bottom:1rem;">
+                    A free, self-hosted, and privacy-focused solution for archiving WhatsApp conversations.
+                </p>
+                <div class="footer-links">
+                    <a href="https://github.com/notamitgamer" target="_blank">GitHub</a>
+                    <a href="https://amit.is-a.dev" target="_blank">Website</a>
+                </div>
+            </div>
+            <div>
+                <h5 style="color:#89F8C7; margin-bottom:16px; font-size:1rem;">Legal & Community</h5>
+                <div class="footer-links" style="display:flex; flex-direction:column; gap:8px;">
+                    <a href="#community">Code of Conduct</a>
+                    <a href="#community">Security Policy</a>
+                    <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-/blob/main/LICENSE" target="_blank">MIT License</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 amit.is-a.dev | Built with <span style="color:#89F8C7">♥</span> by notamitgamer
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Logic
+        const toggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        function toggleMenu() {
+            sidebar.classList.toggle('open');
+            toggle.innerHTML = sidebar.classList.contains('open') 
+                ? '<span class="material-symbols-rounded">close</span>' 
+                : '<span class="material-symbols-rounded">menu</span>';
+        }
+
+        toggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // Navigation Highlight & Smooth Scroll
+        function nav(el) {
+            document.querySelectorAll('aside a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+            if(window.innerWidth <= 768) {
+                toggleMenu(); // Close sidebar on mobile when clicked
+            }
+        }
+
+        // Tabs
+        function openTab(id, btn) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(btn) btn.classList.add('active');
+        }
+
+        // Helper to switch tabs from Sidebar links
+        function jumpToTab(tabId) {
+            openTab(tabId, null);
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            document.getElementById('setup-frontend').scrollIntoView();
+        }
+
+        // Copy Code
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.nextElementSibling.innerText;
+                navigator.clipboard.writeText(code);
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+                setTimeout(() => btn.innerHTML = originalHtml, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

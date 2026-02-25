@@ -12,58 +12,219 @@
     />
     <link rel="canonical" href="https://amit.is-a.dev/" />
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Amit Dutta",
-        "alternateName": "notamitgamer",
-        "url": "https://amit.is-a.dev/",
-        "image": "https://amit.is-a.dev/mypic.png",
-        "description": "Amit Dutta (notamitgamer) is a software developer and B.Sc. Computer Science student specializing in modern web technologies, Python, and C programming.",
-        "gender": "Male",
-        "birthDate": "2006-07-05",
-        "birthPlace": {
-          "@type": "Place",
-          "name": "Kolkata, West Bengal, India"
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://amit.is-a.dev/#website",
+          "url": "https://amit.is-a.dev/",
+          "name": "Amit Dutta",
+          "alternateName": ["notamitgamer"],
+          "publisher": { "@id": "https://amit.is-a.dev/#person" }
         },
-        "jobTitle": "Student",
-        "knowsAbout": [
-          "Web Development",
-          "Python",
-          "Software Engineering",
-          "C Programming",
-          "Node.js",
-          "Mobile App Development"
-        ],
-        "alumniOf": [
-          {
-            "@type": "CollegeOrUniversity",
-            "name": "Acharya Prafulla Chandra College",
-            "alternateName": "APC College",
-            "sameAs": "https://apccollege.ac.in/"
+        {
+      "@type": "Person",
+      "@id": "https://amit.is-a.dev/#person",
+      "name": "Amit Dutta",
+      "alternateName": "notamitgamer",
+      "identifier": "kg:/g/11yzcqs5ff",
+      "jobTitle": "Software Developer",
+      "description": "Software engineer in training at Acharya Prafulla Chandra College (WBSU) specializing in Python and C.",
+      "url": "https://amit.is-a.dev/about",
+      "image": "https://amit.is-a.dev/mypic.png",
+      "nationality": {
+        "@type": "Country",
+        "name": "India"
+      },
+      "gender": "http://schema.org/Male",
+      "parent": [
+        {
+          "@type": "Person",
+          "name": "Ashim Kumar Dutta"
+        },
+        {
+          "@type": "Person",
+          "name": "Rita Dutta"
+        }
+      ],
+      "knowsAbout": ["Computer Science", "Python", "C Programming", "Web Development", "AI"],
+      "hasCredential": [
+        {
+          "@type": "EducationalOccupationalCredential",
+          "name": "Build a free website with WordPress",
+          "credentialCategory": "Certification",
+          "recognizedBy": {
+            "@type": "Organization",
+            "name": "Coursera Project Network"
           },
-          {
-            "@type": "EducationalOrganization",
-            "name": "New Barrackpore Colony Boys High School"
-          },
-          {
-            "@type": "EducationalOrganization",
-            "name": "Kisalaya Nursery and KG School"
+          "url": "https://www.coursera.org/account/accomplishments/records/HT6XTKV390MC"
+        }
+      ],
+      "alumniOf": [
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Acharya Prafulla Chandra College",
+          "sameAs": "https://apccollege.ac.in/"
+        },
+        {
+          "@type": "EducationalOrganization",
+          "name": "New Barrackpore Colony Boys' High School"
+        }
+      ],
+          "sameAs": [
+            "https://amit.is-a.dev/about",
+            "https://orcid.org/0009-0006-8834-9881",
+            "https://www.crunchbase.com/person/amit-dutta-d32d",
+            "https://gravatar.com/notamitgamer",
+            "https://github.com/notamitgamer",
+            "https://github.com/sponsors/notamitgamer",
+            "https://www.linkedin.com/in/notamitgamer",
+            "https://twitter.com/notamitgamer",
+            "https://x.com/notamitgamer",
+            "https://www.facebook.com/notamitgamer",
+            "https://www.instagram.com/notamitgamer",
+            "https://www.reddit.com/user/notamitgamer",
+            "https://www.youtube.com/@amitduttanotamitgamer",
+            "https://www.npmjs.com/~notamitgamer",
+            "https://news.ycombinator.com/user?id=notamitgamer",
+            "https://www.producthunt.com/@notamitgamer",
+            "https://pypi.org/user/notamitgamer/",
+            "https://holopin.io/@notamitgamer"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Mojic",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows, Linux, MacOS",
+          "description": "C source code obfuscator using a password-seeded rolling cipher.",
+          "url": "https://amit.is-a.dev/mojicDocs",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/mojic",
+          "subjectOf": {
+            "@type": "SocialMediaPosting",
+            "headline": "Show HN: Mojic – C source code obfuscator",
+            "url": "https://news.ycombinator.com/item?id=46941800",
+            "datePublished": "2026-02-09T12:00:00+05:30",
+            "author": { 
+              "@type": "Person", 
+              "name": "notamitgamer",
+              "url": "https://amit.is-a.dev/" 
+            },
+            "image": "https://news.ycombinator.com/y18.svg"
           }
-        ],
-        "sameAs": [
-          "https://www.wikidata.org/wiki/Q138028719",
-          "https://github.com/notamitgamer",
-          "https://www.linkedin.com/in/notamitgamer",
-          "https://twitter.com/notamitgamer",
-          "https://www.facebook.com/notamitgamer",
-          "https://www.instagram.com/notamitgamer",
-          "https://www.reddit.com/user/notamitgamer",
-          "https://www.npmjs.com/~notamitgamer",
-          "https://news.ycombinator.com/user?id=notamitgamer",
-          "https://kubble.com/notamitgamer"
-        ]
-      }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Githrun",
+          "image": "https://www.producthunt.com/favicon.ico", 
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Windows, Linux, MacOS",
+          "description": "Run Python scripts directly from GitHub URLs.",
+          "url": "https://amit.is-a.dev/githrun",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/githrun",
+          "subjectOf": [
+            {
+              "@type": "SocialMediaPosting",
+              "headline": "Show HN: Githrun – Run Python scripts from GitHub URLs",
+              "url": "https://news.ycombinator.com/item?id=46941796",
+              "datePublished": "2026-02-09T12:00:00+05:30",
+              "author": { "@id": "https://amit.is-a.dev/#person" },
+              "image": "https://news.ycombinator.com/y18.svg"
+            },
+            {
+              "@type": "SocialMediaPosting",
+              "headline": "Githrun on Product Hunt",
+              "url": "https://www.producthunt.com/p/githrun",
+              "datePublished": "2026-02-11T12:00:00+05:30",
+              "author": { "@id": "https://amit.is-a.dev/#person" },
+              "image": "https://www.producthunt.com/favicon.ico",
+              "publisher": {
+                "@type": "Organization",
+                "name": "Product Hunt",
+                "url": "https://www.producthunt.com"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Ada AI",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "AssistantApplication",
+          "operatingSystem": "Web",
+          "url": "https://ada.amit.is-a.dev/",
+          "description": "AI-driven platform bridging systems programming and AI.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/ada-web",
+          "subjectOf": {
+            "@type": "SocialMediaPosting",
+            "headline": "Show HN: Ada – AI Code Assistant",
+            "url": "https://news.ycombinator.com/item?id=46601360",
+            "datePublished": "2026-01-13T12:00:00+05:30",
+            "author": { 
+              "@type": "Person", 
+              "name": "notamitgamer",
+              "url": "https://amit.is-a.dev/" 
+            },
+            "image": "https://news.ycombinator.com/y18.svg"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "WBSU B.Sc Coursework",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://amit.is-a.dev/bsc",
+          "description": "Comprehensive coursework for B.Sc. Computer Science Honours at West Bengal State University.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/bsc"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "ADPKG",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Cross-platform",
+          "description": "Python library for math, stats, and data manipulation.",
+          "url": "https://github.com/notamitgamer/adpkg",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "ESAL-1.0",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://esal.amit.is-a.dev",
+          "description": "Educational Source-Available License (ESAL-1.0) for academic integrity.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Cloud Compiler",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web",
+          "url": "https://compiler.amit.is-a.dev",
+          "description": "Browser-based compiler with server-side execution via WebSockets.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "mainEntityOfPage": "https://github.com/notamitgamer/cloud-compiler"
+        }
+      ]
+    }
     </script>
 
     <title>Amit Dutta (notamitgamer)</title>
@@ -839,6 +1000,9 @@
                 >. I believe in clean code, efficiency, and brutalist
                 aesthetics.
               </p>
+              <strong class="text-white font-normal"
+                  >See more about me <a href="/about" class="text-lime-300 hover:underline">here</a>.</strong
+                >
             </div>
 
             <div class="mt-8 flex gap-8 font-mono text-xs text-neutral-500">
@@ -993,14 +1157,39 @@
                 Octal, and Hex operations.
               </p>
               <!-- Button -->
-              <div class="relative z-10">
+              <div class="relative z-10 flex flex-col gap-3">
+  <a
+    href="/codenct"
+    class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded text-center  w-fit"
+  >
+    INITIATE v1
+  </a>
+  
+  <a
+    href="/nct-legacy"
+    class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-flex items-center justify-center gap-1.5  w-fit"
+  >
+    INITIATE v2.11
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#D0BCFF">
+      <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+    </svg>
+    (Legacy Edition)
+  </a>
+  <div class="flex gap-3 relative z-10">
                 <a
-                  href="/codenct"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  href="https://amit.is-a.dev/code-nct-legacy"
+                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
                 >
-                  INITIATE
+                  Source Code
+                </a>
+                <a
+                  href="https://github.com/notamitgamer/nct"
+                  class="px-4 py-2 bg-neutral-800 hover:bg-white hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
+                >
+                  GITHUB
                 </a>
               </div>
+</div>
             </div>
 
             <!-- Card 2 -->
@@ -1246,6 +1435,44 @@
                 </a>
               </div>
             </div>
+            <div class="project-card block p-8 rounded relative group overflow-hidden">
+              <div class="card-icon-wrapper">
+                <svg
+                  class="w-32 h-32"
+                  fill="currentColor"
+                  viewBox="0 0 100 100"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                    <rect width="100" height="100" rx="30" fill="currentColor" />
+
+                    <path 
+                      d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H45L30 70V35Z" 
+                      fill="black" 
+                      opacity="0.5" 
+                    />
+
+                    <circle cx="42" cy="45" r="3" fill="black" />
+                    <circle cx="50" cy="45" r="3" fill="black" />
+                    <circle cx="58" cy="45" r="3" fill="black" />
+                </svg>
+              </div>
+              <div class="font-mono text-neutral-600 text-xs mb-4">009</div>
+              <h3 class="text-xl text-white font-bold mb-2 group-hover:text-lime-300 transition-colors">
+                Whatsapp Logger
+              </h3>
+              <p class="text-neutral-400 text-sm leading-relaxed mb-6">
+                A privacy-first, self-hosted archive for WhatsApp conversations.
+              </p>
+              <div class="relative z-10">
+                <a
+                  href="/logger"
+                  target="_blank"
+                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                >
+                  VIEW DOCS
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1332,7 +1559,7 @@
             rel="noopener noreferrer"
             class="hover:brightness-125 transition-all"
           >
-            <img src="animejs-logo.svg" alt="Anime.js" class="h-6 w-auto" />
+            <img src="/assets/animejs-logo.svg" alt="Anime.js" class="h-6 w-auto" />
           </a>
 
           <!-- Tailwind CSS -->
@@ -1343,7 +1570,7 @@
             class="hover:brightness-125 transition-all"
           >
             <img
-              src="tailwind-logo-dark.svg"
+              src="/assets/tailwind-logo-dark.svg"
               alt="Tailwind CSS"
               class="h-4 w-auto"
             />
@@ -1415,7 +1642,7 @@
         const skipHint = document.getElementById("skip-hint");
 
         let stepIndex = 0;
-        const stepBaseDelay = 400; // Delay between normal logs
+        const stepBaseDelay = 100; // Delay between normal logs
 
         // Flags and Timers for Skipping
         const hasVisited = localStorage.getItem("aranag_visited");

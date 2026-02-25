@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="canonical" href="https://amit.is-a.dev/githrun.html" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Githrun Documentation</title>
@@ -15,8 +16,9 @@
     <style>
         :root {
             /* Theme Colors */
-            --header-bg: #2b3137; /* Dark Charcoal - Distinct from Python Blue */
-            --primary-blue: #3775a9; /* Python Blue for accents */
+            --header-bg: #2b3137; /* Dark Charcoal */
+            --primary-blue: #3775a9; /* Python Blue */
+            --vscode-blue: #007acc; /* VS Code Blue */
             --accent-yellow: #ffd343;
             --text-main: #24292e;
             --text-light: #586069;
@@ -157,8 +159,19 @@
             background-color: #458ac6;
             box-shadow: 0 4px 12px rgba(55, 117, 169, 0.4);
         }
+        
+        .btn-vscode {
+            background-color: var(--vscode-blue);
+            color: white;
+            border: 1px solid var(--vscode-blue);
+        }
+        
+        .btn-vscode:hover {
+            background-color: #0065a9;
+            box-shadow: 0 4px 12px rgba(0, 122, 204, 0.4);
+        }
 
-        /* --- MOBILE MENU ICON (FIXED) --- */
+        /* --- MOBILE MENU ICON --- */
         .mobile-toggle {
             display: none;
             background: none;
@@ -188,14 +201,14 @@
         }
 
         .hamburger-inner {
-            display: block; /* CRITICAL FIX: Was missing, causing collapse */
+            display: block;
             top: 50%;
             margin-top: -1px;
         }
 
         .hamburger-inner::before, .hamburger-inner::after {
             content: "";
-            display: block; /* CRITICAL FIX */
+            display: block;
         }
 
         .hamburger-inner::before {
@@ -206,7 +219,6 @@
             bottom: -8px;
         }
 
-        /* Active State (X Icon) */
         .mobile-toggle.is-active .hamburger-inner {
             transform: rotate(45deg);
         }
@@ -270,7 +282,7 @@
             background-color: #f1f8ff;
             color: var(--primary-blue);
             border-left-color: var(--primary-blue);
-            transform: translateX(3px); /* Subtle slide */
+            transform: translateX(3px);
         }
 
         /* --- MAIN CONTENT --- */
@@ -315,9 +327,23 @@
             border-radius: 4px;
             font-size: 85%;
             color: #24292e;
+            /* Basic word wrap just in case */
+            overflow-wrap: break-word;
         }
 
-        /* Code Blocks Wrapper - Fixing Mobile Scroll */
+        .kbd {
+            background-color: #fafbfc;
+            border: 1px solid #d1d5da;
+            border-bottom-color: #c6cbd1;
+            border-radius: 3px;
+            box-shadow: inset 0 -1px 0 #c6cbd1;
+            color: #444d56;
+            font: 11px var(--font-mono);
+            padding: 3px 5px;
+            vertical-align: middle;
+        }
+
+        /* Code Blocks Wrapper */
         .code-wrapper {
             position: relative;
             margin-bottom: 1.5rem;
@@ -355,7 +381,7 @@
             color: var(--text-light);
             cursor: pointer;
             transition: all 0.2s ease;
-            z-index: 5; /* Ensure above scrollbar */
+            z-index: 5;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -399,6 +425,40 @@
 
         .alert-info strong { color: var(--primary-blue); }
 
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Fix for long URLs in feature cards */
+        .feature-card code {
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--primary-blue);
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* List Styles */
         ul, ol { padding-left: 1.5rem; margin-bottom: 1.5rem; color: #444; }
         li { margin-bottom: 0.5rem; }
@@ -418,7 +478,6 @@
                 flex-direction: column;
             }
 
-            /* Animated Sidebar for Mobile */
             aside {
                 position: fixed;
                 top: var(--header-height);
@@ -445,7 +504,7 @@
             }
 
             .header-links {
-                display: none; /* Hide desktop links on mobile */
+                display: none;
             }
 
             h1 { font-size: 2rem; }
@@ -474,6 +533,9 @@
                 <a href="https://github.com/notamitgamer/githrun" class="btn btn-github" target="_blank">
                     <i class="fab fa-github"></i> GitHub
                 </a>
+                <a href="https://marketplace.visualstudio.com/items?itemName=notamitgamer.vscode-githrun" class="btn btn-vscode" target="_blank">
+                    <i class="fas fa-code"></i> VS Code
+                </a>
                 <a href="https://pypi.org/project/githrun/" class="btn btn-pypi" target="_blank">
                     <i class="fab fa-python"></i> PyPI
                 </a>
@@ -486,88 +548,168 @@
             <h3>Getting Started</h3>
             <ul>
                 <li><a href="#overview" onclick="closeMenu()">Overview</a></li>
-                <li><a href="#installation" onclick="closeMenu()">Installation</a></li>
+                <li><a href="#installation" onclick="closeMenu()">CLI Installation</a></li>
+                <li><a href="#vscode-setup" onclick="closeMenu()">VS Code Extension</a></li>
                 <li><a href="#quick-start" onclick="closeMenu()">Quick Start</a></li>
             </ul>
 
-            <h3>Core Features</h3>
+            <h3>VS Code Integration</h3>
+            <ul>
+                <li><a href="#vscode-codelens" onclick="closeMenu()">Smart CodeLens</a></li>
+                <li><a href="#vscode-commands" onclick="closeMenu()">Command Palette</a></li>
+                <li><a href="#vscode-context" onclick="closeMenu()">Context Menus</a></li>
+            </ul>
+
+            <h3>CLI Usage</h3>
             <ul>
                 <li><a href="#remote-execution" onclick="closeMenu()">Remote Execution</a></li>
                 <li><a href="#tool-installation" onclick="closeMenu()">Tool Installation</a></li>
                 <li><a href="#search-find" onclick="closeMenu()">Search & Find</a></li>
                 <li><a href="#downloading" onclick="closeMenu()">Downloading</a></li>
-            </ul>
-
-            <h3>Advanced Usage</h3>
-            <ul>
-                <li><a href="#authentication" onclick="closeMenu()">Authentication</a></li>
                 <li><a href="#bookmarks" onclick="closeMenu()">Bookmarks</a></li>
-                <li><a href="#auto-deps" onclick="closeMenu()">Auto-Dependencies</a></li>
-                <li><a href="#caching" onclick="closeMenu()">Smart Caching</a></li>
-            </ul>
-
-            <h3>Python Library</h3>
-            <ul>
-                <li><a href="#library-api" onclick="closeMenu()">API Reference</a></li>
             </ul>
             
+            <h3>Advanced</h3>
+            <ul>
+                <li><a href="#authentication" onclick="closeMenu()">Authentication</a></li>
+                <li><a href="#library-api" onclick="closeMenu()">Python API</a></li>
+                <li><a href="#configuration" onclick="closeMenu()">Config</a></li>
+            </ul>
+
             <h3>Project Info</h3>
             <ul>
-                <li><a href="#configuration" onclick="closeMenu()">Configuration</a></li>
                 <li><a href="#contributing" onclick="closeMenu()">Contributing</a></li>
+                <li><a href="#security" onclick="closeMenu()">Security</a></li>
+                <li><a href="#code-of-conduct" onclick="closeMenu()">Code of Conduct</a></li>
                 <li><a href="#license" onclick="closeMenu()">License</a></li>
             </ul>
         </aside>
 
         <main>
             <section id="overview">
-                <h1>Githrun CLI</h1>
+                <h1>Githrun</h1>
                 <p><strong>The Swiss Army Knife for Remote Python Execution.</strong></p>
                 
                 <div class="badges">
                     <a href="https://pypi.org/project/githrun/" target="_blank">
                         <img src="https://img.shields.io/pypi/v/githrun?color=3775a9&label=pypi%20package&logo=python&logoColor=white" alt="PyPI Version">
                     </a>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=notamitgamer.vscode-githrun" target="_blank">
+                        <img src="https://img.shields.io/badge/VS%20Code-Extension-007acc?logo=visual-studio-code&logoColor=white" alt="VS Code Extension">
+                    </a>
                     <a href="https://github.com/notamitgamer/githrun" target="_blank">
                         <img src="https://img.shields.io/badge/GitHub-Repo-24292e?logo=github" alt="GitHub Repo">
-                    </a>
-                    <a href="https://pypi.org/project/githrun/" target="_blank">
-                        <img src="https://pepy.tech/badge/githrun" alt="Total Downloads">
                     </a>
                     <a href="https://opensource.org/licenses/MIT" target="_blank">
                         <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
                     </a>
+
+                    <a href="https://www.producthunt.com/products/githrun?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-githrun" target="_blank" rel="noopener noreferrer">
+                        <img alt="Githrun - Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1078250&amp;theme=light&amp;t=1770971505390" style="height: 48px; width: auto;">
+                    </a>
+                    <a href="https://www.producthunt.com/products/githrun/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-githrun" target="_blank">
+                        <img src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1163407&theme=light" alt="Githrun Reviews" style="height: 48px; width: auto;">
+                    </a>
+                    <a href="https://www.producthunt.com/products/githrun?utm_source=badge-follow&utm_medium=badge&utm_source=badge-githrun" target="_blank">
+                        <img src="https://api.producthunt.com/widgets/embed-image/v1/follow.svg?product_id=1163407&theme=light" alt="Follow Githrun" style="height: 48px; width: auto;">
+                    </a>
                 </div>
 
                 <p>Githrun turns GitHub repositories into your personal script library. It allows you to execute remote scripts instantly, install them as local tools, or explore folder structures without the hassle of cloning entire repositories.</p>
-                <p>Whether you need to run a quick maintenance script, install a utility from a gist, or explore a codebase interactively, Githrun handles the heavy lifting of fetching, dependency management, and caching.</p>
+                <div class="alert alert-info">
+                    <strong>New!</strong> Githrun is now available as a <strong>VS Code Extension</strong>. Run scripts directly from your code editor with a single click.
+                </div>
             </section>
 
             <section id="installation">
-                <h2>Installation</h2>
+                <h2>CLI Installation</h2>
                 <p>Githrun is available on PyPI and can be installed via pip. It supports Python 3.9 and newer.</p>
                 <pre><code>pip install githrun</code></pre>
-                <div class="alert alert-info">
-                    <strong>Tip:</strong> If you use <code>pipx</code>, you can install it globally to use the CLI anywhere: <code>pipx install githrun</code>.
-                </div>
+                <p>If you use <code>pipx</code>, you can install it globally to use the CLI anywhere:</p>
+                <pre><code>pipx install githrun</code></pre>
+            </section>
+
+            <section id="vscode-setup">
+                <h2>VS Code Extension Setup</h2>
+                <p>The Githrun extension integrates the power of the CLI directly into Visual Studio Code.</p>
+                
+                <h4>Step 1: Install the Extension</h4>
+                <ol>
+                    <li>Open VS Code.</li>
+                    <li>Go to the <strong>Extensions</strong> view (<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span>).</li>
+                    <li>Search for <strong>"Githrun"</strong>.</li>
+                    <li>Click <strong>Install</strong>.</li>
+                </ol>
+
+                <h4>Step 2: Dependency Check</h4>
+                <p>The extension relies on the Githrun CLI. When you first activate it, it will check if <code>githrun</code> is in your path. If not, it will prompt you to install it via a built-in terminal command.</p>
             </section>
 
             <section id="quick-start">
                 <h2>Quick Start</h2>
-                <p>Get up and running in seconds. Here are the most common commands.</p>
+                <p>Choose your preferred way to run scripts.</p>
                 
-                <h3>1. Run a Remote Script</h3>
-                <p>Execute a python file directly from a GitHub URL.</p>
-                <pre><code>githrun run https://github.com/user/repo/blob/main/hello.py</code></pre>
-
-                <h3>2. Search a Repository</h3>
-                <p>Find files matching a query inside a remote repo.</p>
-                <pre><code>githrun find https://github.com/user/repo "config"</code></pre>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-terminal"></i> Using CLI</h4>
+                        <p>Run a script from your terminal:</p>
+                        <code>githrun run https://github.com/notamitgamer/githrun/blob/main/test/test_githrun.py</code>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-code"></i> Using VS Code</h4>
+                        <p>Open a Markdown file with links, and click the <strong>Run with Githrun</strong> button that appears above the URL.</p>
+                    </div>
+                </div>
             </section>
 
+            <section id="vscode-codelens">
+                <h2>VS Code: Smart CodeLens</h2>
+                <p>This is the fastest way to run scripts referenced in your documentation or notes.</p>
+                
+                <p><strong>How it works:</strong> The extension automatically scans your open files (Markdown, Python, or Plaintext). If it detects a valid GitHub or Gist URL that ends in <code>.py</code>, it injects a small "Lens" above the line.</p>
+                
+                <div class="code-wrapper" style="padding: 1.5rem; background: #1e1e1e; color: #d4d4d4; font-family: var(--font-mono);">
+                    <div style="color: #999; font-size: 0.85rem; margin-bottom: 5px;">
+                        <i class="fas fa-play" style="font-size: 0.7rem;"></i> Run with Githrun
+                    </div>
+                    <span style="color: #569cd6; word-break: break-all;">https://github.com/notamitgamer/githrun/blob/main/test/test_githrun.py</span>
+                </div>
+                
+                <p>Simply click <strong>Run with Githrun</strong> to execute the script in a new integrated terminal window.</p>
+            </section>
+
+            <section id="vscode-commands">
+                <h2>VS Code: Command Palette</h2>
+                <p>You can access all Githrun features via the Command Palette (<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">P</span>).</p>
+                
+                <ul>
+                    <li><strong>Githrun: Run from URL...</strong> - Opens an input box where you can paste any GitHub URL to run it immediately.</li>
+                    <li><strong>Githrun: Run Selected Text</strong> - Executes the currently highlighted URL.</li>
+                    <li><strong>Githrun: Install Githrun CLI</strong> - Runs the pip install command for you.</li>
+                </ul>
+            </section>
+
+            <section id="vscode-context">
+                <h2>VS Code: Context Menus</h2>
+                <p>If you don't want to use the CodeLens or Command Palette, simply highlight a URL in your editor:</p>
+                <ol>
+                    <li>Select the URL text (e.g., <code>https://gist.github.com/...</code>).</li>
+                    <li><strong>Right-click</strong> the selection.</li>
+                    <li>Choose <strong>Githrun: Run Selected Text</strong>.</li>
+                </ol>
+                
+                <h4>Extension Settings</h4>
+                <p>You can configure the extension behavior in VS Code Settings:</p>
+                <ul>
+                    <li><code>githrun.autoInstallDeps</code> (Boolean): If enabled, the extension appends <code>--auto-install</code> to every command, automatically handling missing Python dependencies for you.</li>
+                </ul>
+            </section>
+
+            <!-- Original CLI Documentation Continues Below -->
+
             <section id="remote-execution">
-                <h2>Remote Execution</h2>
-                <p>The <code>run</code> command is the core of Githrun. It fetches the raw content of a file and executes it locally.</p>
+                <h2>CLI: Remote Execution</h2>
+                <p>The <code>run</code> command is the core of the Githrun CLI. It fetches the raw content of a file and executes it locally.</p>
                 
                 <h4>Supported Sources</h4>
                 <ul>
@@ -581,7 +723,7 @@
             </section>
 
             <section id="tool-installation">
-                <h2>Tool Installation</h2>
+                <h2>CLI: Tool Installation</h2>
                 <p>Found a useful script? Turn it into a permanent command-line tool on your system using <code>install</code>.</p>
                 <pre><code>githrun install https://github.com/user/repo/blob/main/utils.py --name my-util</code></pre>
                 
@@ -595,7 +737,7 @@
             </section>
 
             <section id="search-find">
-                <h2>Search & Find</h2>
+                <h2>CLI: Search & Find</h2>
                 <p>Don't clone a 1GB repo just to find one file. The <code>find</code> command recursively searches the remote repository tree.</p>
                 <pre><code>githrun find https://github.com/notamitgamer/adpkg "test"</code></pre>
                 
@@ -603,7 +745,7 @@
             </section>
 
             <section id="downloading">
-                <h2>Downloading</h2>
+                <h2>CLI: Downloading</h2>
                 <p>Githrun can download individual files or recursively download entire directories.</p>
 
                 <h4>Single File</h4>
@@ -614,15 +756,8 @@
                 <pre><code>githrun download https://github.com/user/repo/tree/main/src --output ./local_src</code></pre>
             </section>
 
-            <section id="authentication">
-                <h2>Authentication</h2>
-                <p>By default, GitHub allows 60 unauthenticated API requests per hour. To increase this limit to 5,000/hr and to access <strong>Private Repositories</strong>, you need to login.</p>
-                <pre><code>githrun login ghp_YourPersonalAccessToken...</code></pre>
-                <p>The token is stored locally in <code>~/.githrun/config.json</code> and is never sent anywhere except GitHub API endpoints.</p>
-            </section>
-
             <section id="bookmarks">
-                <h2>Bookmarks</h2>
+                <h2>CLI: Bookmarks</h2>
                 <p>Bookmarks allow you to alias long, complex GitHub URLs to short, memorable names.</p>
 
                 <h4>Add a Bookmark</h4>
@@ -630,86 +765,32 @@
 
                 <h4>Run a Bookmark</h4>
                 <pre><code>githrun run clean-db</code></pre>
-
-                <h4>List Bookmarks</h4>
-                <pre><code>githrun bookmark list</code></pre>
             </section>
 
-            <section id="auto-deps">
-                <h2>Auto-Dependencies</h2>
-                <p>One of the biggest pain points of running remote scripts is missing dependencies (e.g., <code>ModuleNotFoundError: No module named 'requests'</code>).</p>
-                <p>Githrun can solve this automatically:</p>
-                <pre><code>githrun run https://gist.github.com/user/id --auto-install</code></pre>
-                
-                <p><strong>The Mechanics:</strong></p>
-                <ol>
-                    <li>Githrun scans the script for <code>import</code> statements.</li>
-                    <li>It checks which packages are missing from your system.</li>
-                    <li>It creates a <strong>temporary virtual environment</strong> in <code>/tmp</code>.</li>
-                    <li>It installs the missing packages into that venv.</li>
-                    <li>It executes the script using the venv's Python interpreter.</li>
-                    <li>It cleans up (deletes) the venv after execution.</li>
-                </ol>
-            </section>
-
-            <section id="caching">
-                <h2>Smart Caching</h2>
-                <p>To keep the tool snappy and respectful of API limits, Githrun caches API responses (like repository trees) locally for 10 minutes.</p>
-                <p>This means if you run <code>githrun find</code> on a large repo multiple times, the subsequent runs will be instant and won't consume your GitHub API quota.</p>
+            <section id="authentication">
+                <h2>Authentication</h2>
+                <p>By default, GitHub allows 60 unauthenticated API requests per hour. To increase this limit to 5,000/hr and to access <strong>Private Repositories</strong>, you need to login.</p>
+                <pre><code>githrun login ghp_YourPersonalAccessToken...</code></pre>
+                <p>The token is stored locally in <code>~/.githrun/config.json</code> and is never sent anywhere except GitHub API endpoints.</p>
             </section>
 
             <section id="library-api">
                 <h2>Python Library API</h2>
                 <p>Githrun exposes its core logic as a Python library, allowing you to build your own tools on top of it.</p>
                 
-                <h4>Usage inside a Python Source File</h4>
-                <p>You can import <code>githrun</code> in your own scripts (e.g., <code>main.py</code>) to automate remote execution or file fetching.</p>
-                
                 <pre><code># main.py
 import githrun
 
 # 1. Search a repository for config files
-print("Searching for config files...")
 results = githrun.search_repository("https://github.com/user/repo", "config")
-for item in results:
-    print(f"Found: {item['path']}")
 
-# 2. Download a specific utility script
-print("\nDownloading utility...")
-githrun.download_file(
-    "https://github.com/user/repo/blob/main/utils.py", 
-    output_path="local_utils.py"
-)
-
-# 3. Execute a remote setup script immediately
-print("\nRunning setup...")
-# This runs the script securely and returns the exit code
-exit_code = githrun.execute_remote_code("https://github.com/user/repo/blob/main/setup.py")
-
-if exit_code == 0:
-    print("Setup completed successfully!")
-else:
-    print("Setup failed.")</code></pre>
-
-                <h4>Available Functions</h4>
-                <ul>
-                    <li><code>execute_remote_code(url, args=[], auto_install=False)</code></li>
-                    <li><code>download_file(url, output_path=None)</code></li>
-                    <li><code>download_folder(url, output_dir=None)</code></li>
-                    <li><code>search_repository(repo_url, query)</code></li>
-                    <li><code>get_folder_contents(url)</code></li>
-                </ul>
+# 2. Execute a remote setup script immediately
+exit_code = githrun.execute_remote_code("https://github.com/user/repo/blob/main/setup.py")</code></pre>
             </section>
 
             <section id="configuration">
                 <h2>Configuration</h2>
                 <p>Githrun stores all its data in your home directory under <code>.githrun</code>.</p>
-                <ul>
-                    <li><strong>Windows:</strong> <code>C:\Users\Username\.githrun\</code></li>
-                    <li><strong>Linux/Mac:</strong> <code>~/.githrun/</code></li>
-                </ul>
-
-                <h4>File Structure</h4>
                 <ul>
                     <li><code>config.json</code>: Stores your API key and bookmarks.</li>
                     <li><code>cache/</code>: Stores JSON responses from GitHub API (expiring).</li>
@@ -720,6 +801,11 @@ else:
             <section id="contributing">
                 <h2>Contributing</h2>
                 <p>We welcome contributions from the community! Whether it's a bug fix, new feature, or documentation improvement.</p>
+                <p><strong>Contact the Developer:</strong> If you have questions or want to discuss a major feature, feel free to email:</p>
+                <p><a href="mailto:mail@amit.is-a.dev" class="btn btn-pypi" style="display:inline-flex; margin-top:0.5rem;"><i class="fas fa-envelope"></i> mail@amit.is-a.dev</a></p>
+                <p><a href="mailto:amitdutta4255@gmail.com" class="btn btn-pypi" style="display:inline-flex;"><i class="fas fa-envelope"></i> amitdutta4255@gmail.com</a></p>
+                
+                <h4>Steps to Contribute</h4>
                 <ol>
                     <li>Fork the repository on GitHub.</li>
                     <li>Clone your fork.</li>
@@ -729,10 +815,32 @@ else:
                 </ol>
             </section>
 
+            <section id="security">
+                <h2>Security Policy</h2>
+                <p>We take the security of Githrun seriously. Because this tool executes remote code, we strive to ensure that the execution environment is as predictable as possible.</p>
+                
+                <h4>Reporting Vulnerabilities</h4>
+                <p>If you discover a security vulnerability in Githrun, please <strong>DO NOT</strong> open a public issue. Instead, please email the developer directly at:</p>
+                <p><a href="mailto:amitdutta4255@gmail.com" class="btn btn-pypi" style="display:inline-flex; margin-top:0.5rem;"><i class="fas fa-envelope"></i> amitdutta4255@gmail.com</a></p>
+                <p>We will review your report and work with you to release a patch as soon as possible.</p>
+            </section>
+
+            <section id="code-of-conduct">
+                <h2>Code of Conduct</h2>
+                <p>We are committed to providing a friendly, safe, and welcoming environment for all, regardless of gender, sexual orientation, disability, ethnicity, religion, or similar personal characteristic.</p>
+                <div class="alert alert-info">
+                    <strong>Our Pledge:</strong> We pledge to make participation in our project and our community a harassment-free experience for everyone.
+                </div>
+                <p>Please be kind and courteous. Harassment of any kind will not be tolerated. Participants violating these rules may be banned from the community at the discretion of the maintainers.</p>
+            </section>
+
             <section id="license">
                 <h2>License</h2>
                 <p>Githrun is open-source software licensed under the <strong><a href="https://github.com/notamitgamer/githrun/blob/main/LICENSE">MIT License</a></strong>.</p>
-                <p>&copy; 2026 <a href="https://amit.is-a.dev" target="_blank" style="text-decoration: none; color: inherit;"><b><u>Amit Dutta</u></b></a> (<a href="https://github.com/notamitgamer" target="_blank" style="text-decoration: none; color: inherit;"><b><u>notamitgamer</u></b></a>).</p>
+                <p>You are free to use, modify, and distribute this software in compliance with the license terms.</p>
+                <p style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                    &copy; 2026 <a href="https://amit.is-a.dev" target="_blank" style="text-decoration: none; color: inherit;"><b><u>Amit Dutta</u></b></a> (<a href="https://github.com/notamitgamer" target="_blank" style="text-decoration: none; color: inherit;"><b><u>notamitgamer</u></b></a>).
+                </p>
             </section>
         </main>
     </div>
@@ -757,33 +865,24 @@ else:
 
         // --- COPY TO CLIPBOARD ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Select all pre elements that contain code
             const preBlocks = document.querySelectorAll('pre');
             
             preBlocks.forEach(pre => {
-                // 1. Create wrapper div
                 const wrapper = document.createElement('div');
                 wrapper.className = 'code-wrapper';
-                
-                // 2. Insert wrapper before pre
                 pre.parentNode.insertBefore(wrapper, pre);
-                
-                // 3. Move pre into wrapper
                 wrapper.appendChild(pre);
                 
-                // 4. Create copy button
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
                 btn.innerHTML = '<i class="far fa-copy"></i> Copy';
                 
-                // 5. Add event listener
                 btn.addEventListener('click', () => {
                     const code = pre.querySelector('code').innerText;
                     navigator.clipboard.writeText(code).then(() => {
                         btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                         btn.style.color = '#28a745';
                         btn.style.borderColor = '#28a745';
-                        
                         setTimeout(() => {
                             btn.innerHTML = '<i class="far fa-copy"></i> Copy';
                             btn.style.color = '';
@@ -791,8 +890,6 @@ else:
                         }, 2000);
                     });
                 });
-                
-                // 6. Append button to wrapper (sibling to pre)
                 wrapper.appendChild(btn);
             });
         });

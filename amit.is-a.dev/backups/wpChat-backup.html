@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp Logger</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest-wpChat.json">
+    <meta name="theme-color" content="#006C4C">
+    
+    <!-- SVG Favicon -->
+    <link rel="icon" href="icon.svg">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            /* Light Theme Tokens */
+            --md-sys-color-primary: #006C4C;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #89F8C7;
+            --md-sys-color-on-primary-container: #002114;
+            
+            --md-sys-color-secondary: #4D6357;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #CFE9D9;
+            --md-sys-color-on-secondary-container: #092016;
+            
+            --md-sys-color-surface: #FBFDF9;
+            --md-sys-color-surface-dim: #D9DBD9;
+            --md-sys-color-surface-container: #ECEEEB;
+            --md-sys-color-surface-container-high: #E6E8E5;
+            
+            --md-sys-color-on-surface: #191C1A;
+            --md-sys-color-on-surface-variant: #404944;
+            --md-sys-color-outline: #707974;
+            --md-sys-color-outline-variant: #BFC9C2;
+
+            --md-sys-color-error: #BA1A1A;
+            
+            /* WhatsApp Specifics */
+            --chat-bubble-me: #E2FFEC;
+            --chat-bubble-them: #FFFFFF;
+            --chat-bg-color: #EFE7DE;
+            --chat-bg-image-opacity: 0.08;
+            --search-highlight: #ffeb3b;
+            
+            /* Elevations & Shapes */
+            --elevation-1: 0px 1px 3px 1px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+            --elevation-2: 0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+            
+            /* Settings */
+            --base-font-size: 15px;
+        }
+
+        /* Dark Theme Tokens */
+        [data-theme="dark"] {
+            --md-sys-color-primary: #89F8C7;
+            --md-sys-color-on-primary: #003828;
+            --md-sys-color-primary-container: #005138;
+            --md-sys-color-on-primary-container: #89F8C7;
+            
+            --md-sys-color-secondary: #BACCB3;
+            --md-sys-color-on-secondary: #25342D;
+            --md-sys-color-secondary-container: #3B4B43;
+            --md-sys-color-on-secondary-container: #D6E8D8;
+            
+            --md-sys-color-surface: #111412;
+            --md-sys-color-surface-dim: #111412;
+            --md-sys-color-surface-container: #1E211F;
+            --md-sys-color-surface-container-high: #282B29;
+            
+            --md-sys-color-on-surface: #E2E3DD;
+            --md-sys-color-on-surface-variant: #C2C8C5;
+            --md-sys-color-outline: #8C938F;
+            --md-sys-color-outline-variant: #424945;
+
+            --md-sys-color-error: #FFB4AB;
+            
+            --chat-bubble-me: #005C4B;
+            --chat-bubble-them: #202C33;
+            --chat-bg-color: #0B141A;
+            --chat-bg-image-opacity: 0.05;
+            --search-highlight: #6b6200;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- ANIMATIONS --- */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.0, 0.0, 1.0); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .ripple-surface { position: relative; overflow: hidden; transform: translate3d(0, 0, 0); transition: transform 0.1s; }
+        .ripple-surface:active { transform: scale(0.98); }
+        
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-enter { animation: scaleIn 0.3s cubic-bezier(0.2, 0.0, 0, 1.0); }
+
+        /* --- AUTH SCREEN --- */
+        #auth-screen {
+            position: fixed; inset: 0; z-index: 999;
+            background: radial-gradient(circle at 50% 10%, var(--md-sys-color-surface-container) 0%, var(--md-sys-color-surface) 60%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px; height: 100dvh; padding-bottom: 15vh;
+            /* Initially handled by inline style to prevent flash */
+            transition: opacity 0.3s;
+        }
+        
+        .auth-card { width: 100%; max-width: 400px; text-align: center; }
+        .brand-icon { width: 96px; height: 96px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .brand-icon img { width: 100%; height: 100%; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2)); }
+
+        .auth-card h1 { font-family: 'Google Sans', sans-serif; }
+
+        /* --- UI ELEMENTS --- */
+        .m3-field {
+            position: relative; margin-bottom: 16px;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            transition: 0.3s;
+        }
+        .m3-field:focus-within { 
+            border-bottom: 2px solid var(--md-sys-color-primary); 
+            background: var(--md-sys-color-surface-container); 
+        }
+        .m3-input {
+            width: 100%; padding: 24px 16px 8px 16px;
+            border: none; background: transparent; outline: none;
+            font-size: 16px; color: var(--md-sys-color-on-surface); font-family: inherit;
+        }
+        .m3-label {
+            position: absolute; left: 16px; top: 18px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 16px; pointer-events: none; transition: 0.2s;
+        }
+        .m3-input:focus ~ .m3-label, .m3-input:not(:placeholder-shown) ~ .m3-label {
+            top: 6px; font-size: 12px; color: var(--md-sys-color-primary);
+        }
+        .eye-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            border: none; background: none; cursor: pointer; color: var(--md-sys-color-on-surface-variant);
+            padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+        }
+        .eye-toggle:hover { background: rgba(0,0,0,0.05); color: var(--md-sys-color-on-surface); }
+
+        .m3-btn {
+            width: 100%; height: 56px; border-radius: 28px;
+            border: none; outline: none; cursor: pointer;
+            font-family: 'Google Sans', sans-serif; font-weight: 500; font-size: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.2s; position: relative; overflow: hidden;
+        }
+        .m3-btn.filled {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            box-shadow: var(--elevation-1);
+        }
+        .m3-btn.filled:hover { box-shadow: var(--elevation-2); opacity: 0.9; }
+        .m3-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Spinner */
+        .spinner {
+            width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: white;
+            animation: spin 0.8s linear infinite; display: none;
+        }
+        .m3-btn.loading .btn-text { visibility: hidden; }
+        .m3-btn.loading .btn-icon { display: none; }
+        .m3-btn.loading .spinner { display: block; position: absolute; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- APP LAYOUT --- */
+        #app-layout {
+            display: flex; width: 100%; height: 100%; max-width: 1600px;
+            background: var(--md-sys-color-surface); opacity: 0; transition: opacity 0.6s ease-in-out;
+            visibility: hidden; 
+        }
+        #app-layout.visible { opacity: 1; visibility: visible; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 400px; display: flex; flex-direction: column;
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            background: var(--md-sys-color-surface); z-index: 10;
+        }
+        .sidebar-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn {
+            width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; cursor: pointer;
+            color: var(--md-sys-color-on-surface-variant); display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .icon-btn:hover { background: rgba(128,128,128,0.1); color: var(--md-sys-color-on-surface); }
+        
+        .search-container { padding: 0 16px 12px; }
+        .search-bar {
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: 28px; height: 48px; display: flex; align-items: center; padding: 0 16px;
+        }
+        .search-bar input {
+            border: none; background: transparent; outline: none; flex: 1; margin-left: 12px;
+            font-size: 16px; color: var(--md-sys-color-on-surface);
+        }
+        .contact-list { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px; }
+        .contact-item {
+            display: flex; align-items: center; padding: 12px 16px; border-radius: 16px; cursor: pointer; margin-bottom: 2px;
+            animation: slideUp 0.3s cubic-bezier(0.2, 0.0, 0, 1.0) backwards;
+        }
+        .contact-item:hover { background: rgba(128,128,128,0.05); }
+        .contact-item.active { background: var(--md-sys-color-secondary-container); }
+        .contact-item.active .contact-name { color: var(--md-sys-color-on-secondary-container); font-weight: 700; }
+        .avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 500; flex-shrink: 0; margin-right: 16px;
+        }
+        .contact-info { flex: 1; min-width: 0; }
+        .contact-name { font-size: 16px; font-weight: 500; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contact-sub { font-size: 14px; color: var(--md-sys-color-on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* CHAT AREA */
+        .chat-area {
+            flex: 1; display: flex; flex-direction: column; position: relative;
+            background-color: var(--chat-bg-color);
+            transition: background-color 0.3s;
+        }
+        .chat-bg-pattern {
+            position: absolute; inset: 0; opacity: var(--chat-bg-image-opacity); z-index: 0; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236e7874' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .chat-header {
+            height: 64px; background: var(--md-sys-color-surface);
+            display: flex; align-items: center; padding: 0 16px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant); z-index: 5;
+        }
+        .chat-content {
+            flex: 1; overflow-y: auto; padding: 16px; z-index: 1;
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .msg-bubble {
+            max-width: 80%; padding: 8px 12px; position: relative;
+            font-size: var(--base-font-size); line-height: 1.4;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column;
+            animation: scaleIn 0.2s cubic-bezier(0.2, 0.0, 0, 1.0) backwards;
+        }
+        .msg-in {
+            align-self: flex-start; background: var(--chat-bubble-them);
+            border-radius: 0 16px 16px 16px; color: var(--md-sys-color-on-surface);
+        }
+        .msg-out {
+            align-self: flex-end; background: var(--chat-bubble-me);
+            border-radius: 16px 0 16px 16px; color: var(--md-sys-color-on-surface);
+        }
+        .msg-sender { font-size: 12px; font-weight: 700; color: var(--md-sys-color-primary); margin-bottom: 2px; }
+        .msg-meta { font-size: 10px; opacity: 0.7; align-self: flex-end; margin-top: 2px; }
+        
+        .highlight { background-color: var(--search-highlight); color: black; border-radius: 2px; padding: 0 2px; }
+
+        /* Search In Chat */
+        .in-chat-search {
+            background: var(--md-sys-color-surface-container);
+            padding: 8px 16px; display: flex; align-items: center; gap: 10px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            animation: slideUp 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+        .in-chat-search input {
+            border: none; background: transparent; outline: none; flex: 1;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* Menu */
+        .menu-container { position: relative; }
+        .dropdown-menu {
+            position: absolute; top: 100%; right: 0;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: 12px; padding: 8px 0; min-width: 200px;
+            display: none; flex-direction: column; z-index: 100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: scaleIn 0.2s cubic-bezier(0.2, 0.0, 0, 1.0); transform-origin: top right;
+        }
+        .dropdown-menu.show { display: flex; }
+        .menu-item {
+            padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+            color: var(--md-sys-color-on-surface); background: none; border: none;
+            font-family: inherit; font-size: 14px; cursor: pointer; text-align: left;
+        }
+        .menu-item:hover { background: rgba(128,128,128,0.1); }
+
+        /* Settings Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .settings-card {
+            background: var(--md-sys-color-surface);
+            width: 90%; max-width: 600px; height: 80vh;
+            border-radius: 28px; display: flex; flex-direction: column;
+            overflow: hidden; animation: scaleIn 0.3s var(--anim-enter);
+        }
+        .settings-header {
+            padding: 20px 24px; border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .settings-content { flex: 1; overflow-y: auto; padding: 24px; }
+        .setting-section { margin-bottom: 32px; }
+        .setting-title { font-size: 14px; font-weight: 500; color: var(--md-sys-color-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .setting-label h4 { font-size: 16px; font-weight: 400; margin-bottom: 4px; }
+        .setting-label p { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--md-sys-color-surface-container-high); border-radius: 34px; transition: .4s;
+            border: 1px solid var(--md-sys-color-outline);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 3px;
+            background-color: var(--md-sys-color-outline); border-radius: 50%; transition: .4s;
+        }
+        input:checked + .slider { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: var(--md-sys-color-on-primary); }
+
+        /* Accordion */
+        .faq-item { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+        .faq-question {
+            width: 100%; padding: 16px 0; text-align: left; background: none; border: none;
+            font-size: 16px; color: var(--md-sys-color-on-surface); cursor: pointer;
+            display: flex; justify-content: space-between;
+        }
+        .faq-answer { display: none; padding-bottom: 16px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; }
+        .faq-item.open .faq-answer { display: block; }
+
+        /* Background Selector */
+        .bg-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .bg-option {
+            height: 60px; border-radius: 8px; cursor: pointer; border: 2px solid transparent;
+            background-size: cover; position: relative; overflow: hidden;
+        }
+        .bg-option.selected { border-color: var(--md-sys-color-primary); }
+        .bg-1 { background-color: #EFE7DE; }
+        .bg-2 { background-color: #d1d7db; }
+        .bg-3 { background-color: #e5ddd5; }
+        .bg-4 { background-color: #ffffff; }
+
+        /* Install Sheet - Hidden by default on PC */
+        .install-sheet { display: none; }
+        
+        /* Settings Install Card */
+        .install-card {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            padding: 16px; border-radius: 12px; margin-bottom: 32px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .install-card h4 { margin-bottom: 4px; }
+        .install-card p { font-size: 12px; }
+        .install-card .m3-btn {
+            width: auto; height: 36px; padding: 0 16px;
+            font-size: 14px; white-space: nowrap; flex-shrink: 0;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; flex: 1; border-right: none; }
+            .chat-area { position: fixed; inset: 0; z-index: 20; transform: translateX(100%); transition: transform 0.3s; background-color: var(--chat-bg-color); }
+            .chat-area.active { transform: translateX(0); }
+            .back-btn { display: flex !important; margin-right: 8px; }
+            
+            /* Bottom Sheet Install Prompt - Only visible on Mobile */
+            .install-sheet {
+                display: block; /* Enable it for mobile logic */
+                position: fixed; bottom: 0; left: 0; right: 0; z-index: 3000;
+                background: var(--md-sys-color-surface);
+                border-top-left-radius: 28px; border-top-right-radius: 28px;
+                padding: 24px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+                transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+            }
+            .install-sheet.visible { transform: translateY(0); }
+            .sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+            .sheet-content { text-align: center; }
+            .sheet-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        }
+        .back-btn { display: none; margin-right: 8px; }
+
+        /* UTILITY MODALS STYLING FIX */
+        .modal-card {
+            background-color: var(--md-sys-color-surface);
+            padding: 24px;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 320px;
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.2, 0, 0, 1);
+            animation: scaleIn 0.3s var(--anim-enter);
+        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+        
+        .modal-card.utility {
+            width: 320px;
+            padding: 24px;
+            border-radius: 28px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .modal-actions .m3-btn {
+            width: auto;
+            min-width: 80px;
+            height: 40px;
+            padding: 0 16px;
+        }
+
+        /* Empty State Centering */
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; width: 100%; color: var(--md-sys-color-outline);
+            text-align: center; animation: fadeIn 0.5s;
+        }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--md-sys-color-surface-container-high) 25%, var(--md-sys-color-surface-container) 50%, var(--md-sys-color-surface-container-high) 75%);
+            background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 4px;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skel-contact { display: flex; align-items: center; padding: 12px 16px; gap: 16px; width: 100%; }
+        .skel-avatar { width: 48px; height: 48px; border-radius: 50%; }
+        .skel-text-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .skel-msg-group { display: flex; flex-direction: column; gap: 12px; padding: 20px; width: 100%; }
+        .skel-bubble { height: 40px; border-radius: 12px; width: 40%; margin-bottom: 8px;}
+        .skel-left { align-self: flex-start; border-bottom-left-radius: 0; }
+        .skel-right { align-self: flex-end; border-bottom-right-radius: 0; width: 50%; }
+
+    </style>
+</head>
+<body>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen">
+        <div class="auth-card">
+            <div class="brand-icon animate-enter">
+                <img src="icon.svg" alt="App Logo" style="width: 100%; height: 100%;">
+            </div>
+            <h1 style="font-family:'Google Sans'; margin-bottom: 8px;" class="animate-enter">Welcome Back</h1>
+            <p style="color:var(--md-sys-color-on-surface-variant); margin-bottom: 32px;" class="animate-enter">Enter your credentials</p>
+            <div class="m3-field animate-enter"><input type="text" id="username" class="m3-input" placeholder=" "><label class="m3-label">Username</label></div>
+            <div class="m3-field animate-enter">
+                <input type="password" id="password" class="m3-input" placeholder=" ">
+                <label class="m3-label">Password</label>
+                <button class="eye-toggle" onclick="togglePasswordVisibility()">
+                    <span class="material-symbols-rounded" id="passIcon">visibility</span>
+                </button>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; margin: 16px 0 24px;" class="animate-enter">
+                <input type="checkbox" id="rememberMe" style="width:18px; height:18px;"><label for="rememberMe">Remember me</label>
+            </div>
+            <button class="m3-btn filled animate-enter" id="loginBtn" onclick="attemptLogin()">
+                <span class="btn-text">Access Dashboard</span>
+                <span class="material-symbols-rounded btn-icon" style="font-size:20px;">arrow_forward</span>
+                <div class="spinner"></div>
+            </button>
+            <p id="authError" style="color: var(--md-sys-color-error); margin-top: 16px; opacity: 0;">Invalid Credentials</p>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <h2 style="font-family:'Google Sans'; font-size: 20px;">Chat log</h2>
+                </div>
+                <div style="display:flex; gap: 8px;">
+                    <button class="icon-btn ripple-surface" onclick="promptAddChat()"><span class="material-symbols-rounded">add_circle</span></button>
+                    <button class="icon-btn ripple-surface" onclick="openSettings()" title="Settings"><span class="material-symbols-rounded">settings</span></button>
+                </div>
+            </div>
+            <div class="search-container">
+                <div class="search-bar">
+                    <span class="material-symbols-rounded" style="color: var(--md-sys-color-on-surface-variant);">search</span>
+                    <input type="text" id="searchInput" placeholder="Search...">
+                </div>
+            </div>
+            <div class="contact-list" id="contactList"></div>
+        </aside>
+
+        <main class="chat-area" id="chatArea">
+            <header class="chat-header">
+                <button class="icon-btn back-btn ripple-surface" onclick="closeChatMobile()"><span class="material-symbols-rounded">arrow_back</span></button>
+                <div id="chatHeaderContent" style="display:flex; align-items:center; gap:12px; flex:1; opacity:0;">
+                    <div class="avatar" id="headerAvatar">A</div>
+                    <div style="flex:1;">
+                        <div id="headerName" style="font-weight: 500; font-size: 16px;">Alice</div>
+                        <div id="headerId" style="font-size: 12px; opacity: 0.7;">Online</div>
+                    </div>
+                    <div class="menu-container">
+                        <button class="icon-btn ripple-surface" onclick="toggleChatMenu(event)"><span class="material-symbols-rounded">more_vert</span></button>
+                        <div class="dropdown-menu" id="chatMenu">
+                            <button class="menu-item" onclick="toggleChatSearch()"><span class="material-symbols-rounded">search</span>Search in Chat</button>
+                            <button class="menu-item" onclick="showRenameModal()"><span class="material-symbols-rounded">edit</span>Rename</button>
+                            <button class="menu-item" onclick="downloadChat()"><span class="material-symbols-rounded">download</span>Download</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <div id="inChatSearch" class="in-chat-search hidden">
+                <input type="text" id="msgSearchInput" placeholder="Find message...">
+                <div id="searchCount" style="font-size:12px; margin-right:8px;"></div>
+                <button class="icon-btn" style="width:30px; height:30px;" onclick="toggleChatSearch()"><span class="material-symbols-rounded">close</span></button>
+            </div>
+
+            <div class="chat-bg-pattern"></div>
+            <div class="chat-content" id="messagesContainer">
+                <div class="empty-state">
+                    <span class="material-symbols-rounded" style="font-size: 64px; opacity: 0.2;">chat</span>
+                    <p>Select a conversation</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="settings-card">
+            <div class="settings-header">
+                <h2 style="font-family:'Google Sans'">Settings</h2>
+                <button class="icon-btn" onclick="closeModal('settingsModal')"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="settings-content">
+                
+                <!-- Install App -->
+                <div id="installAppSection" class="install-card hidden">
+                    <div>
+                        <h4>Install App</h4>
+                        <p>Get the app for better experience</p>
+                    </div>
+                    <button class="m3-btn filled" onclick="installPWA()">Install</button>
+                </div>
+
+                <!-- Profile -->
+                <div class="setting-section">
+                    <div class="setting-title">Profile</div>
+                    <div class="m3-field"><input type="text" id="profileName" class="m3-input" placeholder=" " onchange="saveProfile()"><label class="m3-label">Your Name</label></div>
+                    <div class="m3-field"><input type="text" id="profilePhone" class="m3-input" placeholder=" " onchange="saveProfile()"><label class="m3-label">Phone Number</label></div>
+                </div>
+
+                <!-- Appearance -->
+                <div class="setting-section">
+                    <div class="setting-title">Appearance</div>
+                    <div class="setting-row">
+                        <div class="setting-label"><h4>Dark Mode</h4><p>Easier on the eyes</p></div>
+                        <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-label"><h4>Text Size</h4><p>Adjust message font size</p></div>
+                        <input type="range" min="12" max="20" value="15" oninput="changeFontSize(this.value)">
+                    </div>
+                    
+                    <div class="setting-label" style="margin-bottom:8px"><h4>Chat Wallpaper</h4></div>
+                    <div class="bg-selector">
+                        <div class="bg-option bg-1 selected" onclick="changeBg(1)"></div>
+                        <div class="bg-option bg-2" onclick="changeBg(2)"></div>
+                        <div class="bg-option bg-3" onclick="changeBg(3)"></div>
+                        <div class="bg-option bg-4" onclick="changeBg(4)"></div>
+                    </div>
+                </div>
+
+                <!-- Help & Legal -->
+                <div class="setting-section">
+                    <div class="setting-title">Help & Support</div>
+                    <div id="faqContainer">
+                        <!-- FAQs injected via JS -->
+                    </div>
+                    <div style="margin-top:24px; display:flex; gap:12px;">
+                        <button class="m3-btn filled" 
+                                style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" 
+                                onclick="window.open('https://amit.is-a.dev/logger#faq', '_blank')">
+                            View FAQ
+                        </button>
+                    </div>
+                    <div style="margin-top:24px; display:flex; gap:12px;">
+                        <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container)" onclick="window.open('mailto:mail@amit.is-a.dev')">Email Support</button>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <div class="setting-title">Legal</div>
+                    <p style="font-size:12px; color:var(--md-sys-color-on-surface-variant); line-height:1.5;">
+                        <strong>MIT License</strong><br>
+                        <strong>Security:</strong> Logs are stored strictly in your private Firebase. No external access.
+                        <br>Check out this project on <a href="https://amit.is-a.dev/logger">amit.is-a.dev</a> or <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-">Github</a>
+                        <br>Developed by <a href="https://github.com/notamitgamer">@notamitgamer</a>
+                    </p>
+                </div>
+
+                <button class="m3-btn filled" style="background:var(--md-sys-color-error);" onclick="showLogoutModal()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTILITY MODALS -->
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-card utility">
+            <h3 class="modal-title">Log Out?</h3>
+            <p style="margin:16px 0; color:var(--md-sys-color-on-surface-variant);">Session will end.</p>
+            <div class="modal-actions">
+                <button class="m3-btn text" onclick="closeModal('logoutModal')">Cancel</button>
+                <button class="m3-btn filled" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="renameModal" class="modal-overlay">
+        <div class="modal-card utility">
+            <h3 class="modal-title">Rename Chat</h3>
+            <div class="m3-field" style="margin-top:16px;"><input type="text" id="renameInput" class="m3-input"><label class="m3-label">New Name</label></div>
+            <div class="modal-actions">
+                <button class="m3-btn text" onclick="closeModal('renameModal')">Cancel</button>
+                <button class="m3-btn filled" onclick="saveRename()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA INSTALL SHEET (Mobile Only) -->
+    <div id="installSheet" class="install-sheet">
+        <div class="sheet-header">
+            <h3 style="font-family:'Google Sans'; margin: 0;">Install App</h3>
+            <button class="icon-btn" onclick="closeInstallSheet()"><span class="material-symbols-rounded">close</span></button>
+        </div>
+        <div class="sheet-content">
+            <div style="width:64px; height:64px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center;">
+                <img src="icon.svg" alt="App Logo" style="width:100%; height:100%; object-fit: contain;">
+            </div>
+            <p style="color:var(--md-sys-color-on-surface-variant); margin-bottom:24px;">Install WhatsApp Logger App for a better experience, and full screen view.</p>
+            <div class="sheet-actions">
+                <button class="m3-btn filled" onclick="installPWA()">Install App</button>
+                <button class="m3-btn text" onclick="closeInstallSheet()">Continue in Browser</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RENDER_BACKEND_URL = "https://logger-8i35.onrender.com"; 
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqOELjpsI7nbPdK7Z6X57rVRyKUlH4bzk",
+            authDomain: "wp-logger.firebaseapp.com",
+            projectId: "wp-logger",
+            storageBucket: "wp-logger.firebasestorage.app",
+            messagingSenderId: "642661549198",
+            appId: "1:642661549198:web:ec94fa62aea1c4e2b375df"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let activeChatId = null;
+        let deferredPrompt;
+        let currentMessages = [];
+
+        // --- PWA INSTALLATION ---
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
+            navigator.serviceWorker.register('sw-wpChat.js').catch(err => {
+                console.warn('SW Register Fail:', err);
+            });
+        }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); 
+            deferredPrompt = e;
+            // Also show settings button for manual install
+            document.getElementById('installAppSection').classList.remove('hidden');
+            
+            // Show bottom sheet on mobile, simple banner on desktop if preferred
+            if (window.innerWidth <= 768) {
+                setTimeout(() => document.getElementById('installSheet').classList.add('visible'), 2000);
+            }
+        });
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                closeInstallSheet();
+                document.getElementById('installAppSection').classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+
+        function closeInstallSheet() {
+            document.getElementById('installSheet').classList.remove('visible');
+        }
+
+        // --- AUTH & INIT ---
+        // Immediate check to prevent flash
+        if(localStorage.getItem('wp_auth_expiry') > Date.now()) {
+            document.write('<style>#auth-screen{display:none} #app-layout{opacity:1; visibility:visible}</style>');
+            window.addEventListener('DOMContentLoaded', loadChats);
+        } else {
+             document.write('<style>#auth-screen{opacity:1; visibility:visible}</style>');
+        }
+
+        window.onload = () => {
+            // Load theme
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('darkModeToggle').checked = true;
+            }
+            // Load Profile
+            document.getElementById('profileName').value = localStorage.getItem('profileName') || '';
+            document.getElementById('profilePhone').value = localStorage.getItem('profilePhone') || '';
+            
+            // Load BG
+            const bg = localStorage.getItem('chatBg') || 1;
+            changeBg(bg, false);
+
+            populateFAQ();
+        };
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('passIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerText = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.innerText = 'visibility';
+            }
+        }
+
+        async function attemptLogin() {
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('authError');
+            
+            btn.classList.add('loading');
+            btn.disabled = true;
+            err.style.opacity = '0';
+
+            try {
+                const response = await fetch(`${RENDER_BACKEND_URL}/api/verify`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                const data = await response.json();
+                if(data.success) {
+                    if(document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('wp_auth_expiry', Date.now() + (3 * 24 * 60 * 60 * 1000));
+                    }
+                    revealApp();
+                } else throw new Error();
+            } catch (e) {
+                err.style.opacity = '1';
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        function revealApp() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-layout').classList.add('visible');
+            loadChats();
+        }
+
+        // --- SETTINGS LOGIC ---
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        function toggleTheme() {
+            const isDark = document.getElementById('darkModeToggle').checked;
+            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        function changeFontSize(val) {
+            document.documentElement.style.setProperty('--base-font-size', `${val}px`);
+        }
+        function changeBg(id, save=true) {
+            document.querySelectorAll('.bg-option').forEach(el => el.classList.remove('selected'));
+            const colors = ['#EFE7DE', '#d1d7db', '#e5ddd5', '#ffffff'];
+            // Apply to variable so it works everywhere
+            document.documentElement.style.setProperty('--chat-bg-color', colors[id-1]);
+            
+            const option = document.querySelector(`.bg-${id}`);
+            if(option) option.classList.add('selected');
+            if(save) localStorage.setItem('chatBg', id);
+        }
+        function saveProfile() {
+            localStorage.setItem('profileName', document.getElementById('profileName').value);
+            localStorage.setItem('profilePhone', document.getElementById('profilePhone').value);
+        }
+        function populateFAQ() {
+            const faqs = [
+                {q: "Is this secure?", a: "Yes, data lives in your private Firebase. No one else can access it."},
+                {q: "Does it track deleted messages?", a: "Yes, once a message is received by the server, it is logged forever, even if the sender deletes it."},
+                {q: "Does my phone need to be online?", a: "No. Once linked, your Render server handles logging even if your phone is powered off."},
+                {q: "Can I reply from here?", a: "No, this is a read-only archive designed for logging and privacy, not active chatting."},
+                {q: "What is the 'Pinger' for?", a: "It keeps your free Render server awake so it never misses a message due to inactivity."}
+            ];
+            const container = document.getElementById('faqContainer');
+            faqs.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'faq-item';
+                div.innerHTML = `<button class="faq-question" onclick="this.parentElement.classList.toggle('open')">${item.q} <span class="material-symbols-rounded">expand_more</span></button><div class="faq-answer">${item.a}</div>`;
+                container.appendChild(div);
+            });
+        }
+
+        // --- CHAT FUNCTIONS ---
+        function toggleChatMenu(event) {
+            if(event) event.stopPropagation();
+            document.getElementById('chatMenu').classList.toggle('show');
+        }
+        
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('chatMenu');
+            if(menu.classList.contains('show') && !e.target.closest('.menu-container')) {
+                menu.classList.remove('show');
+            }
+        });
+
+        function toggleChatSearch() {
+            document.getElementById('inChatSearch').classList.toggle('hidden');
+            document.getElementById('chatMenu').classList.remove('show');
+            document.getElementById('msgSearchInput').focus();
+        }
+        
+        document.getElementById('msgSearchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const bubbles = document.querySelectorAll('.msg-bubble');
+            let count = 0;
+            
+            // Unwrap highlights
+            document.querySelectorAll('.highlight').forEach(span => {
+                const parent = span.parentNode;
+                parent.innerHTML = parent.textContent;
+            });
+
+            bubbles.forEach(b => {
+                const textDiv = b.querySelector('div:not(.msg-sender):not(.msg-meta)'); 
+                if(textDiv) {
+                    const originalText = textDiv.textContent;
+                    if(term && originalText.toLowerCase().includes(term)) {
+                        b.style.display = 'flex';
+                        const regex = new RegExp(`(${term})`, 'gi');
+                        textDiv.innerHTML = originalText.replace(regex, '<span class="highlight">$1</span>');
+                        count++;
+                    } else {
+                        b.style.display = term ? 'none' : 'flex';
+                        textDiv.textContent = originalText;
+                    }
+                }
+            });
+            document.getElementById('searchCount').innerText = term ? `${count} found` : '';
+        });
+
+        async function loadChats() {
+            // Skeleton
+            const list = document.getElementById('contactList');
+            list.innerHTML = '';
+            for(let i=0; i<5; i++) {
+                list.innerHTML += `<div class="skel-contact fade-in"><div class="skeleton skel-avatar"></div><div class="skel-text-col"><div class="skeleton" style="width:60%; height:16px;"></div><div class="skeleton" style="width:40%; height:12px;"></div></div></div>`;
+            }
+
+            try {
+                const snap = await db.collection('Chats').get();
+                const groups = {};
+                const excluded = ['917278779512@s.whatsapp.net', '201554426618024@lid'];
+
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (!d.lastActive || excluded.includes(doc.id)) return;
+                    const phone = d.phoneNumber || doc.id.split('@')[0];
+                    if (!groups[phone]) groups[phone] = { main: {id:doc.id, ...d}, ids: [doc.id] };
+                    else {
+                        groups[phone].ids.push(doc.id);
+                        if (d.lastActive > groups[phone].main.lastActive) groups[phone].main = {id:doc.id, ...d};
+                    }
+                });
+
+                const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
+                
+                list.innerHTML = '';
+                if(chats.length === 0) {
+                    list.innerHTML = `<div style="text-align:center; padding:32px; color:var(--md-sys-color-outline);">No chats found</div>`;
+                    return;
+                }
+
+                chats.forEach(c => {
+                    const el = document.createElement('div');
+                    el.className = 'contact-item';
+                    const name = c.customName || c.displayName || c.phoneNumber || c.id;
+                    const isGroup = c.id.includes('@g.us');
+                    const avatarContent = isGroup ? `<span class="material-symbols-rounded">group</span>` : name[0].toUpperCase();
+
+                    el.innerHTML = `<div class="avatar">${avatarContent}</div><div class="contact-info"><div class="contact-name">${name}</div><div class="contact-sub">${c.phoneNumber || c.id}</div></div>`;
+                    el.onclick = () => openChat(c.ids, name, el, isGroup, c.phoneNumber || c.id);
+                    list.appendChild(el);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function openChat(ids, name, el, isGroup, displayId) {
+            activeChatId = ids[0];
+            isCurrentChatGroup = isGroup;
+            document.getElementById('headerName').innerText = name;
+            document.getElementById('chatHeaderContent').style.opacity = '1';
+            
+            // Update Header ID with phone/group ID
+            document.getElementById('headerId').innerText = displayId;
+
+            const avatarEl = document.getElementById('headerAvatar');
+            avatarEl.innerHTML = isGroup ? `<span class="material-symbols-rounded">group</span>` : name[0].toUpperCase();
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (isMobile) {
+                window.history.pushState({chatOpen: true}, "");
+                document.getElementById('sidebar').classList.add('inactive');
+                document.getElementById('chatArea').classList.add('active');
+            }
+
+            if(window.unsub) window.unsub.forEach(u => u());
+            window.unsub = [];
+            
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = `<div class="skel-msg-group"><div class="skeleton skel-bubble skel-left"></div><div class="skeleton skel-bubble skel-right" style="width:60%"></div><div class="skeleton skel-bubble skel-left" style="width:30%"></div></div>`;
+            
+            const msgs = new Map();
+
+            ids.forEach(id => {
+                window.unsub.push(db.collection('Chats').doc(id).collection('Messages').orderBy('timestamp').onSnapshot(snap => {
+                    snap.forEach(d => msgs.set(d.id, d.data()));
+                    renderMsgs(msgs);
+                }));
+            });
+        }
+
+        function renderMsgs(map) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            currentMessages = Array.from(map.values()).sort((a,b) => a.timestamp - b.timestamp);
+            
+            if(currentMessages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No messages recorded</p></div>';
+                return;
+            }
+
+            currentMessages.forEach(m => {
+                const div = document.createElement('div');
+                div.className = `msg-bubble ${m.fromMe ? 'msg-out' : 'msg-in'}`;
+                const showSenderName = !m.fromMe && isCurrentChatGroup && m.senderName && m.senderName !== "Unknown"; 
+                
+                div.innerHTML = `
+                    ${showSenderName ? `<div class="msg-sender">${m.senderName}</div>` : ''}
+                    <div>${m.text}</div>
+                    <div class="msg-meta">${new Date(m.timestamp*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                `;
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('wp_auth_expiry');
+            location.reload();
+        }
+        
+        function closeChatMobile() {
+            window.history.back();
+        }
+        
+        window.addEventListener('popstate', () => {
+            document.getElementById('chatArea').classList.remove('remove');
+            document.getElementById('chatArea').classList.remove('active');
+        });
+        
+        // --- DOWNLOAD ---
+        function downloadChat() {
+            if(!currentMessages.length) return;
+            const text = currentMessages.map(m => `[${new Date(m.timestamp*1000).toLocaleString()}] ${m.senderName}: ${m.text}`).join('\n');
+            const blob = new Blob([text], {type:'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'chat.txt';
+            a.click();
+        }
+        
+        // --- RENAME CHAT ---
+        function showRenameModal() {
+            if(!activeChatId) return;
+            document.getElementById('renameModal').classList.add('active');
+            document.getElementById('renameInput').value = document.getElementById('headerName').innerText;
+            document.getElementById('chatMenu').classList.remove('show');
+        }
+        
+        async function saveRename() {
+            const name = document.getElementById('renameInput').value;
+            if(name) {
+                await db.collection('Chats').doc(activeChatId).set({customName: name}, {merge:true});
+                document.getElementById('headerName').innerText = name;
+                closeModal('renameModal');
+                loadChats();
+            }
+        }
+        
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        // Contact search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('.contact-item').forEach(el => {
+                const name = el.innerText.toLowerCase();
+                el.style.display = name.includes(val) ? 'flex' : 'none';
+            });
+        });
+
+        function promptAddChat() {
+            const id = prompt("Enter WhatsApp ID (e.g. 12345@s.whatsapp.net)");
+            if(id) {
+                db.collection('Chats').doc(id).set({displayName:'Manual Add', id:id, lastActive: Math.floor(Date.now()/1000)}, {merge:true});
+                setTimeout(loadChats, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
