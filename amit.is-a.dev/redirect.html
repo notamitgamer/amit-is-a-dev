@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Redirect | Amit Dutta</title>
+
+    <!-- Custom SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%23006494'/><text x='50%' y='50%' font-family='sans-serif' font-weight='bold' font-size='55' fill='white' dominant-baseline='central' text-anchor='middle'>AD</text></svg>">
+
+    <!-- Universal Open Graph (OG) Meta Tags -->
+    <meta name="description" content="Secure link redirection portal and analytics dashboard for Amit Dutta.">
+    <meta property="og:title" content="Secure Redirect | Amit Dutta">
+    <meta property="og:description" content="You are being safely redirected to the destination.">
+    <meta property="og:image" content="https://amit.is-a.dev/mypic.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Added &display=block to prevent the Flash of Unstyled Text (FOUT) for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        // Premium M3 Light Theme
+                        m3: {
+                            background: '#fafbfc',
+                            surface: '#ffffff',
+                            surfaceContainer: '#f5f7fa',
+                            surfaceContainerHigh: '#eef1f6',
+                            onSurface: '#1a1c1e',
+                            onSurfaceVariant: '#43474e',
+                            primary: '#006494',
+                            primaryHover: '#00537a',
+                            onPrimary: '#ffffff',
+                            primaryContainer: '#cbe6ff',
+                            onPrimaryContainer: '#001e30',
+                            secondary: '#50606e',
+                            secondaryContainer: '#d3e5f5',
+                            onSecondaryContainer: '#0c1d29',
+                            error: '#ba1a1a',
+                            outline: '#74777f',
+                            outlineVariant: '#dce0e5',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, theme('colors.m3.background') 0%, #eef2f9 100%);
+            color: theme('colors.m3.onSurface');
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .m3-icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Smooth card expansion */
+        #main-card { transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="antialiased selection:bg-m3-primaryContainer">
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex items-center justify-center w-full p-4 relative">
+        
+        <!-- ========================================== -->
+        <!-- INITIAL SKELETON: REDIRECTION CARD         -->
+        <!-- ========================================== -->
+        <div id="skeleton-card" class="hidden bg-m3-surface rounded-[32px] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-m3-outlineVariant/50 p-8 text-center w-full max-w-[420px] mx-auto flex-col items-center animate-pulse">
+            <div class="w-20 h-20 bg-m3-surfaceContainerHigh rounded-2xl mb-6"></div>
+            <div class="w-48 h-8 bg-m3-surfaceContainerHigh rounded-full mb-10"></div>
+            <div class="w-28 h-28 bg-m3-surfaceContainerHigh rounded-full mb-8"></div>
+            <div class="w-32 h-4 bg-m3-surfaceContainerHigh rounded-full mb-8"></div>
+            <div class="flex gap-3 w-full">
+                <div class="flex-1 h-12 bg-m3-surfaceContainerHigh rounded-xl"></div>
+                <div class="flex-1 h-12 bg-m3-surfaceContainerHigh rounded-xl"></div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- INITIAL SKELETON: DASHBOARD                -->
+        <!-- ========================================== -->
+        <div id="skeleton-dashboard" class="hidden flex-col w-full max-w-4xl animate-pulse py-4">
+            <div class="flex flex-col items-center mb-10">
+                <div class="w-16 h-16 bg-m3-surfaceContainerHigh rounded-3xl mb-4"></div>
+                <div class="w-64 h-10 bg-m3-surfaceContainerHigh rounded-full mb-2"></div>
+                <div class="w-48 h-4 bg-m3-surfaceContainerHigh rounded-full"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="h-28 bg-m3-surface rounded-2xl border border-m3-outlineVariant/50"></div>
+                <div class="h-28 bg-m3-surface rounded-2xl border border-m3-outlineVariant/50"></div>
+                <div class="h-28 bg-m3-surface rounded-2xl border border-m3-outlineVariant/50"></div>
+                <div class="h-28 bg-m3-surface rounded-2xl border border-m3-outlineVariant/50"></div>
+            </div>
+            <div class="h-32 bg-m3-surface rounded-[24px] mb-8 border border-m3-outlineVariant/50"></div>
+            <div class="h-64 bg-m3-surface rounded-[24px] border border-m3-outlineVariant/50"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: REDIRECTION CARD                   -->
+        <!-- ========================================== -->
+        <div id="main-card" class="hidden bg-m3-surface rounded-[32px] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-m3-outlineVariant/50 p-8 text-center relative overflow-hidden animate-fade-in-up opacity-0 max-w-[420px] w-full">
+            
+            <div id="card-layout" class="flex flex-col md:flex-row gap-8 items-center md:items-start w-full transition-all duration-300">
+                
+                <!-- LEFT COLUMN: Loading / Redirecting Core -->
+                <div id="loading-view" class="flex flex-col items-center w-full flex-1">
+                    <div class="mb-8 flex flex-col items-center justify-center space-y-3">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-m3-primaryContainer rounded-2xl animate-pulse-slow"></div>
+                            <div id="dest-icon" class="relative z-10 text-3xl text-m3-primary bg-m3-primaryContainer p-4 rounded-2xl shadow-sm border border-white/50"></div>
+                        </div>
+                        <h1 id="main-heading" class="text-2xl font-semibold text-m3-onSurface tracking-tight">
+                            Redirecting to <span id="dest-name" class="text-m3-primary font-bold">Destination</span>
+                        </h1>
+                    </div>
+
+                    <div class="relative w-28 h-28 mb-6 drop-shadow-sm">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-m3-surfaceContainerHigh stroke-current" stroke-width="8" cx="50" cy="50" r="42" fill="transparent"></circle>
+                            <circle id="progress-circle" class="text-m3-primary progress-ring__circle stroke-current" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="42" fill="transparent"></circle>
+                        </svg>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                            <span id="countdown-text" class="text-3xl font-bold text-m3-onSurface">3</span>
+                        </div>
+                    </div>
+
+                    <p id="transfer-text" class="text-sm text-m3-onSurfaceVariant mb-6 font-medium">Safely transferring you...</p>
+
+                    <div id="standard-actions" class="flex gap-3 justify-center w-full">
+                        <button id="cancel-btn" class="flex-1 py-3 px-4 rounded-xl border-2 border-m3-surfaceContainerHigh text-m3-onSurfaceVariant font-semibold text-sm hover:bg-m3-surfaceContainer transition-colors focus:outline-none focus:ring-2 focus:ring-m3-primary">
+                            Cancel
+                        </button>
+                        <a id="manual-btn" href="#" class="flex-1 py-3 px-4 rounded-xl bg-m3-primary text-m3-onPrimary font-semibold text-sm hover:bg-m3-primaryHover transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-m3-primary shadow-md shadow-m3-primary/20 flex items-center justify-center gap-2">
+                            Continue <span class="material-symbols-rounded text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Post-Cancellation Utilities -->
+                <div id="utility-actions" class="hidden flex-col gap-4 w-full flex-1 animate-fade-in-up text-left">
+                    <h3 class="font-semibold text-m3-onSurface text-lg border-b border-m3-outlineVariant/50 pb-2">Link Utilities</h3>
+                    
+                    <button id="copy-btn" class="flex items-center justify-between w-full p-3.5 bg-m3-surfaceContainerHigh rounded-xl border border-transparent hover:border-m3-primary/30 transition-all text-sm font-medium text-m3-onSurface group">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-rounded text-[22px] text-m3-primary">content_copy</span>
+                            Copy URL directly
+                        </div>
+                        <span id="copy-feedback" class="text-xs text-m3-primary font-bold opacity-0 transition-opacity">Copied!</span>
+                    </button>
+                    
+                    <div class="bg-m3-surfaceContainer rounded-2xl p-5 border border-m3-outlineVariant/30 flex flex-col items-center">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-m3-onSurfaceVariant mb-3">Scan to Open</p>
+                        
+                        <!-- Custom QR Canvas Container -->
+                        <div class="relative w-[180px] h-[200px] bg-white rounded-xl shadow-sm border border-m3-outlineVariant p-2 mb-4 flex items-center justify-center overflow-hidden">
+                            <div id="qr-loader" class="absolute inset-0 flex items-center justify-center bg-white rounded-xl z-10">
+                                <span class="material-symbols-rounded animate-spin text-3xl text-m3-primary/50">progress_activity</span>
+                            </div>
+                            <img id="qr-image-display" src="" alt="Custom QR Code" class="w-full h-full object-contain hidden z-20 relative">
+                        </div>
+
+                        <!-- QR Actions -->
+                        <div class="flex gap-2 w-full">
+                            <button id="share-qr-btn" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-m3-surface text-m3-onSurface text-xs font-semibold border border-m3-outlineVariant hover:bg-m3-surfaceContainerHigh transition-colors">
+                                <span class="material-symbols-rounded text-[18px]">share</span> Share
+                            </button>
+                            <button id="save-qr-btn" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-m3-primaryContainer text-m3-onPrimaryContainer text-xs font-semibold hover:brightness-95 transition-colors">
+                                <span class="material-symbols-rounded text-[18px]">download</span> Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <a href="https://amit.is-a.dev" class="mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer font-semibold text-sm hover:brightness-95 transition-all w-full">
+                        <span class="material-symbols-rounded text-[18px]">home</span>
+                        Return Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- VIEW: Error / Wrong ID -->
+            <div id="error-view" class="hidden flex-col items-center py-6">
+                <div class="mb-6 p-4 bg-orange-50 rounded-full text-orange-500">
+                    <span class="material-symbols-rounded m3-icon-fill text-[56px]">link_off</span>
+                </div>
+                <h1 class="text-2xl font-bold text-m3-onSurface mb-2">Link Not Found</h1>
+                <p id="error-desc" class="text-m3-onSurfaceVariant text-sm mb-8 leading-relaxed px-2">The redirect link you followed doesn't exist or is formatted incorrectly.</p>
+                <a href="https://amit.is-a.dev/links" class="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer font-semibold text-sm hover:brightness-95 transition-all w-full">
+                    View All Links
+                </a>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: REAL-TIME ANALYTICS DASHBOARD      -->
+        <!-- ========================================== -->
+        <div id="dashboard-view" class="hidden flex-col w-full max-w-4xl animate-fade-in-up py-4">
+            
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center p-3 bg-m3-primaryContainer/30 rounded-3xl mb-4 shadow-sm group">
+                    <svg class="w-12 h-12 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" class="fill-m3-primaryContainer/50" />
+                        <path d="M8 16V12M12 16V8M16 16V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-m3-primary" />
+                        <path d="M15 5L15.5 6.5L17 7L15.5 7.5L15 9L14.5 7.5L13 7L14.5 6.5L15 5Z" fill="currentColor" class="text-yellow-500 animate-pulse" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-m3-onSurface tracking-tight">Analytics Dashboard</h1>
+                <p class="text-m3-onSurfaceVariant mt-2">Live metrics for all global redirect links.</p>
+            </div>
+
+
+            <!-- Firebase Setup Warning (Hidden by default) -->
+            <div id="auth-warning" class="hidden bg-m3-error/10 text-m3-error p-4 rounded-xl mb-6 text-sm text-center border border-m3-error/20 mx-auto max-w-2xl">
+                <span class="font-bold"><span class="material-symbols-rounded align-middle text-[18px]">warning</span> Setup Required:</span> 
+                "Anonymous" Sign-in is not enabled in your Firebase Authentication console. Live tracking is paused, but dashboard reading may work if rules permit.
+            </div>
+
+            <!-- Stats Grid (Updated to 4 Cards) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <!-- Stat Card 1: Auto Redirects -->
+                <div class="bg-m3-surface rounded-2xl p-5 shadow-sm border border-m3-outlineVariant/50 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-3 text-m3-onSurfaceVariant">
+                        <span class="material-symbols-rounded text-[20px] text-m3-primary">public</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">Auto Redirects</span>
+                    </div>
+                    <div id="stat-total" class="text-3xl font-bold text-m3-onSurface">--</div>
+                </div>
+
+                <!-- Stat Card 2: Manual Clicks -->
+                <div class="bg-m3-surface rounded-2xl p-5 shadow-sm border border-m3-outlineVariant/50 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-3 text-m3-onSurfaceVariant">
+                        <span class="material-symbols-rounded text-[20px] text-m3-primary">ads_click</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">Manual Clicks</span>
+                    </div>
+                    <div id="stat-manual" class="text-3xl font-bold text-m3-onSurface">--</div>
+                </div>
+
+                <!-- Stat Card 3: Canceled -->
+                <div class="bg-m3-surface rounded-2xl p-5 shadow-sm border border-m3-outlineVariant/50 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-3 text-m3-onSurfaceVariant">
+                        <span class="material-symbols-rounded text-[20px] text-m3-error">cancel</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">Canceled</span>
+                    </div>
+                    <div id="stat-canceled" class="text-3xl font-bold text-m3-onSurface">--</div>
+                </div>
+
+                <!-- Stat Card 4: QR Scans -->
+                <div class="bg-m3-surface rounded-2xl p-5 shadow-sm border border-m3-outlineVariant/50 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-3 text-m3-onSurfaceVariant">
+                        <span class="material-symbols-rounded text-[20px] text-m3-primary">qr_code_scanner</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">QR Scans</span>
+                    </div>
+                    <div id="stat-scans" class="text-3xl font-bold text-m3-onSurface">--</div>
+                </div>
+            </div>
+
+            <!-- Top Link Banner -->
+            <div class="bg-m3-surface rounded-[24px] p-6 shadow-sm border border-m3-outlineVariant/50 flex items-center justify-between mb-8 relative overflow-hidden">
+                <div class="absolute -right-4 -top-8 text-m3-primary/5">
+                    <span class="material-symbols-rounded text-[140px]">emoji_events</span>
+                </div>
+                <div class="relative z-10 flex items-center gap-4">
+                    <span class="material-symbols-rounded text-orange-500 bg-orange-100 p-3 rounded-2xl text-2xl">star</span>
+                    <div>
+                        <span class="text-xs font-semibold text-m3-onSurfaceVariant uppercase tracking-wider">Top Link</span>
+                        <div id="stat-top-link" class="text-2xl font-bold text-m3-onSurface truncate">Loading...</div>
+                    </div>
+                </div>
+                <div class="relative z-10 text-right">
+                    <div id="stat-top-clicks" class="text-3xl font-bold text-m3-primary">--</div>
+                    <span class="text-xs font-semibold text-m3-onSurfaceVariant uppercase tracking-wider">Total Clicks</span>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="bg-m3-surface rounded-[24px] shadow-sm border border-m3-outlineVariant/50 overflow-hidden">
+                <div class="p-6 border-b border-m3-outlineVariant/30 flex items-center justify-between bg-m3-surfaceContainer/30">
+                    <h2 class="text-xl font-bold text-m3-onSurface">Link Leaderboard</h2>
+                    <div class="flex gap-4 text-sm text-m3-onSurfaceVariant font-medium">
+                        <span class="hidden md:inline-flex items-center gap-1"><span class="material-symbols-rounded text-[18px]">download</span> <span id="stat-downloads">0</span></span>
+                        <span class="hidden md:inline-flex items-center gap-1"><span class="material-symbols-rounded text-[18px]">share</span> <span id="stat-shares">0</span></span>
+                    </div>
+                </div>
+                <div class="p-0">
+                    <ul id="leaderboard-list" class="divide-y divide-m3-outlineVariant/30">
+                        <!-- Skeletons -->
+                        <li class="p-6 flex items-center justify-between animate-pulse">
+                            <div class="flex items-center gap-4"><div class="w-10 h-10 bg-m3-surfaceContainerHigh rounded-full"></div><div class="h-4 bg-m3-surfaceContainerHigh rounded w-32"></div></div>
+                            <div class="h-6 bg-m3-surfaceContainerHigh rounded w-16"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <a href="https://amit.is-a.dev/links" class="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer font-semibold text-sm hover:brightness-95 transition-all">
+                    <span class="material-symbols-rounded text-[20px]">arrow_back</span> Return to Links
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Premium Footer -->
+    <footer class="w-full py-6 mt-auto border-t border-m3-outlineVariant/30 bg-m3-surfaceContainer/50">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="https://amit.is-a.dev/mypic.png" referrerpolicy="no-referrer" alt="Logo" class="w-8 h-8 rounded-full shadow-sm border border-m3-outlineVariant/50">
+                <span class="font-semibold text-m3-onSurface text-sm">Amit Dutta</span>
+            </div>
+            <div class="text-center md:text-left">
+                <p class="text-xs text-m3-onSurfaceVariant">&copy; <script>document.write(new Date().getFullYear())</script> Amit Dutta. All rights reserved.</p>
+                <p class="text-xs text-m3-onSurfaceVariant mt-1">Icons by <a href="https://icons8.com" target="_blank" class="text-m3-primary hover:underline font-medium">Icons8</a></p>
+            </div>
+            <div class="flex gap-4">
+                <a href="https://amit.is-a.dev" class="text-xs font-medium text-m3-primary hover:underline">Portfolio</a>
+                <a href="https://amit.is-a.dev/links" class="text-xs font-medium text-m3-primary hover:underline">All Links</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs and Core Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDazpW8HIpg7aEFMe75H0m0-8mBslslrOk",
+            authDomain: "aranag-main-page.firebaseapp.com",
+            projectId: "aranag-main-page",
+            storageBucket: "aranag-main-page.firebasestorage.app",
+            messagingSenderId: "1045058736886",
+            appId: "1:1045058736886:web:21d2323159ba745d3e12d7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        // Strict compliance path for Firestore mapping
+        const ANALYTICS_PATH = collection(db, 'artifacts', 'amit-redirect', 'public', 'data', 'analytics');
+
+        let userIsAuthenticated = false;
+
+        // --- DIRECT ROUTING DICTIONARY ---
+        const routes = {
+            "link-discord-direct": { name: "Discord", url: "https://discord.com/users/1274721760088166495", icon: "<i class='fa-brands fa-discord'></i>" },
+            "link-about": { name: "About Page", url: "https://amit.is-a.dev/about", icon: "<span class='material-symbols-rounded m3-icon-fill'>person</span>" },
+            "link-orcid": { name: "ORCID", url: "https://orcid.org/0009-0006-8834-9881", icon: "<i class='fa-brands fa-orcid'></i>" },
+            "link-crunchbase": { name: "Crunchbase", url: "https://www.crunchbase.com/person/amit-dutta", icon: "<span class='material-symbols-rounded m3-icon-fill'>domain</span>" },
+            "link-gravatar": { name: "Gravatar", url: "https://en.gravatar.com/notamitgamer", icon: "<span class='material-symbols-rounded m3-icon-fill'>account_circle</span>" },
+            "link-github": { name: "GitHub", url: "https://github.com/notamitgamer", icon: "<i class='fa-brands fa-github'></i>" },
+            "link-github-sponsor": { name: "GitHub Sponsors", url: "https://github.com/sponsors/notamitgamer", icon: "<span class='material-symbols-rounded m3-icon-fill'>favorite</span>" },
+            "link-linkedin": { name: "LinkedIn", url: "https://linkedin.com/in/notamitgamer", icon: "<i class='fa-brands fa-linkedin'></i>" },
+            "link-x": { name: "X (Twitter)", url: "https://x.com/notamitgamer", icon: "<i class='fa-brands fa-x-twitter'></i>" },
+            "link-facebook": { name: "Facebook", url: "https://facebook.com/notamitgamer", icon: "<i class='fa-brands fa-facebook'></i>" },
+            "link-instagram": { name: "Instagram", url: "https://instagram.com/notamitgamer", icon: "<i class='fa-brands fa-instagram'></i>" },
+            "link-reddit": { name: "Reddit", url: "https://reddit.com/user/notamitgamer", icon: "<i class='fa-brands fa-reddit'></i>" },
+            "link-youtube": { name: "YouTube", url: "https://youtube.com/@notamitgamer", icon: "<i class='fa-brands fa-youtube'></i>" },
+            "link-npm": { name: "NPM", url: "https://npmjs.com/~notamitgamer", icon: "<i class='fa-brands fa-npm'></i>" },
+            "link-hackernews": { name: "Hacker News", url: "https://news.ycombinator.com/user?id=notamitgamer", icon: "<i class='fa-brands fa-hacker-news'></i>" },
+            "link-producthunt": { name: "Product Hunt", url: "https://www.producthunt.com/@notamitgamer", icon: "<i class='fa-brands fa-product-hunt'></i>" },
+            "link-pypi": { name: "PyPI", url: "https://pypi.org/user/notamitgamer/", icon: "<i class='fa-brands fa-python'></i>" },
+            "link-holopin": { name: "Holopin", url: "https://www.holopin.io/@notamitgamer", icon: "<span class='material-symbols-rounded m3-icon-fill'>military_tech</span>" },
+            "link-email-gmail": { name: "Personal Email", url: "mailto:amitdutta4255@gmail.com", icon: "<span class='material-symbols-rounded m3-icon-fill'>mail</span>" },
+            "link-email-dev": { name: "Dev Email", url: "mailto:mail@amit.is-a.dev", icon: "<span class='material-symbols-rounded m3-icon-fill'>mail</span>" },
+            "link-website": { name: "Main Website", url: "https://amit.is-a.dev/", icon: "<span class='material-symbols-rounded m3-icon-fill'>language</span>" },
+            "profile-avatar": { name: "Profile Photo", url: "https://amit.is-a.dev/mypic.png", icon: "<span class='material-symbols-rounded m3-icon-fill'>image</span>" },
+            "link-whatsapp": { name: "WhatsApp", url: "https://wa.me/917278779512?text=hi", icon: "<i class='fa-brands fa-whatsapp'></i>"}
+        };
+
+        // --- Custom Canvas QR Generator ---
+        async function generatePremiumQRCanvas(redirectUrl, logoUrl) {
+            const canvas = document.createElement('canvas');
+            const size = 500;
+            const textSpace = 80; // Extra room at the bottom for text
+            canvas.width = size;
+            canvas.height = size + textSpace;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Fill entire canvas with white background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Generate Base QR Code
+            const qrDataUrl = await QRCode.toDataURL(redirectUrl, {
+                errorCorrectionLevel: 'H', // High error correction to allow middle logo
+                margin: 2,
+                width: size,
+                color: { dark: '#006494', light: '#ffffff' }
+            });
+
+            // Helper to load images safely (Fixed Bitdefender block using a trusted CDN for resizing/proxy)
+            const loadImage = (src, isLogo = false) => new Promise((resolve) => {
+                const img = new Image();
+                if (isLogo) {
+                    img.crossOrigin = 'anonymous';
+                    // Use wsrv.nl - highly trusted Cloudflare-backed image proxy/resizer to fix CORS & avoid AV blocks
+                    const cleanUrl = src.replace(/^https?:\/\//, '');
+                    img.src = `https://wsrv.nl/?url=${cleanUrl}&output=png&w=200&h=200`;
+                } else {
+                    img.src = src;
+                }
+                
+                img.onload = () => resolve(img);
+                img.onerror = () => {
+                    console.warn("Failed to load image for QR code:", src);
+                    resolve(null);
+                };
+            });
+
+            const qrImg = await loadImage(qrDataUrl);
+            const logoImg = await loadImage(logoUrl, true);
+
+            // 3. Draw QR Code
+            if (qrImg) ctx.drawImage(qrImg, 0, 0, size, size);
+
+            // 4. Draw Brand Text at the bottom
+            ctx.fillStyle = '#43474e'; // m3-onSurfaceVariant
+            ctx.font = '600 24px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('https://amit.is-a.dev', size / 2, size + 45);
+
+            // 5. Draw Center Logo with White Border
+            if (logoImg) {
+                const center = size / 2;
+                const logoSize = size * 0.24; // 24% of QR size
+                const radius = logoSize / 2;
+                
+                // Draw Solid White Circle (Border/Background for logo)
+                ctx.beginPath();
+                ctx.arc(center, center, radius + 10, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+
+                // Draw Logo (clipped to circle)
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(center, center, radius, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(logoImg, center - radius, center - radius, logoSize, logoSize);
+                ctx.restore();
+                
+                // Draw faint outer border ring for premium look
+                ctx.beginPath();
+                ctx.arc(center, center, radius + 10, 0, Math.PI * 2);
+                ctx.strokeStyle = '#eef1f6';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            return canvas;
+        }
+
+        // --- CORE LOGIC ---
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetId = urlParams.get('to') || urlParams.get('id');
+            const isQRScan = urlParams.get('ref') === 'qr';
+
+            const skeletonCard = document.getElementById('skeleton-card');
+            const skeletonDashboard = document.getElementById('skeleton-dashboard');
+            const loadingView = document.getElementById('loading-view');
+            const errorView = document.getElementById('error-view');
+            const dashboardView = document.getElementById('dashboard-view');
+            const mainCard = document.getElementById('main-card');
+            
+            // Instantly show the correct loading skeleton
+            if (!targetId || targetId.trim() === '') {
+                skeletonDashboard.classList.remove('hidden');
+                skeletonDashboard.classList.add('flex');
+            } else {
+                skeletonCard.classList.remove('hidden');
+                skeletonCard.classList.add('flex');
+            }
+
+            // 1. Authenticate Firebase First
+            try {
+                await signInAnonymously(auth);
+                userIsAuthenticated = true;
+            } catch (err) {
+                console.warn("Firebase Auth Warning: Anonymous sign-in is not enabled in your Firebase Console. Analytics writing will be disabled.");
+            }
+
+            // Hide the skeletons instantly after background init completes
+            skeletonCard.classList.add('hidden');
+            skeletonCard.classList.remove('flex');
+            skeletonDashboard.classList.add('hidden');
+            skeletonDashboard.classList.remove('flex');
+
+            // Universal Logging Function
+            async function logAnalyticsEvent(type, destId) {
+                if (!userIsAuthenticated) return;
+                try {
+                    await addDoc(ANALYTICS_PATH, {
+                        type: type, // "redirect", "redirect_manual", "redirect_cancel", "qr_scan", "qr_download", "qr_share"
+                        destinationId: destId,
+                        timestamp: serverTimestamp()
+                    });
+                } catch (e) { console.error("Event log failed:", e); }
+            }
+
+            // --- BRANCH A: NO ID -> SHOW DASHBOARD ---
+            if (!targetId || targetId.trim() === '') {
+                dashboardView.classList.remove('hidden');
+                dashboardView.classList.add('flex');
+
+                if (!userIsAuthenticated) {
+                    const warningEl = document.getElementById('auth-warning');
+                    if(warningEl) {
+                        warningEl.classList.remove('hidden');
+                        warningEl.classList.add('block');
+                    }
+                }
+
+                // Setup Real-time Listener for Dashboard
+                onSnapshot(ANALYTICS_PATH, (snapshot) => {
+                    let totalRedirects = 0;
+                    let totalManual = 0;
+                    let totalCanceled = 0;
+                    let totalScans = 0;
+                    let totalDownloads = 0;
+                    let totalShares = 0;
+                    const destCounts = {};
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const t = data.type;
+                        const dId = data.destinationId;
+
+                        if (t === 'redirect') totalRedirects++;
+                        if (t === 'redirect_manual') totalManual++;
+                        if (t === 'redirect_cancel') totalCanceled++;
+                        if (t === 'qr_scan') totalScans++;
+                        if (t === 'qr_download') totalDownloads++;
+                        if (t === 'qr_share') totalShares++;
+
+                        // Aggregate Leaderboard points (All successful visits count as clicks)
+                        if (t === 'redirect' || t === 'redirect_manual' || t === 'qr_scan') {
+                            if (!destCounts[dId]) destCounts[dId] = 0;
+                            destCounts[dId]++;
+                        }
+                    });
+
+                    // Update Top Cards
+                    document.getElementById('stat-total').innerText = totalRedirects.toLocaleString();
+                    document.getElementById('stat-manual').innerText = totalManual.toLocaleString();
+                    document.getElementById('stat-canceled').innerText = totalCanceled.toLocaleString();
+                    document.getElementById('stat-scans').innerText = totalScans.toLocaleString();
+                    
+                    document.getElementById('stat-downloads').innerText = totalDownloads.toLocaleString();
+                    document.getElementById('stat-shares').innerText = totalShares.toLocaleString();
+
+                    // Calculate Leaderboard
+                    const sortedDestinations = Object.entries(destCounts)
+                        .map(([id, count]) => ({ id, count }))
+                        .sort((a, b) => b.count - a.count);
+
+                    const leaderboardList = document.getElementById('leaderboard-list');
+                    
+                    if (sortedDestinations.length === 0) {
+                        document.getElementById('stat-top-link').innerText = "No data yet";
+                        document.getElementById('stat-top-clicks').innerText = "--";
+                        leaderboardList.innerHTML = `<li class="p-6 text-center text-m3-onSurfaceVariant">No tracking data available yet.</li>`;
+                    } else {
+                        // Top Link Banner
+                        const topLink = routes[sortedDestinations[0].id] || { name: sortedDestinations[0].id };
+                        document.getElementById('stat-top-link').innerText = topLink.name;
+                        document.getElementById('stat-top-clicks').innerText = `${sortedDestinations[0].count.toLocaleString()}`;
+
+                        // Render List
+                        leaderboardList.innerHTML = '';
+                        sortedDestinations.forEach((item, index) => {
+                            const routeData = routes[item.id] || { name: item.id, icon: '<span class="material-symbols-rounded">link</span>' };
+                            
+                            // Highlight top 3
+                            let rankBadge = `<div class="w-8 h-8 rounded-full bg-m3-surfaceContainerHigh text-m3-onSurfaceVariant flex items-center justify-center font-bold text-sm">${index + 1}</div>`;
+                            if (index === 0) rankBadge = `<div class="w-8 h-8 rounded-full bg-[#FFD700] text-[#B8860B] flex items-center justify-center font-bold text-sm shadow-sm"><span class="material-symbols-rounded text-[18px]">star</span></div>`;
+                            if (index === 1) rankBadge = `<div class="w-8 h-8 rounded-full bg-[#E6E8FA] text-[#778899] flex items-center justify-center font-bold text-sm shadow-sm">2</div>`;
+                            if (index === 2) rankBadge = `<div class="w-8 h-8 rounded-full bg-[#F4A460] text-[#8B4513] flex items-center justify-center font-bold text-sm shadow-sm">3</div>`;
+
+                            const li = document.createElement('li');
+                            li.className = "p-4 sm:p-5 flex items-center justify-between hover:bg-m3-surfaceContainer/50 transition-colors";
+                            li.innerHTML = `
+                                <div class="flex items-center gap-4">
+                                    ${rankBadge}
+                                    <div class="w-10 h-10 rounded-xl bg-m3-primaryContainer/30 text-m3-primary flex items-center justify-center text-xl">
+                                        ${routeData.icon}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-m3-onSurface text-sm sm:text-base">${routeData.name}</p>
+                                        <p class="text-xs text-m3-onSurfaceVariant font-mono">${item.id}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-bold text-lg text-m3-onSurface">${item.count.toLocaleString()}</span>
+                                    <span class="text-xs text-m3-onSurfaceVariant block">clicks</span>
+                                </div>
+                            `;
+                            leaderboardList.appendChild(li);
+                        });
+                    }
+                }, (error) => {
+                    console.error("Dashboard listener error:", error);
+                    document.getElementById('stat-top-link').innerText = "Data error (Check DB Rules)";
+                });
+                
+                return; // Stop execution, dashboard is active
+            }
+
+
+            // --- BRANCH B: VALID ID -> REDIRECT/QR FLOW ---
+            mainCard.classList.remove('hidden');
+            mainCard.classList.add('block'); 
+
+            const cleanTargetId = targetId.toLowerCase();
+            const destination = routes[cleanTargetId];
+
+            if (destination) {
+                // If it's a QR Scan, log it instantly
+                if (isQRScan) logAnalyticsEvent('qr_scan', cleanTargetId);
+
+                let finalDestinationUrl = destination.url;
+                
+                // Smart UTM Forwarding
+                urlParams.delete('to');
+                urlParams.delete('id');
+                urlParams.delete('ref');
+                const remainingParams = urlParams.toString();
+                if (remainingParams && !finalDestinationUrl.startsWith("mailto:")) {
+                    try {
+                        const destUrlObj = new URL(finalDestinationUrl);
+                        const hash = destUrlObj.hash;
+                        destUrlObj.hash = ''; 
+                        const destParams = new URLSearchParams(destUrlObj.search);
+                        for (const [key, value] of urlParams.entries()) destParams.append(key, value);
+                        destUrlObj.search = destParams.toString();
+                        destUrlObj.hash = hash; 
+                        finalDestinationUrl = destUrlObj.toString();
+                    } catch (e) { }
+                }
+
+                // Setup UI
+                document.getElementById('dest-name').innerText = destination.name;
+                document.getElementById('dest-icon').innerHTML = destination.icon;
+                document.getElementById('manual-btn').href = finalDestinationUrl;
+
+                // Setup SVG Timer
+                const circle = document.getElementById('progress-circle');
+                const radius = circle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                circle.style.strokeDashoffset = circumference;
+
+                let timeLeft = 3; 
+                let timerInterval;
+                const countdownText = document.getElementById('countdown-text');
+
+                circle.getBoundingClientRect(); 
+                circle.style.transition = `stroke-dashoffset ${timeLeft}s linear`;
+                circle.style.strokeDashoffset = 0;
+
+                // Create the Smart Tracking URL for the QR code and the pre-generated Asset URL
+                const trackingQrUrl = `https://amit.is-a.dev/redirect?id=${cleanTargetId}&ref=qr`;
+                const qrAssetUrl = `/assets/${cleanTargetId}_qr.png`; // Path to your locally generated QRs
+
+                // --- NEW EVENT: Manual Button Click ---
+                document.getElementById('manual-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    clearInterval(timerInterval); // Stop timer immediately
+                    
+                    logAnalyticsEvent('redirect_manual', cleanTargetId).then(() => {
+                        window.location.replace(finalDestinationUrl);
+                    });
+                });
+
+                // --- EVENT: Cancellation Logic ---
+                const cancelBtn = document.getElementById('cancel-btn');
+                cancelBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    clearInterval(timerInterval);
+                    
+                    logAnalyticsEvent('redirect_cancel', cleanTargetId);
+                    
+                    document.getElementById('main-heading').innerHTML = "Redirection <span class='text-m3-error'>Cancelled</span>";
+                    document.getElementById('transfer-text').innerText = "You have safely stopped the automatic redirect.";
+                    countdownText.innerHTML = '<span class="material-symbols-rounded m3-icon-fill text-4xl text-m3-error">close</span>';
+                    
+                    circle.style.transition = 'none';
+                    circle.style.stroke = 'var(--tw-colors-m3-outlineVariant)'; 
+                    
+                    document.getElementById('standard-actions').classList.add('hidden');
+                    
+                    // UI Expansion
+                    mainCard.classList.remove('max-w-[420px]');
+                    mainCard.classList.add('max-w-[760px]');
+                    
+                    const utilityActions = document.getElementById('utility-actions');
+                    utilityActions.classList.remove('hidden');
+                    utilityActions.classList.add('flex');
+
+                    // Instantly load pre-generated QR code image from the assets folder
+                    const qrDisplay = document.getElementById('qr-image-display');
+                    
+                    // Show when fully loaded
+                    qrDisplay.onload = () => {
+                        document.getElementById('qr-loader').classList.add('hidden');
+                        qrDisplay.classList.remove('hidden');
+                    };
+                    
+                    // Fallback if image is missing from assets
+                    qrDisplay.onerror = () => {
+                        document.getElementById('qr-loader').innerHTML = '<span class="material-symbols-rounded text-m3-error">broken_image</span>';
+                    };
+                    
+                    qrDisplay.src = qrAssetUrl;
+                });
+
+                // Copy Original Destination URL
+                document.getElementById('copy-btn').addEventListener('click', () => {
+                    navigator.clipboard.writeText(finalDestinationUrl).then(() => {
+                        const feedback = document.getElementById('copy-feedback');
+                        feedback.classList.remove('opacity-0');
+                        setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+                    });
+                });
+
+                // Download Custom QR (Fetches the local asset)
+                document.getElementById('save-qr-btn').addEventListener('click', async () => {
+                    logAnalyticsEvent('qr_download', cleanTargetId);
+                    try {
+                        const response = await fetch(qrAssetUrl);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = `${cleanTargetId}_amit.is-a.dev.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    } catch (err) {
+                        console.error("Failed to download image", err);
+                        alert("Could not download the QR code.");
+                    }
+                });
+
+                // Native Share QR & Link (Fetches the local asset)
+                document.getElementById('share-qr-btn').addEventListener('click', async () => {
+                    logAnalyticsEvent('qr_share', cleanTargetId);
+                    
+                    try {
+                        const response = await fetch(qrAssetUrl);
+                        const blob = await response.blob();
+                        const file = new File([blob], `${cleanTargetId}_qr.png`, { type: blob.type });
+                        
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                title: `QR Code for ${destination.name}`,
+                                text: `Check out ${destination.name} of Amit Dutta:\n${trackingQrUrl}`,
+                                files: [file]
+                            });
+                            return;
+                        }
+                    } catch (err) { 
+                        console.error("File share failed, falling back to URL share", err); 
+                    }
+                    
+                    // Fallback Text Sharing
+                    if (navigator.share) {
+                        navigator.share({
+                            title: destination.name,
+                            text: `Check out ${destination.name} via Amit Dutta's Portal!`,
+                            url: trackingQrUrl
+                        }).catch(console.error);
+                    } else {
+                        alert("Native sharing is not supported on your browser. Please use the Copy URL button instead.");
+                    }
+                });
+
+                // Execute Countdown
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    countdownText.innerText = timeLeft;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        countdownText.innerHTML = '<span class="material-symbols-rounded m3-icon-fill text-4xl">check</span>';
+                        
+                        // Log standard redirect (if not physical scan) and go
+                        if (!isQRScan) {
+                            logAnalyticsEvent('redirect', cleanTargetId).then(() => {
+                                window.location.replace(finalDestinationUrl);
+                            });
+                        } else {
+                            window.location.replace(finalDestinationUrl);
+                        }
+                    }
+                }, 1000);
+
+            } else {
+                loadingView.classList.add('hidden');
+                loadingView.classList.remove('flex');
+                errorView.classList.remove('hidden');
+                errorView.classList.add('flex');
+            }
+        });
+    </script>
+</body>
+</html>
