@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Veyrix IDE</title>
+    
+    <link rel="manifest" href="assets/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/veyrix.svg">
+    <meta name="theme-color" content="#121b2a">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        veyrix: {
+                            bg: '#0a0f1a',
+                            surface: '#121b2a',
+                            border: '#1e293b',
+                            accent: '#3b82f6',
+                            accentHover: '#2563eb',
+                            text: '#e2e8f0',
+                            muted: '#94a3b8'
+                        }
+                    },
+                    transitionTimingFunction: {
+                        'material': 'cubic-bezier(0.2, 0.0, 0, 1.0)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global tap highlight & focus reset */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid theme('colors.veyrix.accent');
+            outline-offset: 1px;
+            border-radius: 2px;
+        }
+
+        /* Custom UI Scrollbar & Base Styles */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        body {
+            background-color: theme('colors.veyrix.bg');
+            color: theme('colors.veyrix.text');
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .glass-panel {
+            background: theme('colors.veyrix.surface');
+            border: 1px solid theme('colors.veyrix.border');
+        }
+
+        /* --- SIDEBAR RESPONSIVE LOGIC --- */
+        #sidebar {
+            width: 280px;
+            background-color: theme('colors.veyrix.surface');
+            border-right: 1px solid theme('colors.veyrix.border');
+            transition: width 0.25s ease, transform 0.25s ease;
+            overflow: hidden;
+            flex-shrink: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #sidebar.sidebar-collapsed {
+            width: 0;
+            border-right-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                transform: translateX(0);
+                box-shadow: 5px 0 25px rgba(0,0,0,0.7);
+                border-right: none;
+            }
+            #sidebar.sidebar-collapsed {
+                width: 280px;
+                transform: translateX(-100%);
+            }
+        }
+        
+        #editor {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: 0.5rem;
+            background: theme('colors.veyrix.surface');
+        }
+
+        .ace_editor { font-family: 'Fira Code', 'Consolas', monospace !important; }
+        .ace-veyrix-dark {
+            background-color: theme('colors.veyrix.surface');
+            color: #d4d4d4;
+        }
+        
+        .modal-enter { animation: modalIn 0.25s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        .modal-exit { animation: modalOut 0.2s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes modalOut {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to { opacity: 0; transform: scale(0.95) translateY(10px); }
+        }
+    </style>
+
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-beautify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+</head>
+<body class="flex flex-col text-sm antialiased selection:bg-veyrix-accent/30">
+
+    <!-- Top Navigation Bar -->
+    <header class="h-12 border-b border-veyrix-border bg-veyrix-surface flex items-center justify-between px-2 md:px-3 flex-shrink-0 z-40 relative gap-2">
+        
+        <!-- Left Side: Menu + Logo -->
+        <div class="flex items-center gap-2 md:gap-3 shrink-0">
+            <button class="sidebar-toggle-btn text-veyrix-muted hover:text-white p-1.5 rounded transition-colors" onclick="UI.toggleSidebar()">
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            
+            <!-- Desktop Logo -->
+            <div class="hidden md:flex items-center gap-2">
+                <img src="assets/veyrix.svg" alt="Veyrix Logo" class="w-6 h-6">
+                <span class="font-semibold text-white tracking-wide">Veyrix IDE</span>
+            </div>
+            
+            <!-- Mobile Logo (Stacked) -->
+            <div class="flex flex-col items-center justify-center md:hidden leading-[1.1] ml-0.5">
+                <img src="assets/veyrix.svg" alt="Veyrix Logo" class="w-[18px] h-[18px]">
+                <span class="font-bold text-white tracking-wider text-[8px] uppercase mt-[1px]">Veyrix</span>
+            </div>
+            
+            <div class="h-5 w-px bg-veyrix-border mx-2 hidden md:block"></div>
+
+        </div>
+
+        <!-- Center: Active File Display (Dynamic Width) -->
+        <div class="flex-1 flex justify-start md:justify-center min-w-0 overflow-hidden">
+            <div id="top-active-file" class="hidden items-center gap-1.5 bg-black/30 px-3 py-1 rounded-full border border-white/10 max-w-full overflow-hidden whitespace-nowrap text-veyrix-text font-mono text-xs">
+                <span id="top-file-name" class="truncate">No file open</span>
+                <span id="top-file-unsaved" class="w-2 h-2 rounded-full bg-veyrix-accent hidden shrink-0"></span>
+            </div>
+        </div>
+
+        <!-- Right Side: Action Buttons -->
+        <div class="flex items-center gap-0.5 md:gap-1 shrink-0">
+            <button onclick="document.getElementById('file-upload').click()" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Open File (Ctrl+O)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+            </button>
+            <button onclick="App.saveCurrentFile()" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Save (Ctrl+S)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            </button>
+            <button onclick="App.triggerSnapshot()" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Save Snapshot">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            </button>
+            <button onclick="UI.showHistory()" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="View History">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </button>
+            <button onclick="UI.showModal('share-modal')" class="p-1 md:hidden rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Share">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+            </button>
+            <button onclick="UI.showModal('share-modal')" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-veyrix-accent/10 text-veyrix-accent hover:bg-veyrix-accent/20 transition-colors border border-veyrix-accent/20 md:ml-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                Share
+            </button>
+            <button onclick="UI.showModal('help-modal')" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger md:ml-1" title="Help & Shortcuts">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </button>
+            <button onclick="App.toggleFullscreen()" class="hidden md:block p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Fullscreen (F11)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+            </button>
+            <button onclick="UI.showModal('settings-modal')" class="p-1 md:p-1.5 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors tooltip-trigger" title="Settings">
+                <svg class="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden relative z-10 w-full" id="main-workspace">
+        
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden transition-opacity duration-250 opacity-0"></div>
+
+        <!-- Sidebar / File Explorer -->
+        <aside id="sidebar" class="sidebar-collapsed bg-veyrix-surface">
+            <div class="p-3 border-b border-veyrix-border flex items-center justify-between">
+                <span class="text-xs font-bold text-veyrix-muted uppercase tracking-wider">Explorer</span>
+                <div class="flex gap-1">
+                    <button onclick="UI.showModal('new-file-modal')" class="p-1 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors" title="New File">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="file-list" class="flex-1 overflow-y-auto p-2 space-y-0.5 relative">
+                <!-- File items injected here -->
+            </div>
+            
+            <!-- Mobile Sidebar Footer -->
+            <div class="md:hidden p-3 border-t border-veyrix-border flex justify-between">
+                <button onclick="UI.toggleSidebar(true)" class="text-xs text-veyrix-muted hover:text-white flex items-center gap-1 w-full justify-center bg-white/5 hover:bg-white/10 py-2 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Close Sidebar
+                </button>
+            </div>
+        </aside>
+
+        <!-- Editor Area -->
+        <section id="editor-section" class="flex-1 relative p-2 md:p-4 bg-veyrix-bg flex flex-col min-w-0">
+            <!-- Security/Share Warning Banner -->
+            <div id="banner-warning" class="hidden mb-2 bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs px-3 py-2 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span id="banner-text">Viewing shared file. Edits won't sync automatically.</span>
+                </div>
+                <button onclick="this.parentElement.classList.add('hidden')" class="hover:text-amber-100">×</button>
+            </div>
+            
+            <div class="flex-1 relative rounded-lg overflow-hidden border border-veyrix-border shadow-2xl glass-panel">
+                <div id="editor-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-veyrix-muted bg-veyrix-surface z-10">
+                    <img src="assets/veyrix.svg" alt="Veyrix" class="w-20 h-20 mb-6 opacity-20 grayscale">
+                    <p class="text-sm font-medium text-veyrix-text">Ready to build something?</p>
+                    <div class="mt-6 flex gap-4 text-xs text-veyrix-muted">
+                        <button onclick="UI.showModal('new-file-modal')" class="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-veyrix-text transition-colors">Create New File</button>
+                    </div>
+                    <div id="app-version-display" class="absolute bottom-4 text-[10px] font-mono text-veyrix-muted/30 select-none"></div>
+                </div>
+                <div id="editor"></div>
+            </div>
+        </section>
+
+        <!-- Floating Action Button for Mobile -->
+        <button onclick="UI.showModal('new-file-modal')" class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-veyrix-accent hover:bg-veyrix-accentHover rounded-full shadow-lg flex items-center justify-center text-white z-20 transition-transform active:scale-95">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        </button>
+    </main>
+
+    <!-- Global Dropdown Menu (Z-index top priority) -->
+    <div id="global-file-dropdown" class="hidden absolute w-40 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-[100] flex-col py-1 transition-opacity duration-150 opacity-0 scale-95 origin-top-right">
+        <button id="dd-rename" class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-slate-700 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Rename
+        </button>
+        <button id="dd-share" class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-slate-700 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg> Share
+        </button>
+        <div class="h-px bg-slate-700 my-1 mx-2"></div>
+        <button id="dd-delete" class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Delete
+        </button>
+    </div>
+
+    <!-- Hidden File Input for Open -->
+    <input type="file" id="file-upload" class="hidden" accept=".txt,.js,.html,.css,.json,.md,.xml,.csv,.log,.sh,.py,.yml,.yaml,.ini,.env,text/*" onchange="App.handleFileUpload(event)">
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-16 md:bottom-6 right-4 md:right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MODALS OVERLAY -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 z-50 hidden items-start pt-16 md:pt-0 md:items-center justify-center p-4 overflow-y-auto">
+        
+        <!-- Generic Confirm Modal -->
+        <div id="confirm-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-5 space-y-4 text-center">
+                <div class="w-12 h-12 rounded-full bg-veyrix-accent/10 text-veyrix-accent flex items-center justify-center mx-auto mb-2" id="confirm-icon-bg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 class="font-semibold text-white" id="confirm-title">Confirm Action</h3>
+                <p class="text-xs text-veyrix-muted" id="confirm-message">Are you sure?</p>
+                <div class="flex gap-2 justify-center pt-2">
+                    <button onclick="UI.hideModal()" class="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-sm transition-colors">Cancel</button>
+                    <button id="confirm-action-btn" class="flex-1 py-2 bg-veyrix-accent hover:bg-veyrix-accentHover text-white rounded-lg text-sm font-medium transition-colors">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snapshot Limit Modal -->
+        <div id="snapshot-limit-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg">
+                <h3 class="font-semibold text-white">Snapshot Limit Reached</h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="text-sm text-veyrix-text">You have reached the maximum limit of 5 snapshots for this file.</p>
+                <div class="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <p class="text-xs text-veyrix-muted mb-1">Oldest Snapshot:</p>
+                    <p class="text-sm font-mono text-white" id="snapshot-limit-oldest-info"></p>
+                </div>
+                <p class="text-xs text-amber-400">Creating a new snapshot will permanently delete the oldest one.</p>
+            </div>
+            <div class="p-4 border-t border-veyrix-border bg-black/20 flex justify-end gap-2">
+                <button onclick="UI.hideModal()" class="px-4 py-2 text-sm rounded-lg hover:bg-white/5 text-veyrix-text transition-colors">Cancel</button>
+                <button onclick="App.executeSnapshotSave(true)" class="px-4 py-2 text-sm rounded-lg bg-veyrix-accent text-white hover:bg-veyrix-accentHover transition-colors font-medium">Delete Oldest & Continue</button>
+            </div>
+        </div>
+
+        <!-- Help & Shortcuts Modal -->
+        <div id="help-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-md shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0 max-h-[90vh]">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg shrink-0">
+                <h3 class="font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-veyrix-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Help & Shortcuts
+                </h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-6">
+                <div class="bg-veyrix-accent/10 border border-veyrix-accent/20 rounded-lg p-3 text-sm text-veyrix-accent">
+                <div class="flex flex-wrap items-center gap-x-2 leading-relaxed">
+                    <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+
+                    <span class="font-medium">Recommendation:</span>
+                    
+                    <span class="flex items-center gap-1.5">
+                    Use <strong>Fullscreen</strong> 
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                    </svg>
+                    </span>
+
+                    <span>or press</span>
+
+                    <kbd class="px-2 py-0.5 text-[11px] font-bold bg-veyrix-accent/25 border-b-2 border-veyrix-accent/40 rounded text-veyrix-accent">
+                    F11
+                    </kbd>
+
+                    <span class="opacity-90">for the best IDE experience.</span>
+                </div>
+                </div>
+
+                <section>
+                    <h4 class="text-sm font-semibold text-white border-b border-veyrix-border pb-1 mb-3">Icon Guide & Usage</h4>
+                    <ul class="space-y-4 text-xs text-veyrix-muted">
+                        <li class="flex items-start gap-3">
+                            <div class="p-1.5 bg-white/5 rounded text-white shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg></div>
+                            <div><strong class="text-white block mb-0.5">Open File</strong> Load a text or code file from your device into the IDE.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="p-1.5 bg-white/5 rounded text-white shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg></div>
+                            <div><strong class="text-white block mb-0.5">Save</strong> Manually save the current file to your browser's local storage.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="p-1.5 bg-white/5 rounded text-white shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></div>
+                            <div><strong class="text-white block mb-0.5">Save Snapshot</strong> Create a versioned backup of your current file (maximum 5 snapshots per file).</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="p-1.5 bg-white/5 rounded text-white shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <div><strong class="text-white block mb-0.5">View History</strong> View all your saved snapshots and safely restore older versions.</div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="p-1.5 bg-white/5 rounded text-white shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg></div>
+                            <div><strong class="text-white block mb-0.5">Share</strong> Share your code directly via device, fast local link, or cloud upload.</div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 class="text-sm font-semibold text-white border-b border-veyrix-border pb-1 mb-2">Keyboard Shortcuts</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="text-veyrix-muted flex justify-between pr-2 border-r border-white/5"><span>Save File</span> <kbd class="px-1 py-0.5 rounded bg-white/10 text-white">Ctrl+S</kbd></div>
+                        <div class="text-veyrix-muted flex justify-between pl-2"><span>Open File</span> <kbd class="px-1 py-0.5 rounded bg-white/10 text-white">Ctrl+O</kbd></div>
+                        <div class="text-veyrix-muted flex justify-between pr-2 border-r border-white/5"><span>Format Code</span> <kbd class="px-1 py-0.5 rounded bg-white/10 text-white">Alt+Shift+F</kbd></div>
+                        <div class="text-veyrix-muted flex justify-between pl-2"><span>Fullscreen</span> <kbd class="px-1 py-0.5 rounded bg-white/10 text-white">F11</kbd></div>
+                        <div class="text-veyrix-muted flex justify-between pr-2 border-r border-white/5"><span>Close Modal</span> <kbd class="px-1 py-0.5 rounded bg-white/10 text-white">Esc</kbd></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Create New File Modal -->
+        <div id="new-file-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg">
+                <h3 class="font-semibold text-white">Create New File</h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-veyrix-muted mb-1.5">Filename</label>
+                    <input type="text" id="new-file-input" placeholder="e.g., app.js, Dockerfile, .env" 
+                           class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent transition-all">
+                    <p class="text-[10px] text-veyrix-muted mt-1.5">No extension required. Recognized files will be auto-formatted.</p>
+                </div>
+            </div>
+            <div class="p-4 border-t border-veyrix-border bg-black/20 flex justify-end gap-2">
+                <button onclick="UI.hideModal()" class="px-4 py-2 text-sm rounded-lg hover:bg-white/5 text-veyrix-text transition-colors">Cancel</button>
+                <button onclick="App.createNewFile()" class="px-4 py-2 text-sm rounded-lg bg-veyrix-accent text-white hover:bg-veyrix-accentHover transition-colors font-medium">Create</button>
+            </div>
+        </div>
+
+        <!-- Rename File Modal -->
+        <div id="rename-file-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg">
+                <h3 class="font-semibold text-white">Rename File</h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-veyrix-muted mb-1.5">New Filename</label>
+                    <input type="text" id="rename-file-input" placeholder="e.g., app.js, Dockerfile, .env" 
+                           class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent transition-all">
+                </div>
+            </div>
+            <div class="p-4 border-t border-veyrix-border bg-black/20 flex justify-end gap-2">
+                <button onclick="UI.hideModal()" class="px-4 py-2 text-sm rounded-lg hover:bg-white/5 text-veyrix-text transition-colors">Cancel</button>
+                <button onclick="App.executeRename()" class="px-4 py-2 text-sm rounded-lg bg-veyrix-accent text-white hover:bg-veyrix-accentHover transition-colors font-medium">Rename</button>
+            </div>
+        </div>
+
+        <!-- Share Modal -->
+        <div id="share-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-md shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0 max-h-[90vh]">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg shrink-0">
+                <h3 class="font-semibold text-white">Share File</h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            
+            <div class="flex border-b border-veyrix-border shrink-0">
+                <button onclick="UI.switchShareTab('local')" id="tab-btn-local" class="flex-1 py-3 text-sm font-medium border-b-2 border-veyrix-accent text-veyrix-accent transition-colors">Fast Local Share</button>
+                <button onclick="UI.switchShareTab('cloud')" id="tab-btn-cloud" class="flex-1 py-3 text-sm font-medium border-b-2 border-transparent text-veyrix-muted hover:text-white transition-colors">Cloud Share</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1">
+                <div class="p-5">
+                    <!-- Local Share Tab -->
+                    <div id="tab-local" class="space-y-4">
+                        <p class="text-xs text-veyrix-muted">Generates a URL containing the compressed code. No data is stored on servers. URL might be long.</p>
+                        <button onclick="Cloud.generateLocalShare()" class="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-veyrix-text transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            Generate Local Link
+                        </button>
+                        <div id="local-share-result" class="hidden mt-3">
+                            <input type="text" id="local-share-url" readonly class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-xs text-veyrix-muted focus:outline-none mb-2">
+                            <button onclick="UI.copyToClipboard('local-share-url')" class="w-full py-2 bg-veyrix-accent/20 text-veyrix-accent rounded-lg text-sm font-medium hover:bg-veyrix-accent/30 transition-colors">Copy Link</button>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Share Tab -->
+                    <div id="tab-cloud" class="space-y-4 hidden">
+                        <div class="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg flex gap-3 text-sm">
+                            <svg class="w-5 h-5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                            <p class="text-blue-200 text-xs">Saves to Firebase Firestore. Firebase initializes ONLY when you use this feature.</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-veyrix-muted mb-1.5">Optional Password Protection</label>
+                            <input type="password" id="cloud-password" placeholder="Leave blank for public access" 
+                                class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent transition-all">
+                        </div>
+
+                        <button onclick="Cloud.generateCloudShare()" id="btn-cloud-share" class="w-full py-2 bg-veyrix-accent hover:bg-veyrix-accentHover text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Upload & Share
+                        </button>
+                        
+                        <div id="cloud-share-result" class="hidden mt-3">
+                            <input type="text" id="cloud-share-url" readonly class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-xs text-veyrix-muted focus:outline-none mb-2">
+                            <button onclick="UI.copyToClipboard('cloud-share-url')" class="w-full py-2 bg-veyrix-accent/20 text-veyrix-accent rounded-lg text-sm font-medium hover:bg-veyrix-accent/30 transition-colors">Copy Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Native Web Share API Section -->
+            <div id="native-share-section" class="hidden border-t border-veyrix-border bg-black/20 p-5 mt-auto shrink-0">
+                <h4 class="text-sm font-semibold text-white mb-3">Quick Share (Device Share)</h4>
+                <button onclick="Cloud.nativeShare()" class="w-full py-2 bg-veyrix-surface hover:bg-white/5 border border-white/10 rounded-lg text-sm text-veyrix-text transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                    Share via Device
+                </button>
+            </div>
+        </div>
+
+        <!-- Password Prompt Modal -->
+        <div id="password-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-5 space-y-4 text-center">
+                <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 class="font-semibold text-white">Protected File</h3>
+                <p class="text-xs text-veyrix-muted">This shared file requires a password.</p>
+                <input type="password" id="access-password" placeholder="Enter password" 
+                       class="w-full bg-veyrix-bg border border-veyrix-border rounded-lg px-3 py-2 text-sm text-center text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent transition-all">
+                <button onclick="Cloud.verifyAndLoadCloudFile()" class="w-full py-2 bg-veyrix-accent text-white rounded-lg text-sm font-medium hover:bg-veyrix-accentHover transition-colors">Unlock</button>
+            </div>
+        </div>
+
+        <!-- Settings & Data Security Modal -->
+        <div id="settings-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-lg shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden max-h-[90vh] mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg sticky top-0 z-10">
+                <h3 class="font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-veyrix-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Settings & Data Panel
+                </h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-6">
+                
+                <!-- App Installation -->
+                <section class="space-y-3">
+                    <h4 class="text-sm font-semibold text-white">App Installation</h4>
+                    <div class="bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-veyrix-muted space-y-2 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                        <p>Install Veyrix IDE on your device for a faster, app-like experience with offline capabilities.</p>
+                        <button id="install-app-btn" onclick="App.installApp()" disabled class="shrink-0 px-4 py-2 bg-veyrix-accent text-white rounded-lg text-sm font-medium hover:bg-veyrix-accentHover transition-colors opacity-50 cursor-not-allowed">Install Web App</button>
+                    </div>
+                </section>
+
+                <!-- Frequently Asked Questions -->
+                <section class="space-y-3">
+                    <h4 class="text-sm font-semibold text-white">Frequently Asked Questions</h4>
+                    <div class="space-y-2">
+                        
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                Where are my files stored?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                All your files are stored locally on your device inside your browser's secure IndexedDB. They are never uploaded to any server unless you specifically use the Cloud Share tool.
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                What is Fast Share vs Cloud Share?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                <strong>Fast Share</strong> compresses your code using Lempel-Ziv and puts it entirely in the URL without using any server. <strong>Cloud Share</strong> uploads your code to an anonymous Firebase Firestore database, giving you a shorter, cleaner link.
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                Is my data secure?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                Yes. Because files are local, no one can see them. If you use Cloud Share, you can add a password. Passwords are securely hashed using the Web Crypto API (SHA-256) locally before being checked against the database.
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                How many snapshots can I take?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                You can save a maximum of 5 snapshots per file. If you try to save a 6th snapshot, you will be prompted to replace the oldest one.
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                Does Veyrix IDE work offline?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                Yes! Once loaded for the first time, Veyrix operates entirely offline using PWA Service Workers. Note: Cloud Share requires an internet connection.
+                            </div>
+                        </div>
+
+                        <div class="border border-white/10 rounded-lg overflow-hidden">
+                            <button class="w-full text-left p-3 bg-white/5 text-sm font-medium text-white flex justify-between items-center hover:bg-white/10 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">
+                                Can I create custom file extensions?
+                                <svg class="w-4 h-4 text-veyrix-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="p-3 text-xs text-veyrix-muted hidden bg-black/20 border-t border-white/5">
+                                Absolutely. When creating a file, you can type any extension (e.g., <code>project.custom</code>) or no extension at all (e.g., <code>Dockerfile</code>). Unrecognized extensions will default to plain text mode formatting.
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Extensions -->
+                <section class="space-y-3">
+                    <h4 class="text-sm font-semibold text-white">Extensions</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 transition-colors">
+                            <div>
+                                <span class="text-sm text-white block">Prettier Code Formatter</span>
+                                <span class="text-[10px] text-veyrix-muted">Auto-formats on save (Alt+Shift+F)</span>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-veyrix-accent" style="right:0; border-color: #3b82f6;"/>
+                                <label class="toggle-label block overflow-hidden h-5 rounded-full bg-veyrix-accent cursor-pointer"></label>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <div class="border-t border-veyrix-border pt-4">
+                    <button onclick="App.factoryReset()" class="w-full py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500">Factory Reset (Delete All Data)</button>
+                </div>
+
+                <!-- Footer & Branding Section -->
+                <div class="border-t border-veyrix-border pt-6 pb-2 space-y-6">
+                    <!-- Tagline & Version -->
+                    <div class="text-center space-y-1">
+                        <center><img src="assets/veyrix.svg" alt="Veyrix Logo" class="w-10 h-10"></center>
+                        <h4 class="text-lg font-bold text-white tracking-wide">Veyrix</h4>
+                        <p class="text-xs text-veyrix-muted font-light">Code. Anywhere.</p>
+                        <p class="text-[10px] text-veyrix-muted/60 font-mono pt-1" id="settings-version-display"></p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="https://github.com/notamitgamer/veyrix" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-veyrix-text transition-colors flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                            View Source on GitHub
+                        </a>
+                        <a href="/docs" class="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-veyrix-text transition-colors flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            Documentation
+                        </a>
+                    </div>
+
+                    <!-- Creator & Disclaimer -->
+                    <div class="text-center space-y-4">
+                        <div class="text-xs text-veyrix-muted">
+                            &copy; <a href="https://amit.is-a.dev" target="_blank" rel="noopener noreferrer" class="hover:text-veyrix-accent hover:underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent rounded px-0.5">Amit Dutta</a> 
+                            <span class="mx-1 opacity-50">|</span> 
+                            Username: <a href="https://github.com/notamitgamer" target="_blank" rel="noopener noreferrer" class="hover:text-veyrix-accent hover:underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-veyrix-accent rounded px-0.5">notamitgamer</a>
+                        </div>
+                        
+                        <div class="text-[10px] text-veyrix-muted/60 leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5 mx-auto text-center">
+                            Use of this tool is at your own risk.<br>
+                            The creator is not responsible for any data loss, misuse, or damages caused by using this application.
+                            The creator holds full rights to modify or permanently discontinue this project at any time without prior notice.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div id="history-modal" class="hidden bg-veyrix-surface border border-veyrix-border rounded-lg w-full max-w-sm shadow-2xl modal-content pointer-events-auto flex flex-col overflow-hidden mb-auto md:mb-0 mt-4 md:mt-0">
+            <div class="p-4 border-b border-veyrix-border flex justify-between items-center bg-veyrix-bg">
+                <h3 class="font-semibold text-white">Version History</h3>
+                <button onclick="UI.hideModal()" class="text-veyrix-muted hover:text-white transition-colors">✕</button>
+            </div>
+            <div id="history-list" class="overflow-y-auto max-h-64 p-2 space-y-1">
+                <!-- Snapshots injected here -->
+            </div>
+        </div>
+
+    </div>
+
+<script>
+/**
+ * VEYRIX IDE - CORE APPLICATION LOGIC
+ */
+
+const APP_VERSION = '1.0.5';
+
+// ===== FIREBASE CONFIGURATION =====
+// Firebase initializes ONLY when Cloud Share is selected.
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+// Application State
+const state = {
+    files: [],
+    activeFileId: null,
+    editor: null,
+    db: null,
+    renameTargetId: null
+};
+
+// Utilities
+const Utils = {
+    generateId: () => 'f_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36),
+    getDisplayName: (file) => file.ext ? `${file.name}.${file.ext}` : file.name,
+    getMobileShortName: (name, ext) => {
+        let sName = name || '';
+        let sExt = ext || '';
+        
+        if (sName.length > 3) {
+            sName = sName.substring(0, 2) + '...';
+        }
+        if (sExt.length > 3) {
+            sExt = sExt.substring(0, 2) + '...';
+        }
+        
+        return sExt ? `${sName}.${sExt}` : sName;
+    },
+    getFileIcon: (ext, name = '') => {
+        const fullName = ext ? `${name}.${ext}` : name;
+        const lowerName = fullName.toLowerCase();
+        const lowerExt = ext.toLowerCase();
+
+        const baseClass = "w-4 h-4 shrink-0 ";
+        if(lowerExt === 'html') return `<svg class="${baseClass} text-orange-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l2 15 8 2 8-2 2-15L12 2zm0 2.5l8 4-1.5 11.5-6.5 1.5-6.5-1.5L4 8.5l8-4z"/></svg>`;
+        if(lowerExt === 'css') return `<svg class="${baseClass} text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l2 15 8 2 8-2 2-15L12 2zm0 2.5l8 4-1.5 11.5-6.5 1.5-6.5-1.5L4 8.5l8-4z"/></svg>`;
+        if(lowerExt === 'js' || lowerExt === 'jsx' || lowerExt === 'ts' || lowerExt === 'tsx') return `<svg class="${baseClass} text-yellow-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l2 15 8 2 8-2 2-15L12 2zm0 2.5l8 4-1.5 11.5-6.5 1.5-6.5-1.5L4 8.5l8-4z"/></svg>`;
+        if(lowerExt === 'json') return `<svg class="${baseClass} text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>`;
+        if(lowerExt === 'md') return `<svg class="${baseClass} text-blue-300" fill="currentColor" viewBox="0 0 24 24"><path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12C21.35 6 22 6.63 22 7.41v9.18c0 .78-.65 1.41-1.44 1.41zM11 14l-2.5-3.5L6 14H4V9h2v2.5l2.5-3.5L11 11.5V9h2v5h-2zM20 12h-2V9h-2v3h-2l3 3 3-3z"/></svg>`;
+        
+        // Config and special files
+        if(lowerName === 'dockerfile' || lowerName === 'makefile' || lowerName === '.env' || lowerExt === 'env' || lowerName.endsWith('gitignore') || lowerExt === 'yml' || lowerExt === 'yaml') {
+            return `<svg class="${baseClass} text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`;
+        }
+        
+        return `<svg class="${baseClass} text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+    },
+    getModeFromExt: (ext, name = '') => {
+        const fullName = ext ? `${name}.${ext}` : name;
+        const lowerFullName = fullName.toLowerCase();
+        const lowerExt = ext.toLowerCase();
+
+        const map = { html: 'html', css: 'css', js: 'javascript', jsx: 'javascript', ts: 'javascript', tsx: 'javascript', json: 'json', md: 'markdown', txt: 'text', py: 'python', yml: 'yaml', yaml: 'yaml', xml: 'xml', sh: 'sh', csv: 'text' };
+        
+        if (map[lowerExt]) return map[lowerExt];
+        if (lowerFullName === 'dockerfile') return 'dockerfile';
+        if (lowerFullName === 'makefile') return 'makefile';
+        if (lowerFullName.endsWith('.env') || lowerExt === 'env') return 'ini';
+        if (lowerFullName.endsWith('gitignore')) return 'gitignore';
+
+        return 'text';
+    },
+    debounce: (func, wait) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => { clearTimeout(timeout); func(...args); };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    async hashPassword(password) {
+        if (!password) return null;
+        const msgBuffer = new TextEncoder().encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+};
+
+// IndexedDB Wrapper
+const DB = {
+    init: () => {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open('VeyrixFS', 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { state.db = request.result; resolve(); };
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('files')) {
+                    db.createObjectStore('files', { keyPath: 'id' });
+                }
+            };
+        });
+    },
+    getAll: () => {
+        return new Promise((resolve, reject) => {
+            const tx = state.db.transaction('files', 'readonly');
+            const store = tx.objectStore('files');
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    },
+    save: (file) => {
+        return new Promise((resolve, reject) => {
+            const tx = state.db.transaction('files', 'readwrite');
+            const store = tx.objectStore('files');
+            file.lastModified = Date.now();
+            const request = store.put(file);
+            request.onsuccess = () => resolve(file);
+            request.onerror = () => reject(request.error);
+        });
+    },
+    delete: (id) => {
+        return new Promise((resolve, reject) => {
+            const tx = state.db.transaction('files', 'readwrite');
+            const store = tx.objectStore('files');
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+};
+
+// PWA Install Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.getElementById('install-app-btn');
+    if(btn) {
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        btn.disabled = false;
+    }
+});
+
+// UI Manager
+const UI = {
+    activeModal: null,
+    activeDropdownId: null,
+
+    toggleSidebar: (forceClose = false) => {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        
+        let isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+        if (forceClose) {
+            isCollapsed = false; // Intention: want to collapse it
+        }
+
+        if (isCollapsed) {
+            // Open Sidebar
+            sidebar.classList.remove('sidebar-collapsed');
+            localStorage.setItem('veyrix_sidebar', 'open');
+            if (window.innerWidth <= 768) {
+                backdrop.classList.remove('hidden');
+                requestAnimationFrame(() => backdrop.classList.remove('opacity-0'));
+            }
+        } else {
+            // Close Sidebar
+            sidebar.classList.add('sidebar-collapsed');
+            localStorage.setItem('veyrix_sidebar', 'closed');
+            backdrop.classList.add('opacity-0');
+            setTimeout(() => backdrop.classList.add('hidden'), 250);
+        }
+        
+        // Ensure Ace Editor resizes after DOM reflow transition
+        setTimeout(() => { if (state.editor) state.editor.resize(); }, 260);
+    },
+
+    toggleFileDropdown: (id, btnElement, e) => {
+        e.stopPropagation();
+        const dd = document.getElementById('global-file-dropdown');
+        
+        if (UI.activeDropdownId === id && !dd.classList.contains('hidden')) {
+            UI.closeAllDropdowns();
+            return;
+        }
+        
+        UI.activeDropdownId = id;
+        const rect = btnElement.getBoundingClientRect();
+        
+        dd.classList.remove('hidden');
+        dd.style.top = (rect.bottom + 4) + 'px';
+        dd.style.left = (rect.right - 160) + 'px'; // width 40 = 160px
+        
+        // Map current actions to buttons
+        document.getElementById('dd-rename').onclick = (ev) => { App.triggerRename(id, ev); };
+        document.getElementById('dd-share').onclick = (ev) => { App.triggerShare(id, ev); };
+        document.getElementById('dd-delete').onclick = (ev) => { App.triggerDelete(id, ev); };
+
+        requestAnimationFrame(() => {
+            dd.classList.remove('opacity-0', 'scale-95');
+            dd.classList.add('opacity-100', 'scale-100');
+        });
+    },
+
+    closeAllDropdowns: () => {
+        const dd = document.getElementById('global-file-dropdown');
+        if(dd && !dd.classList.contains('hidden')) {
+            dd.classList.remove('opacity-100', 'scale-100');
+            dd.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => dd.classList.add('hidden'), 150);
+            UI.activeDropdownId = null;
+        }
+    },
+
+    showConfirm: (title, message, confirmText, actionCallback) => {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        
+        const btn = document.getElementById('confirm-action-btn');
+        btn.textContent = confirmText;
+        
+        // Handle danger vs normal confirm look
+        const iconBg = document.getElementById('confirm-icon-bg');
+        if (confirmText.toLowerCase().includes('delete') || confirmText.toLowerCase().includes('restore')) {
+            btn.className = "flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors";
+            iconBg.className = "w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2";
+        } else {
+            btn.className = "flex-1 py-2 bg-veyrix-accent hover:bg-veyrix-accentHover text-white rounded-lg text-sm font-medium transition-colors";
+            iconBg.className = "w-12 h-12 rounded-full bg-veyrix-accent/10 text-veyrix-accent flex items-center justify-center mx-auto mb-2";
+        }
+
+        btn.onclick = () => {
+            UI.hideModal();
+            actionCallback();
+        };
+        UI.showModal('confirm-modal');
+    },
+
+    showHistory: () => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return UI.toast('No file open', 'error');
+        const list = document.getElementById('history-list');
+        list.innerHTML = '';
+        
+        if (!file.snapshots || file.snapshots.length === 0) {
+            list.innerHTML = `<p class="text-xs text-veyrix-muted p-3 text-center">No snapshots saved.</p>`;
+        } else {
+            [...file.snapshots].reverse().forEach((snap, idx) => {
+                const date = new Date(snap.ts).toLocaleString();
+                const realIndex = file.snapshots.length - 1 - idx;
+                const versionNumber = snap.version || (realIndex + 1);
+                
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between p-3 hover:bg-white/5 rounded-md text-sm border-b border-veyrix-border/50';
+                el.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-white">Version ${versionNumber}</span>
+                        <span class="text-xs text-veyrix-muted">${date}</span>
+                    </div>
+                    <button onclick="App.triggerRestore(${realIndex})" class="text-veyrix-accent hover:text-veyrix-accentHover text-xs font-medium px-3 py-1.5 rounded bg-veyrix-accent/10 hover:bg-veyrix-accent/20 transition-colors">Restore</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+        UI.showModal('history-modal');
+    },
+
+    showModal: (id) => {
+        if (UI.activeModal) UI.hideModal();
+        UI.closeAllDropdowns();
+        const overlay = document.getElementById('modal-overlay');
+        const modal = document.getElementById(id);
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        modal.classList.remove('hidden');
+        modal.classList.add('modal-enter');
+        modal.classList.remove('modal-exit');
+        UI.activeModal = modal;
+
+        if(id === 'new-file-modal') {
+            setTimeout(() => {
+                const input = document.getElementById('new-file-input');
+                if (input) input.focus();
+            }, 100);
+        } else if(id === 'rename-file-modal') {
+            setTimeout(() => {
+                const input = document.getElementById('rename-file-input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 100);
+        }
+    },
+
+    hideModal: () => {
+        if (!UI.activeModal) return;
+        const overlay = document.getElementById('modal-overlay');
+        const modal = UI.activeModal;
+        modal.classList.remove('modal-enter');
+        modal.classList.add('modal-exit');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            UI.activeModal = null;
+        }, 200);
+    },
+
+    toast: (msg, type = 'info') => {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const colors = type === 'error' ? 'bg-red-500/90 text-white border-red-400' : 'bg-veyrix-surface text-white border-veyrix-border';
+        toast.className = `px-4 py-2 rounded-lg border shadow-lg text-sm font-medium transform transition-all duration-300 translate-y-10 opacity-0 flex items-center gap-2 ${colors}`;
+        toast.innerHTML = type === 'error' ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${msg}` 
+                                           : `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${msg}`;
+        container.appendChild(toast);
+        
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-10', 'opacity-0');
+        });
+
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    },
+
+    renderSidebar: () => {
+        const list = document.getElementById('file-list');
+        list.innerHTML = '';
+        state.files.sort((a,b) => b.lastModified - a.lastModified).forEach(file => {
+            const isActive = file.id === state.activeFileId;
+            const el = document.createElement('div');
+            el.className = `flex items-center justify-between p-1 px-1.5 rounded-lg cursor-pointer group transition-colors ${isActive ? 'bg-veyrix-accent/20 text-white' : 'text-veyrix-text hover:bg-white/5 hover:text-white'}`;
+            el.innerHTML = `
+                <div class="flex items-center gap-2 overflow-hidden flex-1 py-1 px-1" onclick="App.openFile('${file.id}')" role="button" tabindex="0">
+                    ${Utils.getFileIcon(file.ext, file.name)}
+                    <span class="text-sm truncate select-none">${Utils.getDisplayName(file)}</span>
+                    ${file.unsaved ? `<div class="w-1.5 h-1.5 rounded-full bg-veyrix-accent shrink-0 ml-1"></div>` : ''}
+                </div>
+                <div class="relative dd-trigger">
+                    <button onclick="UI.toggleFileDropdown('${file.id}', this, event)" class="p-1 rounded hover:bg-white/10 text-veyrix-muted hover:text-white transition-colors" title="Options">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                    </button>
+                </div>
+            `;
+            list.appendChild(el);
+        });
+    },
+
+    updateTopBar: () => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        const placeholder = document.getElementById('editor-placeholder');
+        const activeFileContainer = document.getElementById('top-active-file');
+        const nameEl = document.getElementById('top-file-name');
+        const unsavedEl = document.getElementById('top-file-unsaved');
+
+        if (file) {
+            placeholder.classList.add('hidden');
+            activeFileContainer.classList.remove('hidden');
+            activeFileContainer.classList.add('flex');
+            
+            let displayName = Utils.getDisplayName(file);
+            if (window.innerWidth <= 768) {
+                displayName = Utils.getMobileShortName(file.name, file.ext);
+            }
+            
+            nameEl.textContent = displayName;
+            unsavedEl.classList.toggle('hidden', !file.unsaved);
+        } else {
+            placeholder.classList.remove('hidden');
+            activeFileContainer.classList.add('hidden');
+            activeFileContainer.classList.remove('flex');
+            nameEl.textContent = 'No file open';
+            unsavedEl.classList.add('hidden');
+            if(state.editor) {
+                state.editor.setValue('', -1);
+                state.editor.setReadOnly(true);
+            }
+        }
+    },
+
+    switchShareTab: (tab) => {
+        document.getElementById('tab-local').classList.toggle('hidden', tab !== 'local');
+        document.getElementById('tab-cloud').classList.toggle('hidden', tab !== 'cloud');
+        
+        document.getElementById('tab-btn-local').className = `flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${tab === 'local' ? 'border-veyrix-accent text-veyrix-accent' : 'border-transparent text-veyrix-muted hover:text-white'}`;
+        document.getElementById('tab-btn-cloud').className = `flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${tab === 'cloud' ? 'border-veyrix-accent text-veyrix-accent' : 'border-transparent text-veyrix-muted hover:text-white'}`;
+    },
+
+    copyToClipboard: (elementId) => {
+        const el = document.getElementById(elementId);
+        el.select();
+        document.execCommand('copy');
+        UI.toast('Link copied to clipboard');
+    }
+};
+
+// Cloud & Firebase Features
+const Cloud = {
+    firebaseLoaded: false,
+    loadFirebase: async () => {
+        if (Cloud.firebaseLoaded) return true;
+        try {
+            const [app, auth, firestore] = await Promise.all([
+                import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js'),
+                import('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js'),
+                import('https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js')
+            ]);
+            
+            const fbApp = app.initializeApp(firebaseConfig);
+            const fbAuth = auth.getAuth(fbApp);
+            const fbDb = firestore.getFirestore(fbApp);
+            
+            await auth.signInAnonymously(fbAuth);
+            
+            window.fbDb = fbDb;
+            window.fbFirestore = firestore;
+            Cloud.firebaseLoaded = true;
+            return true;
+        } catch (e) {
+            console.error(e);
+            UI.toast('Failed to initialize secure cloud share', 'error');
+            return false;
+        }
+    },
+    generateLocalShare: () => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return UI.toast('No file to share', 'error');
+        
+        const compressed = LZString.compressToEncodedURIComponent(file.content);
+        const url = `${window.location.origin}${window.location.pathname}?ext=${file.ext}&code=${compressed}`;
+        
+        const resDiv = document.getElementById('local-share-result');
+        const urlInput = document.getElementById('local-share-url');
+        urlInput.value = url;
+        resDiv.classList.remove('hidden');
+    },
+    generateCloudShare: async () => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return UI.toast('No file to share', 'error');
+
+        const btn = document.getElementById('btn-cloud-share');
+        btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Uploading...`;
+        btn.disabled = true;
+
+        if(await Cloud.loadFirebase()) {
+            try {
+                const pass = document.getElementById('cloud-password').value;
+                const passHash = await Utils.hashPassword(pass);
+                
+                const data = {
+                    content: file.content,
+                    ext: file.ext,
+                    name: file.name,
+                    timestamp: window.fbFirestore.serverTimestamp(),
+                    protected: !!passHash,
+                    hash: passHash
+                };
+
+                const docRef = await window.fbFirestore.addDoc(window.fbFirestore.collection(window.fbDb, "shared_snippets"), data);
+                
+                const url = `${window.location.origin}${window.location.pathname}?id=${docRef.id}`;
+                const resDiv = document.getElementById('cloud-share-result');
+                const urlInput = document.getElementById('cloud-share-url');
+                urlInput.value = url;
+                resDiv.classList.remove('hidden');
+                UI.toast('Uploaded to secure cloud');
+            } catch(e) {
+                console.error(e);
+                UI.toast('Upload failed', 'error');
+            }
+        }
+        
+        btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Upload & Share`;
+        btn.disabled = false;
+    },
+    currentCloudDoc: null,
+    handleCloudLoad: async (id) => {
+        UI.toast('Loading from cloud...');
+        if(await Cloud.loadFirebase()) {
+            try {
+                const docRef = window.fbFirestore.doc(window.fbDb, "shared_snippets", id);
+                const docSnap = await window.fbFirestore.getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if(data.protected) {
+                        Cloud.currentCloudDoc = data;
+                        UI.showModal('password-modal');
+                    } else {
+                        App.loadExternalContent(data.name || 'shared', data.ext, data.content);
+                    }
+                } else {
+                    UI.toast('Cloud file not found', 'error');
+                }
+            } catch(e) {
+                console.error(e);
+                UI.toast('Failed to load cloud file', 'error');
+            }
+        }
+    },
+    verifyAndLoadCloudFile: async () => {
+        const pass = document.getElementById('access-password').value;
+        const hash = await Utils.hashPassword(pass);
+        if(hash === Cloud.currentCloudDoc.hash) {
+            UI.hideModal();
+            App.loadExternalContent(Cloud.currentCloudDoc.name || 'shared', Cloud.currentCloudDoc.ext, Cloud.currentCloudDoc.content);
+            Cloud.currentCloudDoc = null;
+            document.getElementById('access-password').value = '';
+        } else {
+            UI.toast('Incorrect password', 'error');
+        }
+    },
+    nativeShare: async () => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return UI.toast('No file to share', 'error');
+        try {
+            await navigator.share({
+                title: Utils.getDisplayName(file),
+                text: file.content,
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('Share canceled or failed');
+        }
+    }
+};
+
+// Core Application Logic
+const App = {
+    init: async () => {
+        // Init Ace Editor
+        state.editor = ace.edit("editor");
+        state.editor.setTheme("ace/theme/tomorrow_night_eighties");
+        state.editor.setOptions({
+            fontSize: "14px",
+            showPrintMargin: false,
+            wrap: true,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            fontFamily: "'Fira Code', 'Consolas', monospace"
+        });
+        
+        // Exact viewport fix for mobile keyboards
+        if (window.visualViewport) {
+            const adjustViewport = () => {
+                const vh = window.visualViewport.height;
+                const headerHeight = document.querySelector('header').offsetHeight;
+                
+                // Pin body to actual visual height
+                document.body.style.height = vh + 'px';
+                
+                // Allow exact remainder height to the main workspace
+                const mainArea = document.getElementById('main-workspace');
+                if (mainArea) {
+                    mainArea.style.height = (vh - headerHeight) + 'px';
+                }
+                
+                if (state.editor) {
+                    state.editor.resize();
+                }
+            };
+            window.visualViewport.addEventListener('resize', adjustViewport);
+            adjustViewport();
+        }
+
+        // Set version displays
+        const versionDisplay = document.getElementById('app-version-display');
+        if (versionDisplay) versionDisplay.textContent = `v${APP_VERSION}`;
+        
+        const settingsVersionDisplay = document.getElementById('settings-version-display');
+        if (settingsVersionDisplay) settingsVersionDisplay.textContent = `Version: v${APP_VERSION}`;
+
+        // Check version for onboarding modal
+        const storedVersion = localStorage.getItem('veyrix_version');
+        if (storedVersion !== APP_VERSION) {
+            setTimeout(() => {
+                UI.showModal('help-modal');
+                localStorage.setItem('veyrix_version', APP_VERSION);
+            }, 500); // Small delay to let the UI finish rendering first
+        }
+
+        // Feature Detect Native Share
+        if (navigator.share) {
+            const nativeShareSection = document.getElementById('native-share-section');
+            if(nativeShareSection) {
+                nativeShareSection.classList.remove('hidden');
+            }
+        }
+
+        // --- Dot-Space Auto Fix Implementation ---
+        const handleDotSpace = (e) => {
+            const el = e.target;
+            const val = el.value;
+            const selStart = el.selectionStart;
+
+            // Detect if ". " exists exactly right before the cursor
+            if (selStart >= 2 && val.substring(selStart - 2, selStart) === '. ') {
+                el.value = val.substring(0, selStart - 1) + val.substring(selStart);
+                el.setSelectionRange(selStart - 1, selStart - 1);
+            }
+        };
+
+        const newFileInput = document.getElementById('new-file-input');
+        if(newFileInput) newFileInput.addEventListener('input', handleDotSpace);
+
+        const renameFileInput = document.getElementById('rename-file-input');
+        if(renameFileInput) renameFileInput.addEventListener('input', handleDotSpace);
+
+        // --- Enter Key Listeners for Modals ---
+        newFileInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                App.createNewFile();
+            }
+        });
+
+        renameFileInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                App.executeRename();
+            }
+        });
+
+        // Global Event Delegation for Clicks (Closes sidebars & dropdowns)
+        document.addEventListener('click', (e) => {
+            // Dropdowns
+            if (!e.target.closest('#global-file-dropdown') && !e.target.closest('.dd-trigger')) {
+                UI.closeAllDropdowns();
+            }
+
+            // Outside Sidebar Click
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = e.target.closest('.sidebar-toggle-btn');
+            const isSidebarClick = e.target.closest('#sidebar');
+            const isBackdropClick = e.target.id === 'sidebar-backdrop';
+            
+            if (!sidebar.classList.contains('sidebar-collapsed')) {
+                // If it's a mobile backdrop click, OR an external desktop click
+                if (isBackdropClick || (!isSidebarClick && !toggleBtn)) {
+                    UI.toggleSidebar(true);
+                }
+            }
+        });
+
+        // Window resize listeners
+        window.addEventListener('resize', Utils.debounce(() => {
+            UI.updateTopBar();
+        }, 200));
+
+        // Swipe to open/close sidebar
+        let touchStartX = 0;
+        let touchStartY = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+        
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            let touchEndY = e.changedTouches[0].screenY;
+            if (Math.abs(touchEndX - touchStartX) > Math.abs(touchEndY - touchStartY)) {
+                if (touchEndX - touchStartX > 80 && touchStartX < 50) {
+                    const sb = document.getElementById('sidebar');
+                    if (sb.classList.contains('sidebar-collapsed')) UI.toggleSidebar(); // open
+                } else if (touchStartX - touchEndX > 80) {
+                    const sb = document.getElementById('sidebar');
+                    if (!sb.classList.contains('sidebar-collapsed')) UI.toggleSidebar(true); // close
+                }
+            }
+        }, {passive: true});
+        
+        state.editor.on("change", Utils.debounce(() => {
+            if(state.activeFileId) {
+                const file = state.files.find(f => f.id === state.activeFileId);
+                if(file && file.content !== state.editor.getValue()) {
+                    file.content = state.editor.getValue();
+                    if(!file.unsaved) {
+                        file.unsaved = true;
+                        UI.renderSidebar();
+                        UI.updateTopBar();
+                    }
+                }
+            }
+        }, 500));
+
+        // Close modals on overlay click
+        document.getElementById('modal-overlay').addEventListener('click', (e) => {
+            if(e.target.id === 'modal-overlay') UI.hideModal();
+        });
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') { e.preventDefault(); App.saveCurrentFile(); }
+            if (e.ctrlKey && e.key === 'o') { e.preventDefault(); document.getElementById('file-upload').click(); }
+            if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'f') { e.preventDefault(); App.formatCode(); }
+            if (e.key === 'Escape') { UI.hideModal(); UI.closeAllDropdowns(); }
+        });
+
+        // Init DB & State Setup
+        try {
+            await DB.init();
+            state.files = await DB.getAll();
+            
+            // Apply Initial Sidebar State
+            const savedState = localStorage.getItem('veyrix_sidebar');
+            const sb = document.getElementById('sidebar');
+            if (savedState === 'closed') {
+                sb.classList.add('sidebar-collapsed');
+            } else if (savedState === 'open') {
+                sb.classList.remove('sidebar-collapsed');
+            } else {
+                // Default fallback: closed on mobile, open on desktop
+                if (window.innerWidth <= 768) {
+                    sb.classList.add('sidebar-collapsed');
+                } else {
+                    sb.classList.remove('sidebar-collapsed');
+                }
+            }
+
+            UI.renderSidebar();
+            
+            const lastActive = localStorage.getItem('veyrix_active');
+            if(lastActive && state.files.find(f => f.id === lastActive)) {
+                App.openFile(lastActive);
+            } else {
+                UI.updateTopBar();
+            }
+        } catch(e) {
+            UI.toast('Failed to load local DB', 'error');
+        }
+
+        // Handle URL Parameters (Sharing)
+        const params = new URLSearchParams(window.location.search);
+        if(params.has('ext') && params.has('code')) {
+            const ext = params.get('ext');
+            const code = LZString.decompressFromEncodedURIComponent(params.get('code'));
+            if(code !== null) {
+                App.loadExternalContent('shared_snippet', ext, code);
+            }
+        } else if(params.has('id')) {
+            Cloud.handleCloudLoad(params.get('id'));
+        }
+    },
+
+    installApp: async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredPrompt = null;
+                const btn = document.getElementById('install-app-btn');
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.disabled = true;
+            }
+        }
+    },
+    
+    createNewFile: async () => {
+        const input = document.getElementById('new-file-input').value.trim();
+        if(!input) return UI.toast('Filename cannot be empty', 'error');
+        
+        let name = input;
+        let ext = '';
+        
+        const lastDotIdx = input.lastIndexOf('.');
+        if (lastDotIdx > 0 && lastDotIdx < input.length - 1) {
+            ext = input.substring(lastDotIdx + 1);
+            name = input.substring(0, lastDotIdx);
+        } else if (lastDotIdx === 0) {
+            name = input;
+            ext = '';
+        } else if (lastDotIdx === input.length - 1) {
+            name = input.substring(0, lastDotIdx);
+            ext = '';
+        }
+
+        const newFile = {
+            id: Utils.generateId(),
+            name,
+            ext,
+            content: '',
+            unsaved: true
+        };
+
+        state.files.push(newFile);
+        await DB.save(newFile);
+        UI.hideModal();
+        document.getElementById('new-file-input').value = '';
+        App.openFile(newFile.id);
+        UI.toast('File created');
+    },
+
+    openFile: (id) => {
+        const file = state.files.find(f => f.id === id);
+        if(!file) return;
+
+        state.activeFileId = id;
+        localStorage.setItem('veyrix_active', id);
+        
+        state.editor.setReadOnly(false);
+        state.editor.setValue(file.content, -1);
+        
+        const mode = Utils.getModeFromExt(file.ext, file.name);
+        state.editor.session.setMode(`ace/mode/${mode}`);
+        
+        UI.renderSidebar();
+        UI.updateTopBar();
+        
+        if(window.innerWidth <= 768) {
+            UI.toggleSidebar(true); // force close on mobile selection
+        }
+    },
+
+    saveCurrentFile: async () => {
+        if(!state.activeFileId) return;
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return;
+
+        file.content = state.editor.getValue();
+        file.unsaved = false;
+        await DB.save(file);
+        
+        UI.renderSidebar();
+        UI.updateTopBar();
+        UI.toast('File saved');
+    },
+
+    triggerSnapshot: () => {
+        if(!state.activeFileId) return UI.toast('No file open', 'error');
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return;
+
+        file.snapshots = file.snapshots || [];
+        if(file.snapshots.length >= 5) {
+            const oldest = file.snapshots[0];
+            const date = new Date(oldest.ts).toLocaleString();
+            document.getElementById('snapshot-limit-oldest-info').textContent = `Version ${oldest.version || 1} - ${date}`;
+            UI.showModal('snapshot-limit-modal');
+        } else {
+            App.executeSnapshotSave(false);
+        }
+    },
+
+    executeSnapshotSave: async (replaceOldest = false) => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return;
+
+        file.snapshots = file.snapshots || [];
+        file.snapshotCounter = (file.snapshotCounter || file.snapshots.length) + 1;
+
+        if (replaceOldest) {
+            file.snapshots.shift();
+            UI.hideModal();
+        }
+
+        file.snapshots.push({
+            ts: Date.now(),
+            content: state.editor.getValue(),
+            version: file.snapshotCounter
+        });
+        
+        await DB.save(file);
+        UI.toast('Snapshot saved to history');
+    },
+
+    triggerRestore: (index) => {
+        UI.showConfirm(
+            "Restore Snapshot", 
+            "Are you sure you want to restore this snapshot? Current unsaved changes will be lost.", 
+            "Restore", 
+            () => App.restoreSnapshot(index)
+        );
+    },
+
+    restoreSnapshot: async (index) => {
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file || !file.snapshots || !file.snapshots[index]) return;
+        
+        state.editor.setValue(file.snapshots[index].content, -1);
+        UI.toast('Restored previous version');
+        App.saveCurrentFile(); // auto save after restore
+    },
+
+    triggerRename: async (id, e) => {
+        if(e) e.stopPropagation();
+        UI.closeAllDropdowns();
+        const file = state.files.find(f => f.id === id);
+        if(!file) return;
+
+        state.renameTargetId = id;
+        const input = document.getElementById('rename-file-input');
+        input.value = Utils.getDisplayName(file);
+        UI.showModal('rename-file-modal');
+    },
+
+    executeRename: async () => {
+        const id = state.renameTargetId;
+        const file = state.files.find(f => f.id === id);
+        if(!file) return;
+
+        const input = document.getElementById('rename-file-input').value.trim();
+        if(!input) return UI.toast('Filename cannot be empty', 'error');
+
+        const lastDotIdx = input.lastIndexOf('.');
+        
+        if (lastDotIdx > 0 && lastDotIdx < input.length - 1) {
+            file.ext = input.substring(lastDotIdx + 1);
+            file.name = input.substring(0, lastDotIdx);
+        } else if (lastDotIdx === 0) {
+            file.name = input;
+            file.ext = '';
+        } else if (lastDotIdx === input.length - 1) {
+            file.name = input.substring(0, lastDotIdx);
+            file.ext = '';
+        } else {
+            file.name = input;
+            file.ext = '';
+        }
+        
+        await DB.save(file);
+        UI.hideModal();
+        UI.renderSidebar();
+        UI.updateTopBar();
+        UI.toast('File renamed');
+    },
+
+    triggerShare: async (id, e) => {
+        if(e) e.stopPropagation();
+        UI.closeAllDropdowns();
+        App.openFile(id);
+        UI.showModal('share-modal');
+    },
+
+    triggerDelete: async (id, e) => {
+        if(e) e.stopPropagation();
+        UI.closeAllDropdowns();
+        
+        UI.showConfirm(
+            "Delete File", 
+            "Are you sure you want to delete this file? This action cannot be undone.", 
+            "Delete", 
+            async () => {
+                await DB.delete(id);
+                state.files = state.files.filter(f => f.id !== id);
+                if(state.activeFileId === id) {
+                    state.activeFileId = null;
+                    localStorage.removeItem('veyrix_active');
+                    UI.updateTopBar();
+                }
+                UI.renderSidebar();
+                UI.toast('File deleted');
+            }
+        );
+    },
+
+    handleFileUpload: (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+
+        // Validation for common non-text binaries (mobile native pickers might circumvent accept filter)
+        if(file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('audio/') || file.type === 'application/pdf' || file.name.match(/\.(exe|dll|bin|zip|rar|tar|gz|7z|apk|dmg|iso)$/i)) {
+            e.target.value = '';
+            return UI.toast('Invalid file type (Text/Code only)', 'error');
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const input = file.name;
+            let name = input;
+            let ext = '';
+            
+            const lastDotIdx = input.lastIndexOf('.');
+            if (lastDotIdx > 0 && lastDotIdx < input.length - 1) {
+                ext = input.substring(lastDotIdx + 1);
+                name = input.substring(0, lastDotIdx);
+            } else if (lastDotIdx === 0) {
+                name = input;
+                ext = '';
+            } else if (lastDotIdx === input.length - 1) {
+                name = input.substring(0, lastDotIdx);
+                ext = '';
+            }
+
+            const newFile = {
+                id: Utils.generateId(),
+                name,
+                ext,
+                content: ev.target.result,
+                unsaved: false
+            };
+
+            state.files.push(newFile);
+            await DB.save(newFile);
+            App.openFile(newFile.id);
+            UI.toast('File imported');
+        };
+        reader.readAsText(file);
+        e.target.value = ''; // reset
+    },
+
+    loadExternalContent: (name, ext, content) => {
+        // Creates a temporary file that won't auto-save to DB unless specifically saved
+        const file = {
+            id: 'temp_' + Date.now(),
+            name,
+            ext,
+            content,
+            unsaved: true // implies it needs saving
+        };
+        state.files.push(file);
+        App.openFile(file.id);
+        document.getElementById('banner-warning').classList.remove('hidden');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    },
+
+    formatCode: () => {
+        if(!state.activeFileId) return;
+        const file = state.files.find(f => f.id === state.activeFileId);
+        if(!file) return;
+        
+        try {
+            const beautify = ace.require("ace/ext/beautify");
+            beautify.beautify(state.editor.session);
+            UI.toast('Document formatted');
+        } catch(e) {
+            UI.toast('Formatting not supported for this language', 'error');
+        }
+    },
+
+    toggleFullscreen: () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => UI.toast('Fullscreen failed', 'error'));
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    },
+
+    factoryReset: async () => {
+        if(confirm('Are you sure? This will delete all local files and cannot be undone.')) {
+            const request = indexedDB.deleteDatabase('VeyrixFS');
+            request.onsuccess = () => {
+                localStorage.clear();
+                window.location.reload();
+            };
+        }
+    }
+};
+
+// Start application
+window.onload = App.init;
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('assets/sw.js').catch(err => {
+            console.log('SW registration failed: ', err);
+        });
+    });
+}
+</script>
+</body>
+</html>
