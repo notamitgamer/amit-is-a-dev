@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pc-perf-link | Advanced Hardware Telemetry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Jon Suh's Hamburgers CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hamburgers/1.2.1/hamburgers.min.css">
+    
+    <style>
+        /* Robust Font Stacking to prevent mobile device overrides */
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; 
+            scroll-behavior: smooth; 
+            -webkit-font-smoothing: antialiased;
+        }
+        code, pre, .font-mono { 
+            font-family: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important; 
+        }
+        
+        /* Micro Animations & Touch Interactions */
+        .touch-spring {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .touch-spring:active {
+            transform: scale(0.95);
+        }
+        .touch-lift {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+        .touch-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Sidebar Links */
+        .sidebar-link { transition: all 0.2s ease-in-out; }
+        .sidebar-link:hover { background-color: rgba(59, 130, 246, 0.08); color: #2563eb; transform: translateX(4px); }
+        .active-link { border-left: 4px solid #3b82f6; background-color: rgba(59, 130, 246, 0.08); color: #1d4ed8; font-weight: 600; }
+        
+        /* Hamburger Custom Colors */
+        .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after { background-color: #475569 !important; border-radius: 4px !important; }
+        .hamburger.is-active .hamburger-inner, .hamburger.is-active .hamburger-inner::before, .hamburger.is-active .hamburger-inner::after { background-color: #2563eb !important; }
+        .hamburger { padding: 8px !important; }
+        
+        /* Mobile UI Simulation */
+        .mock-mobile { width: 280px; height: 500px; border: 8px solid #0f172a; border-radius: 36px; background: #0f172a; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .mock-mobile::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 24px; background: #0f172a; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 20; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Chart Animation */
+        .spline-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawSpline 3s ease-in-out infinite alternate; }
+        @keyframes drawSpline { to { stroke-dashoffset: 0; } }
+
+        /* Mobile Menu Smooth Transition */
+        #mobileMenu {
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+            transform-origin: top center;
+        }
+        .menu-hidden { opacity: 0; transform: scaleY(0.95); visibility: hidden; pointer-events: none; }
+        .menu-visible { opacity: 1; transform: scaleY(1); visibility: visible; pointer-events: auto; }
+    </style>
+</head>
+<body class="bg-[#fafcff] text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Semi-transparent Backdrop for Open Menu -->
+    <div id="mobileBackdrop" class="lg:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeMobileMenu()"></div>
+
+    <!-- Professional Mobile Header -->
+    <header id="mobileHeader" class="lg:hidden backdrop-blur-xl bg-white/40 border-b border-white/50 sticky top-0 z-50 px-5 py-3 flex justify-between items-center shadow-sm transition-transform duration-300">
+        <div class="touch-spring cursor-pointer" onclick="window.scrollTo(0,0)">
+            <h1 class="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">pc-perf-link</h1>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Telemetry Bridge</p>
+        </div>
+        <!-- Jon Suh Spin Hamburger (Box styling removed) -->
+        <button id="mobileMenuBtn" class="hamburger hamburger--spin scale-75 origin-right opacity-80 hover:opacity-100 transition-opacity" type="button" aria-label="Menu" aria-controls="navigation">
+            <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+            </span>
+        </button>
+    </header>
+
+    <!-- Animated Mobile Dropdown Menu -->
+    <div id="mobileMenu" class="lg:hidden menu-hidden backdrop-blur-2xl bg-white/60 border-b border-white/50 shadow-2xl fixed w-full z-40 max-h-[75vh] overflow-y-auto top-[68px]">
+        <nav class="px-5 py-6 space-y-2 font-semibold text-[15px]">
+            <a href="#introduction" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Introduction</a>
+            <a href="#why-use" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Why pc-perf-link?</a>
+            <a href="#setup" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Setup & Autostart</a>
+            <a href="#kiosk" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Client & Kiosk Browser</a>
+            <a href="#architecture" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Architecture</a>
+            <a href="#ui" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Interactive UI</a>
+            <a href="#benchmarking" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Benchmarking Code</a>
+            <a href="#faq" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">FAQ</a>
+            <a href="#contributing" class="block py-3 px-4 rounded-xl hover:bg-blue-50 hover:text-blue-600 touch-spring text-slate-700" onclick="closeMobileMenu()">Contributing</a>
+        </nav>
+    </div>
+
+    <div class="flex flex-1 w-full max-w-[1600px] mx-auto">
+        <!-- Professional Sidebar Navigation (Desktop) -->
+        <aside class="w-72 bg-white/50 backdrop-blur-xl border-r border-slate-200/80 hidden lg:flex flex-col sticky top-0 h-screen overflow-y-auto shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            <div class="p-8 pb-6 border-b border-slate-200/60 touch-spring cursor-pointer" onclick="window.scrollTo(0,0)">
+                <h1 class="text-[26px] font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">pc-perf-link</h1>
+                <p class="text-[11px] text-slate-400 font-bold tracking-[0.2em] uppercase mt-1">Documentation v1.5</p>
+            </div>
+            <nav class="p-6 space-y-2 flex-1 text-sm text-slate-600 font-medium">
+                <a href="#introduction" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Introduction</a>
+                <a href="#why-use" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Why pc-perf-link?</a>
+                <a href="#setup" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Setup & Autostart</a>
+                <a href="#kiosk" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Client & Kiosk Browser</a>
+                <a href="#architecture" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Data Architecture</a>
+                <a href="#ui" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Interactive UI Features</a>
+                <a href="#benchmarking" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Benchmarking Logic</a>
+                <a href="#faq" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">FAQ & Support</a>
+                <a href="#contributing" class="block py-2.5 px-4 rounded-xl sidebar-link touch-spring">Contributing</a>
+            </nav>
+            <div class="p-6 border-t border-slate-200/60 bg-gradient-to-b from-transparent to-blue-50/50">
+                <a href="https://github.com/notamitgamer/pc-perf-link" target="_blank" class="flex items-center justify-center gap-2 text-sm font-bold text-slate-700 hover:text-blue-600 bg-white border border-slate-200 rounded-xl py-3 px-4 shadow-sm touch-spring hover:border-blue-300">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    GitHub Repository
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 min-w-0 flex flex-col">
+            <div class="flex-1 w-full px-6 py-10 lg:px-16 lg:py-16">
+                <div class="max-w-4xl mx-auto">
+                
+                <!-- INTRODUCTION -->
+                <section id="introduction" class="mb-24 scroll-mt-28">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-5 tracking-tight text-slate-900">Introduction</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed mb-10">
+                        <strong>pc-perf-link</strong> is an open-source, ultra-lightweight hardware telemetry bridge. It completely isolates performance monitoring from your host machine by broadcasting real-time metrics (CPU, RAM, Network, Disk, and Top Apps) over a local network to any device with a web browser.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm touch-lift cursor-default">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5 shadow-inner">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-2 text-lg tracking-tight">Sub-Second Latency</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">WebSocket powered push-architecture updates UI exactly every 1000ms.</p>
+                        </div>
+                        <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm touch-lift cursor-default">
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 shadow-inner">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-2 text-lg tracking-tight">Zero UI Overhead</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">Host runs purely in terminal/background. Graph rendering is offloaded to mobile.</p>
+                        </div>
+                        <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm touch-lift cursor-default">
+                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-5 shadow-inner">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-2 text-lg tracking-tight">Developer Grade</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">Built-in benchmarking tools specifically designed for C/C++/Rust optimization.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-slate-200/60 my-16">
+
+                <!-- WHY USE IT -->
+                <section id="why-use" class="mb-24 scroll-mt-28">
+                    <div class="flex flex-col md:flex-row gap-10 items-center">
+                        <div class="flex-1">
+                            <h2 class="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight text-slate-900">Why avoid 3rd Party Monitors?</h2>
+                            <p class="text-slate-600 mb-6 leading-relaxed text-lg">
+                                Most commercial monitoring software (like NZXT CAM, Corsair iCUE, or web-based electron dashboards) suffer from severe architectural flaws when it comes to raw performance:
+                            </p>
+                            <ul class="space-y-4 mb-8 text-[15px] text-slate-700">
+                                <li class="flex items-start gap-4 p-4 rounded-xl hover:bg-white border border-transparent hover:border-slate-200 hover:shadow-sm transition-all duration-300">
+                                    <span class="text-red-500 bg-red-50 p-1.5 rounded-lg shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></span> 
+                                    <span><strong>Electron Bloat:</strong> They run Chromium in the background, consuming 300MB - 600MB of RAM just to draw a graph.</span>
+                                </li>
+                                <li class="flex items-start gap-4 p-4 rounded-xl hover:bg-white border border-transparent hover:border-slate-200 hover:shadow-sm transition-all duration-300">
+                                    <span class="text-red-500 bg-red-50 p-1.5 rounded-lg shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></span> 
+                                    <span><strong>CPU Interrupts:</strong> Polling and rendering complex UI on the host machine steals CPU cycles from your actual game or compilation tasks.</span>
+                                </li>
+                                <li class="flex items-start gap-4 p-4 rounded-xl hover:bg-white border border-transparent hover:border-slate-200 hover:shadow-sm transition-all duration-300">
+                                    <span class="text-red-500 bg-red-50 p-1.5 rounded-lg shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></span> 
+                                    <span><strong>Data Privacy:</strong> Many require accounts and silently phone home with your telemetry data.</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
+                                <h3 class="text-xl font-bold text-emerald-700 mb-3 flex items-center gap-2">
+                                    <span class="bg-emerald-100 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
+                                    The pc-perf-link Solution
+                                </h3>
+                                <p class="text-[15px] text-emerald-800/80 leading-relaxed">
+                                    We utilize pure Python (`psutil`) to poll hardware at a near-native level. The backend consumes <strong>~15MB of RAM</strong>. It bundles the data into JSON and fires it across your local WiFi. <em>Your phone's processor handles all the heavy lifting of drawing charts.</em>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SETUP & AUTOSTART -->
+                <section id="setup" class="mb-24 scroll-mt-28 bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+                    <!-- Decor Gradients -->
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[100px] opacity-30 transform translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-80 h-80 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 transform -translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight relative z-10 text-white">Setup & Autostart</h2>
+                    
+                    <div class="space-y-10 relative z-10">
+                        <!-- Step 1 -->
+                        <div class="group touch-spring cursor-default">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="bg-blue-600 text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">1</span>
+                                <h3 class="font-bold text-xl">Install Dependencies</h3>
+                            </div>
+                            <!-- IDE Style Code Block -->
+                            <div class="rounded-xl overflow-hidden bg-[#0d1117] border border-slate-700/60 shadow-xl ml-2 md:ml-12 code-block-wrapper relative group">
+                                <div class="flex items-center justify-between px-4 py-3 bg-slate-800/50 border-b border-slate-700/50">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                    </div>
+                                    <button onclick="copyCode(this)" class="text-slate-400 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 p-1 md:p-0" title="Copy code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                                <pre class="text-emerald-400 p-5 text-[14px] font-mono overflow-x-auto">pip install fastapi uvicorn psutil</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="group touch-spring cursor-default">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="bg-blue-600 text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">2</span>
+                                <h3 class="font-bold text-xl">Manual Launch</h3>
+                            </div>
+                            <p class="text-slate-400 mb-4 text-[15px] ml-2 md:ml-12">To run it normally and see console logs (great for debugging):</p>
+                            <!-- IDE Style Code Block -->
+                            <div class="rounded-xl overflow-hidden bg-[#0d1117] border border-slate-700/60 shadow-xl ml-2 md:ml-12 code-block-wrapper relative group">
+                                <div class="flex items-center justify-between px-4 py-3 bg-slate-800/50 border-b border-slate-700/50">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                    </div>
+                                    <button onclick="copyCode(this)" class="text-slate-400 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 p-1 md:p-0" title="Copy code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                                <pre class="text-blue-300 p-5 text-[14px] font-mono overflow-x-auto">python server_bridge.py</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 ml-0 md:ml-12 touch-lift cursor-default shadow-xl">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="bg-purple-500 text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg shadow-purple-500/30">3</span>
+                                <h3 class="font-bold text-xl text-white">Enable Autostart (Background Mode)</h3>
+                            </div>
+                            <p class="text-slate-300 mb-6 text-[15px] leading-relaxed">
+                                You don't want a console window open all the time. We included `start_server.vbs` to execute the python script completely silently.
+                            </p>
+                            <ol class="list-decimal list-inside space-y-3 text-[15px] text-slate-300 bg-black/20 p-5 rounded-xl border border-white/5">
+                                <li>Right-click <code class="text-purple-300 font-mono">start_server.vbs</code> and select <strong>"Create shortcut"</strong>.</li>
+                                <li>Press <kbd class="bg-slate-700 text-white px-2 py-1 rounded-md text-sm shadow-sm border border-slate-600">Win + R</kbd>, type <code class="text-white font-mono">shell:startup</code>, and hit Enter.</li>
+                                <li>Move the shortcut you created into that Startup folder.</li>
+                            </ol>
+                            <div class="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-start">
+                                <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-red-200 leading-relaxed"><strong>How to stop it?</strong> Since it's hidden, open Windows Task Manager, find <code class="font-mono bg-black/30 px-1 rounded">python.exe</code> or <code class="font-mono bg-black/30 px-1 rounded">pythonw.exe</code>, and click "End Task".</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CLIENT & KIOSK BROWSER -->
+                <section id="kiosk" class="mb-24 scroll-mt-28">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-slate-900">Client & Kiosk Browser</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-8">
+                            <div class="touch-lift p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+                                <h3 class="font-bold text-slate-900 text-xl mb-3 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                                    Connecting via Browser
+                                </h3>
+                                <p class="text-[15px] text-slate-600 leading-relaxed">
+                                    Open any device on your local WiFi and navigate to the IP address printed by the Python server (e.g., <code class="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-blue-600 font-mono">http://192.168.1.5:8000</code>). 
+                                    <br><br>
+                                    The web app features a Setup Screen. Enter the IP there; it is saved securely to your browser's <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">localStorage</code> so you never have to type it again.
+                                </p>
+                            </div>
+                            
+                            <div class="touch-lift p-6 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl shadow-sm">
+                                <h3 class="font-bold text-indigo-900 text-xl mb-3 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                    The Kiosk APK (For old phones)
+                                </h3>
+                                <p class="text-[15px] text-indigo-800/80 mb-4 leading-relaxed">
+                                    Don't throw away that old Android phone! Turn it into a permanent hardware monitor.
+                                </p>
+                                <ul class="text-[14px] text-indigo-900/70 space-y-3 list-none">
+                                    <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 bg-indigo-400 rounded-full shrink-0 mt-[7px]"></div> <span class="leading-relaxed">Go to the <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold touch-spring inline-block">GitHub Releases</a> tab.</span></li>
+                                    <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 bg-indigo-400 rounded-full shrink-0 mt-[7px]"></div> <span class="leading-relaxed">Download the included <strong>Kiosk Browser APK</strong>.</span></li>
+                                    <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 bg-indigo-400 rounded-full shrink-0 mt-[7px]"></div> <span class="leading-relaxed">It forces full-screen, removes the URL bar, and <strong>prevents sleep</strong>.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Visual representation of Kiosk setup -->
+                        <div class="bg-slate-50 border border-slate-200/80 p-8 rounded-[2rem] flex items-center justify-center shadow-inner">
+                            <div class="text-center touch-lift">
+                                <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-100">
+                                    <svg class="w-20 h-20 mx-auto text-blue-500 mb-6 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                    <div class="bg-slate-900 text-white font-mono text-sm px-6 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] inline-block text-left">
+                                        <span class="text-slate-500">></span> ENTER PC IP<br>
+                                        <span class="text-blue-400 text-lg font-bold mt-1 inline-block">192.168.1.<span class="animate-pulse">_</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-slate-200/60 my-16">
+
+                <!-- ARCHITECTURE -->
+                <section id="architecture" class="mb-24 scroll-mt-28">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-slate-900">Data Architecture & WebSocket Schema</h2>
+                    
+                    <div class="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm mb-10 touch-lift cursor-default">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-6 text-center">How Data Moves</h3>
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-[15px] text-center font-bold">
+                            <div class="w-full md:w-auto p-5 bg-slate-50 border border-slate-200 rounded-2xl flex-1 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+                                <span class="block text-[11px] text-slate-400 uppercase tracking-widest mb-2 font-semibold">Host PC</span>
+                                psutil Hardware Poll
+                            </div>
+                            <div class="text-slate-300 rotate-90 md:rotate-0 flex gap-1">
+                                <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+                                <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 150ms"></div>
+                                <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 300ms"></div>
+                            </div>
+                            <div class="w-full md:w-auto p-5 bg-blue-50 border border-blue-200 text-blue-700 rounded-2xl flex-1 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+                                <span class="block text-[11px] text-blue-400 uppercase tracking-widest mb-2 font-semibold">FastAPI</span>
+                                Python Dict to JSON
+                            </div>
+                            <div class="text-slate-300 rotate-90 md:rotate-0 flex gap-1">
+                                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 150ms"></div>
+                                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 300ms"></div>
+                            </div>
+                            <div class="w-full md:w-auto p-5 bg-emerald-500 text-white border border-emerald-600 rounded-2xl flex-1 shadow-md transition-transform hover:-translate-y-1 duration-300">
+                                <span class="block text-[11px] text-emerald-200 uppercase tracking-widest mb-2 font-semibold">WebSocket Push</span>
+                                Client Browser Renders
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-4">
+                        <h3 class="text-2xl font-bold text-slate-900 tracking-tight">Live JSON Payload</h3>
+                        <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Updates 1/sec</span>
+                    </div>
+                    <p class="text-[15px] text-slate-600 mb-6 leading-relaxed">
+                        Every 1000ms, the server pushes this complete state object. Notice the <code class="bg-slate-100 border border-slate-200 text-blue-600 px-1.5 py-0.5 rounded font-mono text-sm">"apps"</code> dictionary. The backend filters out processes using less than 50MB to ignore background services, returning only heavy applications grouped by their executable name.
+                    </p>
+                    
+                    <!-- IDE Code Block for JSON -->
+                    <div class="rounded-2xl overflow-hidden bg-[#0d1117] border border-slate-800 shadow-xl touch-lift cursor-text code-block-wrapper relative group">
+                        <div class="flex items-center justify-between px-5 py-3 bg-[#161b22] border-b border-slate-700/50">
+                            <div class="flex items-center gap-3">
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                </div>
+                                <span class="text-xs text-slate-500 font-mono">websocket_payload.json</span>
+                            </div>
+                            <button onclick="copyCode(this)" class="text-slate-400 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 p-1 md:p-0" title="Copy code">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </button>
+                        </div>
+                        <pre class="p-6 text-[14px] overflow-x-auto font-mono leading-relaxed"><span class="text-slate-400">{</span>
+  <span class="text-blue-300">"ip"</span><span class="text-slate-400">:</span> <span class="text-emerald-300">"192.168.1.5"</span><span class="text-slate-400">,</span>
+  <span class="text-blue-300">"uptime"</span><span class="text-slate-400">:</span> <span class="text-emerald-300">"2h 45m"</span><span class="text-slate-400">,</span>
+  <span class="text-blue-300">"cpu"</span><span class="text-slate-400">: {</span> <span class="text-blue-300">"percent"</span><span class="text-slate-400">:</span> <span class="text-orange-300">12.5</span><span class="text-slate-400">,</span> <span class="text-blue-300">"freq_ghz"</span><span class="text-slate-400">:</span> <span class="text-orange-300">3.8</span> <span class="text-slate-400">},</span>
+  <span class="text-blue-300">"ram"</span><span class="text-slate-400">: {</span> <span class="text-blue-300">"percent"</span><span class="text-slate-400">:</span> <span class="text-orange-300">45</span><span class="text-slate-400">,</span> <span class="text-blue-300">"used_gb"</span><span class="text-slate-400">:</span> <span class="text-orange-300">7.2</span><span class="text-slate-400">,</span> <span class="text-blue-300">"total_gb"</span><span class="text-slate-400">:</span> <span class="text-orange-300">16.0</span> <span class="text-slate-400">},</span>
+  <span class="text-blue-300">"network"</span><span class="text-slate-400">: {</span> <span class="text-blue-300">"up_kbps"</span><span class="text-slate-400">:</span> <span class="text-orange-300">120.5</span><span class="text-slate-400">,</span> <span class="text-blue-300">"down_kbps"</span><span class="text-slate-400">:</span> <span class="text-orange-300">2400.1</span> <span class="text-slate-400">},</span>
+  <span class="text-blue-300">"disk"</span><span class="text-slate-400">: {</span> <span class="text-blue-300">"read_kbps"</span><span class="text-slate-400">:</span> <span class="text-orange-300">0.0</span><span class="text-slate-400">,</span> <span class="text-blue-300">"write_kbps"</span><span class="text-slate-400">:</span> <span class="text-orange-300">45.2</span> <span class="text-slate-400">},</span>
+  <span class="text-purple-400 font-bold">"apps"</span><span class="text-slate-400">: {</span>
+    <span class="text-blue-300">"count"</span><span class="text-slate-400">:</span> <span class="text-orange-300">12</span><span class="text-slate-400">,</span>
+    <span class="text-blue-300">"top"</span><span class="text-slate-400">: [</span>
+      <span class="text-slate-400">{</span> <span class="text-blue-300">"name"</span><span class="text-slate-400">:</span> <span class="text-emerald-300">"chrome"</span><span class="text-slate-400">,</span> <span class="text-blue-300">"mem_mb"</span><span class="text-slate-400">:</span> <span class="text-orange-300">1250.5</span> <span class="text-slate-400">},</span>
+      <span class="text-slate-400">{</span> <span class="text-blue-300">"name"</span><span class="text-slate-400">:</span> <span class="text-emerald-300">"vscode"</span><span class="text-slate-400">,</span> <span class="text-blue-300">"mem_mb"</span><span class="text-slate-400">:</span> <span class="text-orange-300">850.2</span> <span class="text-slate-400">}</span>
+    <span class="text-slate-400">]</span>
+  <span class="text-slate-400">}</span>
+<span class="text-slate-400">}</span></pre>
+                    </div>
+                </section>
+
+                <!-- UI & INTERACTIVITY -->
+                <section id="ui" class="mb-24 scroll-mt-28">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight text-slate-900">Interactive UI Features</h2>
+                    <p class="text-[16px] text-slate-600 mb-10 leading-relaxed">
+                        While it looks like a static dashboard, the frontend is built entirely with Tailwind CSS and Chart.js, explicitly designed for responsive touch interfaces with lively micro-animations. 
+                    </p>
+                    
+                    <div class="flex flex-col md:flex-row gap-12 items-center">
+                        <div class="mock-mobile p-4 flex flex-col gap-3 shrink-0 touch-lift cursor-pointer shadow-2xl">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono mt-2 mb-1 px-1">
+                                <span class="text-emerald-400 flex items-center gap-1.5 font-bold">
+                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse"></span> LIVE
+                                </span>
+                                <span class="bg-blue-900/40 text-blue-400 px-2 py-0.5 rounded border border-blue-700/50 touch-spring">APPS: 12</span>
+                            </div>
+                            
+                            <!-- Expandable Cards Simulation -->
+                            <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-4 relative overflow-hidden group touch-spring cursor-pointer shadow-lg">
+                                <div class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">CPU Load</div>
+                                <div class="text-[32px] font-bold text-white font-mono tracking-tighter leading-none relative z-10">24<span class="text-lg text-slate-500 font-sans ml-0.5">%</span></div>
+                                <!-- Mock Chart -->
+                                <svg class="absolute bottom-0 left-0 w-full h-[40%] overflow-visible translate-y-1" preserveAspectRatio="none" viewBox="0 0 100 24">
+                                    <path d="M0,24 Q10,14 20,10 T40,12 T60,5 T80,8 T100,2 L100,24 Z" fill="rgba(59,130,246,0.15)"></path>
+                                    <path class="spline-path" d="M0,24 Q10,14 20,10 T40,12 T60,5 T80,8 T100,2" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <!-- Modal interaction hint -->
+                                <div class="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] z-20">
+                                    <span class="bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl uppercase tracking-widest transform scale-95 group-hover:scale-100 transition-transform duration-300">Tap to Expand</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-4 relative group touch-spring cursor-pointer shadow-lg mt-1 overflow-hidden">
+                                <div class="text-[10px] uppercase font-bold text-slate-400 mb-1 tracking-wider">Memory</div>
+                                <div class="text-[32px] font-bold text-white font-mono tracking-tighter leading-none relative z-10">45<span class="text-lg text-slate-500 font-sans ml-0.5">%</span></div>
+                                <!-- Subtle ring chart mock -->
+                                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 opacity-80" viewBox="0 0 36 36">
+                                    <path class="text-slate-700/50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                                    <path class="text-purple-500" stroke-dasharray="45, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="space-y-8">
+                            <div class="touch-lift p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+                                <h3 class="font-bold text-slate-900 mb-2 text-xl tracking-tight">Tap-to-Expand Modals</h3>
+                                <p class="text-[15px] text-slate-600 leading-relaxed">
+                                    Tapping any specific card (CPU, RAM, Net, Disk) triggers a smooth micro-animation, pauses the main view, and opens a <strong>Full-Screen Interactive Chart</strong> maintaining a 60-second rolling history buffer directly in the browser's memory.
+                                </p>
+                            </div>
+                            <div class="touch-lift p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+                                <h3 class="font-bold text-slate-900 mb-2 text-xl tracking-tight">Active Apps Tracker</h3>
+                                <p class="text-[15px] text-slate-600 leading-relaxed">
+                                    In the top navigation, tapping the <code class="bg-slate-100 border border-slate-200 text-blue-600 px-1.5 py-0.5 rounded text-xs font-mono">APPS: 12</code> counter opens a horizontal bar chart displaying exact megabyte consumption of the top processes, updated dynamically.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-slate-200/60 my-16">
+
+                <!-- BENCHMARKING -->
+                <section id="benchmarking" class="mb-24 scroll-mt-28 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-8 md:p-12 rounded-[2rem] border border-blue-100/80 shadow-sm relative overflow-hidden">
+                    <!-- Decor -->
+                    <svg class="absolute top-0 right-0 w-80 h-80 text-blue-500/5 -mr-20 -mt-20 transform rotate-12 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-blue-900 mb-5 relative z-10 tracking-tight">Benchmarking Code (C/C++/Rust)</h2>
+                    <p class="text-[16px] text-blue-800/80 mb-8 leading-relaxed relative z-10">
+                        When writing low-level code where memory fragmentation and execution speed are critical, you need un-polluted data. The UI includes a massive red <strong>"RECORD"</strong> button specifically for tracking code execution limits.
+                    </p>
+                    
+                    <div class="bg-white/80 backdrop-blur-md p-8 rounded-3xl border border-blue-200/60 shadow-[0_8px_30px_rgba(59,130,246,0.06)] relative z-10 mb-6 touch-lift cursor-default">
+                        <h3 class="text-xs font-bold uppercase text-blue-500 mb-5 tracking-[0.15em]">The 3x2 Grid Report</h3>
+                        <p class="text-[15px] text-slate-600 mb-6">Upon stopping a recording, the UI intercepts the data array and generates a comprehensive session report detailing:</p>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-slate-700 mb-8">
+                            <li class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 touch-spring"><span class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)] shrink-0"></span> <span><strong>CPU:</strong> Peak & Base-to-Max range</span></li>
+                            <li class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 touch-spring"><span class="w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.6)] shrink-0"></span> <span><strong>RAM:</strong> Total Delta & Peak Limit</span></li>
+                            <li class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 touch-spring"><span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] shrink-0"></span> <span><strong>Time:</strong> Millisecond accurate duration</span></li>
+                            <li class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 touch-spring"><span class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.6)] shrink-0"></span> <span><strong>Disk:</strong> Maximum I/O Read/Write spikes</span></li>
+                        </ul>
+
+                        <div class="p-5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg">
+                            <p class="text-[10px] font-bold uppercase text-blue-200 mb-2 tracking-widest">Efficiency Benchmark Formula</p>
+                            <code class="text-lg md:text-xl text-white font-mono font-bold block whitespace-nowrap overflow-x-auto">Score = (Time × 50) + (Peak CPU) + (RAM_GB × 200)</code>
+                        </div>
+                    </div>
+                    <p class="text-sm text-blue-700/60 font-medium relative z-10 flex items-start gap-2">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>A lower score indicates superior optimization. We penalize heavy RAM allocations heavily (200x multiplier) to encourage efficient memory management in unmanaged languages.</span>
+                    </p>
+                </section>
+
+                <!-- FAQ SECTION -->
+                <section id="faq" class="mb-24 scroll-mt-28">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-10 tracking-tight text-slate-900">Frequently Asked Questions</h2>
+                    
+                    <div class="space-y-5">
+                        <!-- Q1 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Does this use a lot of PC resources?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                No. Because the backend is pure Python generating JSON without rendering graphics, it utilizes roughly <strong>15MB of RAM</strong> and less than <strong>0.1% CPU</strong> overhead. The heavy lifting (rendering charts) is pushed entirely to your mobile device's GPU/CPU.
+                            </p>
+                        </div>
+                        
+                        <!-- Q2 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                How do I find my PC's IP address?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                When you run <code class="bg-slate-100 font-mono text-sm px-1 rounded border border-slate-200">python server_bridge.py</code> manually, the console will print a line saying <code class="bg-slate-100 font-mono text-sm px-1 rounded border border-slate-200">Mobile URL: http://192.168.x.x:8000</code>. Enter that exact IP into your phone.
+                            </p>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Can I use it on an iPhone/iPad?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                Yes. Simply open the URL in Safari, tap the Share button, and select <strong>"Add to Home Screen"</strong>. This will run it as a standalone, full-screen Progressive Web App without browser UI interfering.
+                            </p>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Why does my IP connection fail?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                Ensure your PC and mobile device are on the <strong>same WiFi network</strong>. Additionally, your Windows Firewall might be blocking port 8000. You may need to allow Python through the firewall in your Windows Settings.
+                            </p>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                What happens if I close the browser tab?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                The WebSocket connection is simply dropped. The Python server continues running silently in the background on your PC until you manually stop it. Your PC's performance remains completely unaffected by client disconnects.
+                            </p>
+                        </div>
+
+                        <!-- Q6 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                How do I update pc-perf-link?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                Updates can be seamlessly applied by downloading the latest <code class="bg-slate-100 font-mono text-sm px-1 rounded border border-slate-200">server_bridge.py</code> and <code class="bg-slate-100 font-mono text-sm px-1 rounded border border-slate-200">index.html</code> from the GitHub repository and overwriting your existing files.
+                            </p>
+                        </div>
+
+                        <!-- Q7 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Is it secure to broadcast telemetry over my network?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                pc-perf-link is designed exclusively for Local Area Networks (LAN). Your data does not leave your router. However, anyone connected to your WiFi network can view the stats if they know the IP address.
+                            </p>
+                        </div>
+
+                        <!-- Q8 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Can I view the telemetry from outside my house?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                Out-of-the-box, no. This tool prevents internet exposure for security. If you must view it remotely, you should set up a secure VPN (like Tailscale or ZeroTier) into your home network.
+                            </p>
+                        </div>
+
+                        <!-- Q9 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Does it support Linux or macOS?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                Yes! Because the backend relies purely on the <code class="bg-slate-100 font-mono text-sm px-1 rounded border border-slate-200">psutil</code> Python library, it is completely cross-platform compatible and will run perfectly fine on Linux and macOS environments.
+                            </p>
+                        </div>
+
+                        <!-- Q10 -->
+                        <div class="border border-slate-200/80 rounded-2xl p-6 bg-white shadow-sm touch-lift cursor-pointer hover:border-blue-300">
+                            <h3 class="font-bold text-xl text-slate-900 mb-3 flex items-center gap-3 tracking-tight">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0">Q</span>
+                                Why is the Top Apps section not showing my game?
+                            </h3>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-11">
+                                The backend actively filters out any process consuming less than 50MB of RAM to prevent UI clutter. It also matches executables; ensure your game's memory threshold exceeds this limit and isn't hidden by system anti-cheat obfuscation.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CONTRIBUTING -->
+                <section id="contributing" class="mb-8 scroll-mt-28">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-8 tracking-tight text-slate-900">How to Contribute</h2>
+                    <p class="text-[16px] text-slate-600 mb-10 leading-relaxed">
+                        We actively welcome contributions from the community! Whether it's a bug fix, new feature, or documentation improvement, here is the standard pipeline to get your code merged into <strong>pc-perf-link</strong>.
+                    </p>
+
+                    <div class="space-y-8 relative z-10">
+                        <!-- Step 1 -->
+                        <div class="group touch-spring cursor-default bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:border-blue-300 transition-colors">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">1</span>
+                                <h3 class="font-bold text-xl text-slate-900">Fork & Clone</h3>
+                            </div>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-12 mb-4">Start by forking the repository to your own GitHub account, then clone it locally and create a new branch for your feature or fix.</p>
+                            <div class="rounded-xl overflow-hidden bg-[#0d1117] border border-slate-700/60 shadow-inner ml-12 code-block-wrapper relative group/code">
+                                <div class="flex items-center justify-between px-4 py-2.5 bg-[#161b22] border-b border-slate-700/50">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                    </div>
+                                    <button onclick="copyCode(this)" class="text-slate-400 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover/code:opacity-100 focus:opacity-100 p-1 md:p-0" title="Copy code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2-2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                                <pre class="text-emerald-400 p-4 text-[13px] font-mono overflow-x-auto">git clone https://github.com/YOUR_USERNAME/pc-perf-link.git
+cd pc-perf-link
+git checkout -b feature/my-awesome-feature</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="group touch-spring cursor-default bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:border-blue-300 transition-colors">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">2</span>
+                                <h3 class="font-bold text-xl text-slate-900">Commit & Push</h3>
+                            </div>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-12 mb-4">Make your code changes, ensuring you maintain the low-memory, zero-bloat philosophy. Then commit your changes with a clear message and push to your fork.</p>
+                            <div class="rounded-xl overflow-hidden bg-[#0d1117] border border-slate-700/60 shadow-inner ml-12 code-block-wrapper relative group/code">
+                                <div class="flex items-center justify-between px-4 py-2.5 bg-[#161b22] border-b border-slate-700/50">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                        <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                    </div>
+                                    <button onclick="copyCode(this)" class="text-slate-400 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover/code:opacity-100 focus:opacity-100 p-1 md:p-0" title="Copy code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    </button>
+                                </div>
+                                <pre class="text-blue-300 p-4 text-[13px] font-mono overflow-x-auto">git add .
+git commit -m "feat: added new awesome feature"
+git push origin feature/my-awesome-feature</pre>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="group touch-spring cursor-default bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:border-blue-300 transition-colors">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">3</span>
+                                <h3 class="font-bold text-xl text-slate-900">Open PR & Email Me</h3>
+                            </div>
+                            <p class="text-slate-600 text-[15px] leading-relaxed ml-12">
+                                Go to the original <a href="https://github.com/notamitgamer/pc-perf-link" target="_blank" class="text-blue-600 font-semibold hover:underline">GitHub repository</a> and click <strong>"Compare & pull request"</strong>. Fill out the PR template describing your changes.<br><br>
+                                Once the PR is open, <strong>please notify me directly</strong> so I can review it quickly! Send an email to <a href="mailto:mail@amit.is-a.dev" class="text-blue-600 font-semibold hover:underline bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">mail@amit.is-a.dev</a> containing the link to your Pull Request.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                
+            </div>
+            </div>
+            
+            <!-- FOOTER -->
+            <footer class="bg-slate-950 border-t border-slate-900 pt-16 pb-12">
+                <div class="max-w-6xl mx-auto px-6 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                    
+                    <!-- Branding -->
+                    <div class="space-y-4">
+                        <h3 class="font-extrabold text-white uppercase tracking-widest text-lg">pc-perf-link</h3>
+                        <p class="text-[14px] text-slate-400 leading-relaxed">
+                            Designed for absolute minimalists and performance purists. An open-source, ultra-low overhead telemetry bridge.
+                        </p>
+                        <div class="flex items-center gap-2 pt-2">
+                            <span class="text-[11px] font-mono font-bold bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-md">Apache 2.0 Licensed</span>
+                        </div>
+                    </div>
+
+                    <!-- Links -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-white text-[15px]">Project Links</h4>
+                        <ul class="space-y-3 text-[14px] text-slate-400">
+                            <li><a href="https://github.com/notamitgamer/pc-perf-link" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg> <span class="flex items-center gap-1.5">GitHub Repository <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                            <li><a href="https://amit.is-a.dev" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg> <span class="flex items-center gap-1.5">My Portfolio <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                            <li><a href="https://github.com/notamitgamer" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> <span class="flex items-center gap-1.5">GitHub Profile <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                            <li><a href="./connect" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg> <span class="flex items-center gap-1.5">Connect with me <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Security & Contact -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-white text-[15px]">Security & Contact</h4>
+                        <p class="text-[13px] text-slate-400 leading-relaxed">
+                            Please <strong class="text-red-400 font-bold">do not</strong> open public PRs or Issues for critical security bugs.
+                        </p>
+                        <ul class="space-y-3 text-[13px]">
+                            <li>
+                                <span class="text-slate-500 block text-[10px] font-bold uppercase tracking-widest mb-0.5">Important / Security:</span>
+                                <a href="mailto:amitdutta4255@gmail.com" class="text-blue-400 hover:underline font-medium">amitdutta4255@gmail.com</a>
+                            </li>
+                            <li>
+                                <span class="text-slate-500 block text-[10px] font-bold uppercase tracking-widest mb-0.5">General / Feedback:</span>
+                                <a href="mailto:mail@amit.is-a.dev" class="text-blue-400 hover:underline font-medium">mail@amit.is-a.dev</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Developers -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-white text-[15px]">Developers</h4>
+                        <ul class="space-y-2 text-[14px] text-slate-400 mb-4">
+                            <li><a href="https://github.com/notamitgamer/pc-perf-link/blob/main/CONTRIBUTING.md" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div> <span class="flex items-center gap-1.5">Contributing Guide <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                            <li><a href="https://github.com/notamitgamer/pc-perf-link/blob/main/CODE_OF_CONDUCT.md" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div> <span class="flex items-center gap-1.5">Code of Conduct <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span></a></li>
+                        </ul>
+                        <p class="text-[13px] text-slate-400 leading-relaxed mb-3">
+                            Want to contribute? Fork the repo, or support the project by leaving a star!
+                        </p>
+                        <a href="https://github.com/notamitgamer/pc-perf-link" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-slate-600 text-slate-200 rounded-lg text-sm font-bold transition-all touch-spring shadow-sm">
+                            <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+                            <span class="flex items-center gap-1.5">Star on GitHub <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></span>
+                        </a>
+                    </div>
+
+                </div>
+                
+                <div class="max-w-6xl mx-auto px-6 lg:px-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-[13px] text-slate-500 font-medium text-center md:text-left">
+                        <div>© 2026 Amit Dutta. All rights reserved.</div>
+                        <div class="mt-1 text-slate-600 font-normal">Last updated: March 15, 2026</div>
+                    </div>
+                    <div class="text-[13px] text-slate-500 text-center md:text-right">
+                        Crafted with performance in mind.
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Scripts for UI Interactions -->
+    <script>
+        function copyCode(btn) {
+            const wrapper = btn.closest('.code-block-wrapper');
+            const pre = wrapper.querySelector('pre');
+            const textToCopy = pre.innerText;
+
+            navigator.clipboard.writeText(textToCopy).catch(() => {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+            });
+
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 2000);
+        }
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileHeader = document.getElementById('mobileHeader');
+        const mobileBackdrop = document.getElementById('mobileBackdrop');
+
+        function toggleMobileMenu() {
+            // Toggle hamburger animation state
+            mobileMenuBtn.classList.toggle('is-active');
+            
+            // Toggle Menu visibility classes
+            const isHidden = mobileMenu.classList.contains('menu-hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('menu-hidden');
+                mobileMenu.classList.add('menu-visible');
+                // Show backdrop
+                if (mobileBackdrop) {
+                    mobileBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+                    mobileBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+                }
+            } else {
+                closeMobileMenu();
+            }
+        }
+
+        function closeMobileMenu() {
+            mobileMenuBtn.classList.remove('is-active');
+            mobileMenu.classList.add('menu-hidden');
+            mobileMenu.classList.remove('menu-visible');
+            // Hide backdrop
+            if (mobileBackdrop) {
+                mobileBackdrop.classList.add('opacity-0', 'pointer-events-none');
+                mobileBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        // Sidebar active link highlighting and Mobile Header Scroll Logic
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+        let lastScrollTop = 0;
+
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Mobile Header Scroll Hide/Show
+            if (window.innerWidth < 1024) {
+                if (scrollTop > lastScrollTop && scrollTop > 80) {
+                    // Downscroll - hide header
+                    mobileHeader.classList.add('-translate-y-full');
+                    // Auto-close menu if open while scrolling down
+                    if (!mobileMenu.classList.contains('menu-hidden')) {
+                        closeMobileMenu();
+                    }
+                } else {
+                    // Upscroll - show header
+                    mobileHeader.classList.remove('-translate-y-full');
+                }
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
+            // Sidebar Active Link Logic
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                // Adjusted offset for glassmorphic header height
+                if (scrollY >= (sectionTop - 180)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active-link');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active-link');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
