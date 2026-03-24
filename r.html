@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R Programming: Cheat Sheet & Exam</title>
+    
+    <!-- Tailwind CSS for Layout, Header, and Modals -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <!-- Marked.js for parsing Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- GitHub Markdown CSS for the authentic "MD Viewer" look -->
+    <link id="markdown-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    
+    <style>
+        body {
+            background-color: #f6f8fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* GitHub Markdown Body Setup */
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background-color: var(--md-bg, white);
+            border: 1px solid var(--md-border, #d0d7de);
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(27,31,36,0.04);
+            color: var(--md-text, #24292f);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+        
+        html.dark .markdown-body {
+            --md-bg: #0d1117;
+            --md-border: #30363d;
+            --md-text: #c9d1d9;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+
+        /* Print Styles to hide UI elements and export perfectly */
+        @media print {
+            body { background-color: white; }
+            header, footer, #testModal, #resultModal, #goToTopBtn { display: none !important; }
+            .markdown-body { 
+                border: none; 
+                box-shadow: none; 
+                padding: 0 !important; 
+                max-width: 100%;
+            }
+        }
+
+        /* Override Tailwind's list reset for the Markdown body */
+        .markdown-body ul {
+            list-style-type: disc !important;
+            padding-left: 2em !important;
+            margin-bottom: 16px !important;
+        }
+        
+        .markdown-body ol {
+            list-style-type: decimal !important;
+            padding-left: 2em !important;
+            margin-bottom: 16px !important;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            background-color: rgba(31, 35, 40, 0.7);
+            backdrop-filter: blur(2px);
+        }
+
+        /* UI Animations */
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; opacity: 0; }
+        .slide-up { animation: slideUp 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.9); }
+        
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
+
+        /* Go To Top Button */
+        #goToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 45;
+            background-color: #2da44e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            pointer-events: none; /* Prevent clicking when invisible */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #goToTopBtn.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        #goToTopBtn:hover {
+            background-color: #2c974b;
+            transform: translateY(-4px) scale(1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-900 dark:text-gray-100 bg-[#f6f8fa] dark:bg-[#0d1117] transition-colors duration-300">
+
+    <!-- Sticky Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white dark:bg-[#161b22] border-b border-gray-200 dark:border-gray-700 shadow-sm px-3 py-2 flex items-center justify-between transition-colors duration-300 relative fade-in">
+        <div class="flex flex-col flex-shrink-0 mr-2">
+            <h1 class="text-base md:text-lg font-bold text-gray-800 dark:text-gray-100 leading-tight">R Programming</h1>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 leading-tight">Last-Minute Exam Guide</p>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2">
+            <!-- Theme Toggle Button -->
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors" title="Toggle Theme">
+                <!-- Icon injected by JS -->
+            </button>
+
+            <!-- Search Toggle Button -->
+            <button onclick="toggleSearch()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors" title="Search">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+
+            <!-- Download Button (Icon Only) -->
+            <button onclick="downloadPDF()" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors" title="Download PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+            </button>
+
+            <!-- Exam Button (Icon Only) -->
+            <button onclick="openTestModal()" class="p-2 rounded-md bg-[#2da44e] hover:bg-[#2c974b] text-white transition-colors shadow-sm" title="Take Practice Exam">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Search Bar Dropdown Container -->
+        <div id="searchContainer" class="absolute top-full left-0 w-full bg-white dark:bg-[#161b22] border-b border-gray-200 dark:border-gray-700 p-3 transform origin-top transition-all duration-300 scale-y-0 opacity-0 pointer-events-none shadow-md">
+            <div class="relative max-w-5xl mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search rules, functions, or keywords..." class="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-full leading-5 bg-gray-50 dark:bg-[#0d1117] text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-300">
+                <button id="clearSearchBtn" onclick="clearSearch()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" style="display: none;">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Markdown Content Container -->
+    <main class="flex-grow w-full max-w-5xl mx-auto p-4 md:p-8 slide-up" style="animation-delay: 0.1s;">
+        <article class="markdown-body" id="md-content">
+            <!-- Parsed Markdown will be injected here -->
+        </article>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="bg-[#24292f] border-t border-gray-200 mt-8 py-10 text-white fade-in" style="animation-delay: 0.3s;">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-center md:text-left">
+                
+                <!-- Column 1: Portfolio -->
+                <div class="flex flex-col items-center md:items-start space-y-3">
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.91 4a9.27 9.27 0 0 0-.64-1.539 6.7 6.7 0 0 0-.597-.933A7.024 7.024 0 0 1 13.745 4h-1.835z"/>
+                        </svg>
+                        <strong class="text-gray-100 uppercase tracking-wide">Creator Portfolio</strong>
+                    </div>
+                    <a href="https://amit.is-a.dev" target="_blank" class="text-gray-400 hover:text-white hover:underline transition-colors">amit.is-a.dev</a>
+                </div>
+
+                <!-- Column 2: GitHub -->
+                <div class="flex flex-col items-center md:items-start space-y-3">
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        <strong class="text-gray-100 uppercase tracking-wide">GitHub Profile</strong>
+                    </div>
+                    <a href="https://github.com/notamitgamer" target="_blank" class="text-gray-400 hover:text-white hover:underline transition-colors">github.com/notamitgamer</a>
+                </div>
+
+                <!-- Column 3: Repository -->
+                <div class="flex flex-col items-center md:items-start space-y-3">
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707z"/>
+                        </svg>
+                        <strong class="text-gray-100 uppercase tracking-wide">Project Repository</strong>
+                    </div>
+                    <a href="https://github.com/notamitgamer/bsc/tree/main/Semester_1/R" target="_blank" class="text-gray-400 hover:text-white hover:underline transition-colors break-all">notamitgamer/bsc/r</a>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-xs text-gray-500">
+                &copy; 2025-2026<br>All rights reserved.<br>Last updated: March 20, 2026
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE EXAM MODAL -->
+    <div id="testModal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden p-2 md:p-4">
+        <div class="bg-white dark:bg-[#0d1117] w-full max-w-3xl h-[90vh] md:h-[80vh] rounded-xl shadow-2xl flex flex-col overflow-hidden transform transition-all pop-in border dark:border-gray-700">
+            
+            <!-- Header -->
+            <div class="px-4 py-3 md:px-6 md:py-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#161b22] transition-colors duration-300">
+                <h2 class="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-100">Practice Exam</h2>
+                <div class="flex items-center gap-3 md:gap-4">
+                    <div id="timerDisplay" class="text-sm md:text-base font-bold px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-blue-100 text-blue-800 transition-colors">
+                        Time: 100s
+                    </div>
+                    <button onclick="closeTestModal()" class="text-2xl text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 font-bold leading-none transition-colors">&times;</button>
+                </div>
+            </div>
+
+            <!-- Body (One Question at a Time) -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-white dark:bg-[#0d1117] transition-colors duration-300" id="testContainer">
+                <div class="flex justify-between items-center mb-4 md:mb-6 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <span>Question <span id="currentQIndexDisplay">1</span> of 10</span>
+                </div>
+                <div id="questionsWrapper" class="space-y-4">
+                    <!-- MCQ Questions Injected Here -->
+                </div>
+            </div>
+
+            <!-- Footer (Pagination) -->
+            <div class="px-4 py-3 md:px-6 md:py-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#161b22] gap-2 md:gap-4 transition-colors duration-300">
+                <button id="prevBtn" onclick="prevQuestion()" class="flex-1 md:flex-none px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-[#21262d] hover:bg-gray-50 dark:hover:bg-[#30363d] rounded-md font-medium text-sm md:text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                <button id="nextBtn" onclick="nextQuestion()" class="flex-1 md:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium text-sm md:text-base transition-colors">Next Question</button>
+                <button id="submitTestBtn" onclick="submitTest()" class="flex-1 md:flex-none px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium text-sm md:text-base transition-colors hidden">Submit Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div id="resultModal" class="fixed inset-0 z-[60] flex items-center justify-center modal-overlay hidden p-4">
+        <div class="bg-white dark:bg-[#161b22] w-full max-w-2xl max-h-[90vh] p-6 md:p-8 rounded-xl shadow-2xl flex flex-col pop-in border dark:border-gray-700 transition-colors duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100 text-center flex-shrink-0">Exam Results</h2>
+            
+            <!-- Summary Header -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-6 flex-shrink-0">
+                <!-- Big Score Circle -->
+                <div id="scoreCircle" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-[8px] md:border-[10px] flex flex-col items-center justify-center transition-colors duration-500 pop-in" style="animation-delay: 0.1s;">
+                    <span id="scoreValue" class="text-3xl md:text-4xl font-bold dark:text-white">0/10</span>
+                </div>
+
+                <div class="text-center md:text-left">
+                    <h3 id="resultMessage" class="text-lg md:text-xl font-bold mb-2 text-gray-800 dark:text-gray-100">...</h3>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium text-sm md:text-base">
+                        Time Taken: <span id="timeTakenValue" class="font-bold text-gray-700 dark:text-gray-200">0s</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Detailed Answers Breakdown -->
+            <div id="resultDetails" class="flex-grow overflow-y-auto space-y-3 mb-6 border-t border-gray-200 dark:border-gray-700 pt-4 pr-2">
+                <!-- Breakdown Injected by JS -->
+            </div>
+            
+            <div class="flex gap-3 w-full flex-shrink-0">
+                <button onclick="closeResultModal()" class="flex-1 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#30363d] rounded-md font-medium transition-colors">Close</button>
+                <button onclick="retakeExam()" class="flex-1 py-2 bg-[#2da44e] hover:bg-[#2c974b] text-white rounded-md font-medium transition-colors">Retake Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Go To Top Button -->
+    <button id="goToTopBtn" onclick="scrollToTop()" title="Back to Top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"/>
+        </svg>
+    </button>
+
+    <!-- RAW MARKDOWN DATA -->
+    <!-- Storing the markdown inside a template script prevents HTML parsing errors -->
+    <script type="text/template" id="raw-markdown">
+# R Programming: Last-Minute Exam Cheat Sheet
+
+This document is designed for rapid review before your exam. It covers essential core concepts, crucial R functions (and their quirks), and all 20 reserved words.
+
+## Crucial Rules to Remember
+
+* **Variable Naming:** Variables can start with letters or a period (`.`). However, if they start with a period, they **cannot** be followed by a digit (`.2var` is illegal).
+* **1-Based Indexing:** Unlike C, Python, or Java (where arrays start at 0), **R indices start at 1**. The first element of `vector_x` is `vector_x[1]`.
+* **Negative Indexing:** Using a minus sign *excludes* that element. `my_list[-2]` returns the list WITHOUT the 2nd element.
+* **Type Coercion:** If you mix data types in a vector (e.g., `c(1, "A", TRUE)`), R will aggressively force them into a single type. The hierarchy is: `logical` -> `integer` -> `numeric` -> `character`.
+* **Returning Multiple Values:** A function can only return ONE object. To return multiple answers, bundle them into a list: `return(list("Area"=area, "Perimeter"=peri))`.
+* **Assignment:** While `=` works, `<-` is the strictly preferred assignment operator in R. `=` is mainly used for assigning arguments inside function calls.
+* **Null vs NA vs NaN:** * `NA`: Missing data (Not Available).
+  * `NaN`: Mathematical impossibility (Not a Number, like `0/0`).
+  * `NULL`: An empty object / undefined.
+
+## Essential Operators
+
+| Operator | Name | Category | Description |
+| :--- | :--- | :--- | :--- |
+| `<-` | Left Assignment | Assignment | Assigns a value to a variable (Leftward). |
+| `->` | Right Assignment | Assignment | Assigns a value to a variable (Rightward). |
+| `%%` | Modulo | Arithmetic | Modulo (finds the remainder of division, e.g., `5 %% 2 == 1`). |
+| `^` | Exponent | Arithmetic | Exponent/Power (e.g., `2^3 == 8`). |
+| `<` / `>` | Less/Greater Than | Relational | Strictly less than / strictly greater than. |
+| `<=` / `>=` | Less/Greater or Equal | Relational | Less than or equal to / Greater than or equal to. |
+| `==` / `!=` | Equality / Inequality | Relational | Equals to / Not equals to. |
+| `&` | Element-wise AND | Logical | Element-wise AND (returns TRUE only if both are TRUE). |
+| `&&` | Logical AND | Logical | Evaluates ONLY the first element of a vector. Used mainly in if-statements. |
+| `|` | Element-wise OR | Logical | Element-wise OR (returns TRUE if at least one is TRUE). |
+| `||` | Logical OR | Logical | Evaluates ONLY the first element of a vector. Used mainly in if-statements. |
+| `!` | Logical NOT | Logical | NOT operator (reverses a boolean, `!TRUE == FALSE`). |
+
+---
+
+## Built-In Constants
+
+| Constant | Value | Description |
+| :--- | :--- | :--- |
+| `pi` | `3.141593...` | The mathematical constant pi. |
+| `LETTERS` | `"A", "B", "C" ... "Z"` | A character vector of the 26 uppercase English letters. |
+| `letters` | `"a", "b", "c" ... "z"` | A character vector of the 26 lowercase English letters. |
+| `month.abb` | `"Jan", "Feb" ... "Dec"` | A character vector of the 3-letter abbreviations for the English months. |
+| `month.name` | `"January", "February"...` | A character vector of the full names of the English months. |
+
+---
+
+## All 20 R Reserved Words (Keywords)
+
+Reserved words have special meaning in R and **cannot** be used as variable or function names.
+
+| Reserved Word | Usage / Description | Quick Example |
+| :--- | :--- | :--- |
+| `if` | Starts a conditional control-flow statement. | `if (x > 0) print("Pos")` |
+| `else` | Fallback for an `if` statement when the condition is FALSE. | `else print("Neg")` |
+| `while` | Loop that executes as long as a condition is TRUE. | `while (x < 5) x <- x + 1` |
+| `repeat` | Infinite loop that requires a `break` statement to exit. | `repeat { if(x>5) break }` |
+| `for` | Loop that iterates over a list, vector, or sequence. | `for (i in 1:5) print(i)` |
+| `function` | Keyword used to declare a user-defined function. | `f <- function(x) { x + 1 }` |
+| `in` | Used within `for` loops to specify the sequence to iterate over. | `for (item in my_list)` |
+| `next` | Skips the current loop iteration and moves to the next one. | `if (i %% 2 == 0) next` |
+| `break` | Immediately terminates the execution of a loop. | `if (i == 5) break` |
+| `TRUE` | Logical constant representing True (boolean 1). | `is_valid <- TRUE` |
+| `FALSE` | Logical constant representing False (boolean 0). | `is_valid <- FALSE` |
+| `NULL` | Represents the null object / undefined data. | `my_var <- NULL` |
+| `Inf` | Constant representing positive infinity. | `1 / 0` -> `Inf` |
+| `NaN` | Not a Number (e.g., 0/0). | `0 / 0` -> `NaN` |
+| `NA` | Logical missing value (Not Available). | `c(1, NA, 3)` |
+| `NA_integer_` | Missing value specifically typed as an integer. | `c(1L, NA_integer_)` |
+| `NA_real_` | Missing value specifically typed as a double/numeric. | `c(1.5, NA_real_)` |
+| `NA_complex_` | Missing value specifically typed as a complex number. | `c(1+2i, NA_complex_)` |
+| `NA_character_` | Missing value specifically typed as a character/string. | `c("A", NA_character_)` |
+| `...` | Ellipsis operator used to pass a variable number of arguments into a function. | `f <- function(...) print(list(...))` |
+
+---
+
+## Essential Functions Reference
+
+| Function | Usage | Example Result-Output | Edge Case / Quirks |
+| :--- | :--- | :--- | :--- |
+| `print()` | Prints values and variables to the console. | `print("R")`  ->  `[1] "R"` | Printing `NULL` prints `NULL` (without the `[1]` index). |
+| `cat()` | Prints variables and strings concatenated, used with basic types. | `cat("Hi\n")`  ->  `Hi` | `cat(NULL)` outputs absolutely nothing, no errors. |
+| `help()` | Views help documentation for functions or keywords. | `help(sum)`  ->  *(Opens help viewer)* | Searching for special operators requires backticks: `help("+")`. |
+| `class()` | Returns the data type or class of a variable. | `class(TRUE)`  ->  `[1] "logical"` | If applied to a mixed vector `c(1, "a")`, returns `"character"` (coercion). |
+| `paste()` | Prints a string and variable together with a default space separator. | `paste("Hi", "R")`  ->  `[1] "Hi R"` | `paste("A", NA)` outputs `"A NA"` (NA is converted to a string). |
+| `paste0()` | Prints a string and variable together with NO default space separator. | `paste0("Hi", "R")`  ->  `[1] "HiR"` | Recycles shorter vectors: `paste0("A", 1:3)` -> `"A1" "A2" "A3"`. |
+| `sprintf()` | Prints formatted strings using format specifiers like %s, %d, %f. | `sprintf("%d", 123)`  ->  `[1] "123"` | Throws an error if the number of arguments doesn't match specifiers. |
+| `is.numeric()` | Evaluates to TRUE if the variable is of numeric type. | `is.numeric(5)`  ->  `[1] TRUE` | `is.numeric(NA)` is logical, but `is.numeric(NA_real_)` is TRUE. |
+| `ifelse()` | A shorthand vectorized alternative to the standard if...else statement. | `ifelse(c(1) > 0, "Y", "N")`  ->  `[1] "Y"` | If the condition evaluates to `NA`, the output element will be `NA`. |
+| `c()` | Combines or concatenates values into a vector. | `c(1, 2)`  ->  `[1] 1 2` | Mix types (e.g. number + string) and everything becomes strings. |
+| `rep()` | Repeats elements of vectors using 'times' or 'each' arguments. | `rep(2, times=2)`  ->  `[1] 2 2` | `rep(1, times=0)` returns an empty vector: `numeric(0)`. |
+| `length()` | Finds the number of elements present inside a vector or list. | `length(c(1, 2))`  ->  `[1] 2` | `length(NULL)` evaluates to `0`. |
+| `list()` | Creates a collection of similar or different types of data. | `list(1, "A")`  ->  `[[1]] 1  [[2]] "A"` | A list can contain lists inside itself (nested lists). |
+| `append()` | Adds an item at the end of a list or vector. | `append(c(1), 2)`  ->  `[1] 1 2` | Does not modify the original variable in-place; must reassign. |
+| `factorial()` | Calculates the factorial value of a number or vector. | `factorial(4)`  ->  `[1] 24` | `factorial(0)` returns `1`. `factorial(-1)` returns `NaN`. |
+| `sum()` | Finds the sum of a sequence of numbers. | `sum(1, 2)`  ->  `[1] 3` | `sum(c(1, NA))` is `NA`. Use `na.rm=TRUE` to ignore NAs. |
+| `max()` / `min()` | Finds the maximum/minimum value in a sequence of numbers. | `max(4:6)`  ->  `[1] 6` | `max(numeric(0))` returns `-Inf` and a warning message. |
+| `seq()` | Generates regular sequences (more flexible than the `:` operator). | `seq(1, 5, by=2)` -> `[1] 1 3 5` | `seq(1, 1)` correctly handles start and end being the same. |
+| `mean()` | Calculates the arithmetic mean (average). | `mean(c(2, 4))` -> `[1] 3` | `mean(c(1, NA))` returns `NA`. Requires `na.rm = TRUE`. |
+| `is.na()` | Checks for missing values (`NA`) and returns a logical vector. | `is.na(c(1, NA))` -> `[1] FALSE TRUE` | `is.na(NaN)` also evaluates to `TRUE` in R. |
+| `str()` | Compactly displays the internal structure of an R object. | `str(c(1,2))` -> `num [1:2] 1 2` | Calling `str(NULL)` safely returns ` NULL`. |
+| `typeof()` | Determines the internal R type or storage mode of any object. | `typeof(1L)` -> `[1] "integer"` | `typeof(c(1, 2))` returns `"double"`, while `class` is `"numeric"`. |
+| `rm()` | Removes objects/variables from the current workspace environment. | `rm(x)` -> *(Removes x)* | `rm(list = ls())` completely clears the entire workspace. |
+
+---
+
+## 55 Practice Questions (Basic to Advanced)
+
+Test your knowledge! Click on any question to reveal the answer.
+
+<details>
+<summary><b>Q1: What is the primary difference between `<-` and `=` in R?</b></summary>
+
+> `<-` is the standard assignment operator for variables. `=` is typically used only for assigning values to parameters inside function calls.
+
+</details>
+
+<details>
+<summary><b>Q2: Can you assign a variable from right to left in R?</b></summary>
+
+> Yes, R supports rightward assignment using `->` (e.g., `"Hello" -> my_var`).
+
+</details>
+
+<details>
+<summary><b>Q3: How do you write a true multi-line comment in R?</b></summary>
+
+> R does not have a native multi-line comment syntax. You must either use `#` on every line or wrap text in a dummy `if (FALSE) { ... }` block.
+
+</details>
+
+<details>
+<summary><b>Q4: What is the difference between `class(14)` and `class(14L)`?</b></summary>
+
+> `14` is a floating-point `numeric` by default. The `L` suffix explicitly declares `14L` as an `integer`.
+
+</details>
+
+<details>
+<summary><b>Q5: Is R case-sensitive? Give an example.</b></summary>
+
+> Yes. `TRUE` is a valid boolean keyword, but `True` or `true` will throw an 'object not found' error.
+
+</details>
+
+<details>
+<summary><b>Q6: What happens if you type `T <- FALSE`?</b></summary>
+
+> It will successfully overwrite `T` to mean `FALSE`. This is why using `TRUE`/`FALSE` is safer than the `T`/`F` shorthands, as the full words are reserved and cannot be overwritten.
+
+</details>
+
+<details>
+<summary><b>Q7: What is the exact output of `paste("Hello", "R")`?</b></summary>
+
+> `"Hello R"`. The standard `paste()` function adds a single space between items by default.
+
+</details>
+
+<details>
+<summary><b>Q8: What is the exact output of `paste0("Hello", "R")`?</b></summary>
+
+> `"HelloR"`. The `paste0()` function explicitly concatenates with no spaces.
+
+</details>
+
+<details>
+<summary><b>Q9: If `x <- 12.34`, what does `sprintf("Value: %f", x)` do?</b></summary>
+
+> It formats the float as a string, outputting `"Value: 12.340000"`.
+
+</details>
+
+<details>
+<summary><b>Q10: Why can't you use `cat()` to print a list?</b></summary>
+
+> `cat()` only works with basic atomic types (logical, integer, numeric, character). It cannot handle complex data structures like lists.
+
+</details>
+
+<details>
+<summary><b>Q11: What happens when you run `c(1, "A", TRUE)`?</b></summary>
+
+> R coerces them all to the most flexible type (character). The output is `"1" "A" "TRUE"`.
+
+</details>
+
+<details>
+<summary><b>Q12: What does `is.numeric(NA)` return?</b></summary>
+
+> `[1] logical`. Standard `NA` is a logical type by default, unless specified as `NA_real_`.
+
+</details>
+
+<details>
+<summary><b>Q13: How is `ifelse()` different from a standard `if...else` block?</b></summary>
+
+> `ifelse()` is vectorized, meaning it can evaluate an entire vector of conditions at once and return a vector of results. `if...else` evaluates a single condition.
+
+</details>
+
+<details>
+<summary><b>Q14: What happens if you pass a vector of length 5 into a standard `if (condition)` statement?</b></summary>
+
+> The `if` statement will only evaluate the very first element of the vector and will throw a warning.
+
+</details>
+
+<details>
+<summary><b>Q15: What does the `%%` operator do?</b></summary>
+
+> It calculates the modulo (remainder of division). E.g., `5 %% 2` equals `1`.
+
+</details>
+
+<details>
+<summary><b>Q16: When does a `while` loop terminate?</b></summary>
+
+> When its test condition evaluates to `FALSE`, or when a `break` statement is encountered inside the loop.
+
+</details>
+
+<details>
+<summary><b>Q17: If a `break` statement is executed inside a nested loop, what happens?</b></summary>
+
+> It immediately terminates *only the innermost loop* where the `break` was called. The outer loop continues running.
+
+</details>
+
+<details>
+<summary><b>Q18: What does the `next` statement do?</b></summary>
+
+> It immediately skips the rest of the current loop iteration and jumps to the evaluation of the next iteration.
+
+</details>
+
+<details>
+<summary><b>Q19: What is the index of the first element in an R vector?</b></summary>
+
+> `1`. Unlike Python or C, R uses 1-based indexing.
+
+</details>
+
+<details>
+<summary><b>Q20: What does negative indexing do, e.g., `my_vector[-2]`?</b></summary>
+
+> It returns all elements of the vector *except* the element at index 2.
+
+</details>
+
+<details>
+<summary><b>Q21: What is the output of `length(NULL)`?</b></summary>
+
+> It returns `0`, because `NULL` represents an empty, undefined object.
+
+</details>
+
+<details>
+<summary><b>Q22: What is the output of `length(NA)`?</b></summary>
+
+> It returns `1`. `NA` represents a single missing value, so it still takes up one slot in memory.
+
+</details>
+
+<details>
+<summary><b>Q23: What is the difference between `1:3` and `c(1, 2, 3)`?</b></summary>
+
+> Practically nothing in the output, but `:` is a sequence generator operator that efficiently creates the integer sequence without explicitly typing each element.
+
+</details>
+
+<details>
+<summary><b>Q24: What is the output of `rep(c(1, 2), times = 2)`?</b></summary>
+
+> `1 2 1 2`. It repeats the entire sequence twice.
+
+</details>
+
+<details>
+<summary><b>Q25: What is the output of `rep(c(1, 2), each = 2)`?</b></summary>
+
+> `1 1 2 2`. It repeats each individual element twice before moving to the next.
+
+</details>
+
+<details>
+<summary><b>Q26: How do you permanently change the 2nd element of `x` to 5?</b></summary>
+
+> `x[2] <- 5`.
+
+</details>
+
+<details>
+<summary><b>Q27: What is the fundamental difference between a Vector and a List?</b></summary>
+
+> A vector can only hold elements of the *same* data type. A list can hold elements of *different* data types (strings, numbers, booleans, or even other lists).
+
+</details>
+
+<details>
+<summary><b>Q28: Does `append(my_list, 5)` permanently change `my_list`?</b></summary>
+
+> No. Most functions in R do not modify in-place. You must overwrite the variable: `my_list <- append(my_list, 5)`.
+
+</details>
+
+<details>
+<summary><b>Q29: How do you extract the actual value of the first element in a list, not just a sub-list?</b></summary>
+
+> Using double brackets: `my_list[[1]]`. Single brackets `my_list[1]` return a new list containing that element.
+
+</details>
+
+<details>
+<summary><b>Q30: What keyword is used to create a custom function?</b></summary>
+
+> `function()`. Example: `my_func <- function(x) { ... }`.
+
+</details>
+
+<details>
+<summary><b>Q31: What is a formal argument vs an actual argument?</b></summary>
+
+> Formal arguments are the parameters defined inside the `function()` parentheses. Actual arguments are the actual values passed when the function is called.
+
+</details>
+
+<details>
+<summary><b>Q32: Can you change the order of arguments when calling a function?</b></summary>
+
+> Yes, by using named arguments (e.g., `power(b=3, a=2)`).
+
+</details>
+
+<details>
+<summary><b>Q33: How do you give a parameter a default value?</b></summary>
+
+> By assigning it in the function definition: `my_func <- function(length = 5) { ... }`.
+
+</details>
+
+<details>
+<summary><b>Q34: If an R function doesn't use the `return()` statement, what does it return?</b></summary>
+
+> It implicitly returns the result of the very last evaluated expression in the function body.
+
+</details>
+
+<details>
+<summary><b>Q35: What is nested function calling?</b></summary>
+
+> Passing the result of one function directly as an argument into another function. E.g., `print(sum(1, 2))`.
+
+</details>
+
+<details>
+<summary><b>Q36: What is 'Lazy Evaluation' in R?</b></summary>
+
+> R only evaluates function arguments when they are actually needed inside the function body.
+
+</details>
+
+<details>
+<summary><b>Q37: If a function is defined as `f <- function(a, b) { print(a) }`, what happens if you call `f(5)` without providing `b`?</b></summary>
+
+> It successfully prints `5`. Because `b` is never used in the function, R's lazy evaluation ignores the missing argument.
+
+</details>
+
+<details>
+<summary><b>Q38: Following the previous question, what happens if the function *does* use `b` later, e.g., `print(a + b)`?</b></summary>
+
+> R will throw an error only at the exact moment it tries to evaluate `b` and realizes it is missing.
+
+</details>
+
+<details>
+<summary><b>Q39: What is an inline function?</b></summary>
+
+> A compact function written on a single line, often without braces. E.g., `f <- function(x) x^2`.
+
+</details>
+
+<details>
+<summary><b>Q40: What is the output of `sum(4:6)`?</b></summary>
+
+> `15` (because 4 + 5 + 6 = 15).
+
+</details>
+
+<details>
+<summary><b>Q41: What happens if you sum a vector containing an `NA`, like `sum(c(1, 2, NA))`?</b></summary>
+
+> The result is `NA`. You must use the argument `na.rm = TRUE` to ignore missing values.
+
+</details>
+
+<details>
+<summary><b>Q42: What does `Inf` signify?</b></summary>
+
+> Positive Infinity, typically resulting from mathematical operations like dividing a positive number by 0.
+
+</details>
+
+<details>
+<summary><b>Q43: What is the difference between `NaN` and `NA`?</b></summary>
+
+> `NaN` is 'Not a Number' (a mathematical impossibility like `0/0`). `NA` is a logical placeholder for missing data.
+
+</details>
+
+<details>
+<summary><b>Q44: Is `NaN` considered an `NA`?</b></summary>
+
+> Yes, `is.na(NaN)` returns `TRUE`. However, `is.nan(NA)` returns `FALSE`.
+
+</details>
+
+<details>
+<summary><b>Q45: If `x <- c(1, 2, 3)`, what does `str(x)` do?</b></summary>
+
+> It displays the compact internal structure of the object: `num [1:3] 1 2 3`.
+
+</details>
+
+<details>
+<summary><b>Q46: What does `rm(x)` do?</b></summary>
+
+> It removes the variable `x` from the current workspace environment, freeing up memory.
+
+</details>
+
+<details>
+<summary><b>Q47: How do you access the documentation/help file for the `sum` function?</b></summary>
+
+> Type `help(sum)` or `?sum` in the console.
+
+</details>
+
+<details>
+<summary><b>Q48: How do you search for help regarding operators like `+` or reserved keywords like `if`?</b></summary>
+
+> You must wrap them in backticks or quotes: `help("+")` or `?"if"`.
+
+</details>
+
+<details>
+<summary><b>Q49: What does `&` do vs `|` in R?</b></summary>
+
+> `&` is the logical AND operator (returns TRUE only if both sides are TRUE). `|` is the logical OR operator (returns TRUE if at least one side is TRUE).
+
+</details>
+
+<details>
+<summary><b>Q50: What does the `!` operator do?</b></summary>
+
+> It is the logical NOT operator. It reverses booleans, turning `TRUE` to `FALSE` and vice versa.
+
+</details>
+
+<details>
+<summary><b>Q51: What is the rule for starting a variable name with a period (.)?</b></summary>
+
+> A variable name can start with a period, but it CANNOT be followed immediately by a digit (e.g., `.myvar` is valid, `.2var` is invalid).
+
+</details>
+
+<details>
+<summary><b>Q52: What is a Boolean shorthand in R?</b></summary>
+
+> You can type `T` or `F` instead of typing out `TRUE` or `FALSE`.
+
+</details>
+
+<details>
+<summary><b>Q53: Are single characters (like "a") and strings (like "Word") considered different classes in R?</b></summary>
+
+> No, they both belong to the `character` class. R does not have a separate 'char' type like C or Java.
+
+</details>
+
+<details>
+<summary><b>Q54: What does `%c`, `%e`, and `%u` do in the `sprintf()` function?</b></summary>
+
+> `%c` formats as a character, `%e` formats in scientific notation, and `%u` formats as an unsigned decimal integer.
+
+</details>
+
+<details>
+<summary><b>Q55: What is a recursive function?</b></summary>
+
+> A function that calls itself from within its own code block (e.g., calculating a factorial mathematically).
+
+</details>
+    </script>
+
+    <!-- SCRIPTS FOR LOGIC & MARKDOWN RENDERING -->
+    <script>
+        // --- THEME SWITCHER LOGIC ---
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const markdownCssLink = document.getElementById('markdown-css');
+        const htmlElement = document.documentElement;
+
+        const themes = ['system', 'light', 'dark'];
+        let currentThemeIndex = 0;
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('r-cheat-sheet-theme') || 'system';
+            currentThemeIndex = themes.indexOf(savedTheme) !== -1 ? themes.indexOf(savedTheme) : 0;
+            applyTheme();
+        }
+
+        function toggleTheme() {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            const newTheme = themes[currentThemeIndex];
+            localStorage.setItem('r-cheat-sheet-theme', newTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const theme = themes[currentThemeIndex];
+            let isDark = false;
+
+            if (theme === 'system') {
+                isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                // Monitor icon
+                themeToggleBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z"/></svg>`;
+            } else if (theme === 'dark') {
+                isDark = true;
+                // Moon icon
+                themeToggleBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>`;
+            } else {
+                isDark = false;
+                // Sun icon
+                themeToggleBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .708-.708l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>`;
+            }
+
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                markdownCssLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css';
+            } else {
+                htmlElement.classList.remove('dark');
+                markdownCssLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css';
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (themes[currentThemeIndex] === 'system') applyTheme();
+        });
+
+        initTheme();
+
+        // 1. Render Markdown to HTML on Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawMarkdown = document.getElementById('raw-markdown').textContent;
+            const contentDiv = document.getElementById('md-content');
+            contentDiv.innerHTML = marked.parse(rawMarkdown);
+        });
+
+        // --- SEARCH FEATURE LOGIC ---
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const mdContent = document.getElementById('md-content');
+            if(!mdContent) return;
+
+            // Toggle clear button visibility
+            clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
+
+            // If empty, show everything and return
+            if (query === '') {
+                Array.from(mdContent.children).forEach(child => child.style.display = '');
+                mdContent.querySelectorAll('li, tbody tr').forEach(el => el.style.display = '');
+                return;
+            }
+
+            // Hide all top-level elements initially
+            Array.from(mdContent.children).forEach(child => child.style.display = 'none');
+
+            // Helper function to reveal the section header (H2) and paragraphs above a matched element
+            const revealContext = (element) => {
+                let current = element.previousElementSibling;
+                while (current) {
+                    if (current.tagName === 'H2') {
+                        current.style.display = '';
+                        break;
+                    }
+                    if (current.tagName === 'P' || current.tagName === 'HR') {
+                        current.style.display = '';
+                    }
+                    current = current.previousElementSibling;
+                }
+            };
+
+            // 1. Search Lists
+            mdContent.querySelectorAll('ul, ol').forEach(list => {
+                let hasVisibleItems = false;
+                list.querySelectorAll('li').forEach(li => {
+                    if (li.textContent.toLowerCase().includes(query)) {
+                        li.style.display = '';
+                        hasVisibleItems = true;
+                    } else {
+                        li.style.display = 'none';
+                    }
+                });
+                if (hasVisibleItems) {
+                    list.style.display = '';
+                    revealContext(list);
+                }
+            });
+
+            // 2. Search Tables
+            mdContent.querySelectorAll('table').forEach(table => {
+                let hasVisibleRows = false;
+                table.querySelectorAll('tbody tr').forEach(tr => {
+                    if (tr.textContent.toLowerCase().includes(query)) {
+                        tr.style.display = '';
+                        hasVisibleRows = true;
+                    } else {
+                        tr.style.display = 'none';
+                    }
+                });
+                if (hasVisibleRows) {
+                    table.style.display = '';
+                    revealContext(table);
+                }
+            });
+
+            // 3. Search Dropdowns (Details)
+            mdContent.querySelectorAll('details').forEach(details => {
+                if (details.textContent.toLowerCase().includes(query)) {
+                    details.style.display = '';
+                    revealContext(details);
+                }
+            });
+
+            // 4. Search standalone Paragraphs
+            Array.from(mdContent.children).forEach(child => {
+                if (child.tagName === 'P' && child.style.display === 'none') {
+                    if (child.textContent.toLowerCase().includes(query)) {
+                        child.style.display = '';
+                        revealContext(child);
+                    }
+                }
+            });
+        });
+
+        // 2. Download / Print Functionality (Direct File Download)
+        function downloadPDF() {
+            // URL to your pre-hosted PDF file
+            const pdfUrl = 'https://amit.is-a.dev/assets/R_Programming_Cheat_Sheet.pdf'; 
+            
+            // Create a temporary, invisible anchor tag to trigger the download
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'R_Programming_Cheat_Sheet.pdf'; // Suggested filename for the user
+            link.target = '_blank'; // Fallback to open in new tab if browser blocks forced download
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- 3. EXAM SIMULATOR LOGIC ---
+        const rQuestions55 = [
+            { q: "What is the primary difference between `<-` and `=` in R?", a: "`<-` is the standard assignment operator for variables. `=` is typically used only for assigning values to parameters inside function calls.", opts: ["`<-` is standard for variables; `=` is for parameters in function calls.", "`=` is standard for variables; `<-` is for loops.", "They are 100% identical in all situations.", "`<-` only works on numbers, `=` works on strings."] },
+            { q: "Can you assign a variable from right to left in R?", a: "Yes, R supports rightward assignment using `->` (e.g., `\"Hello\" -> my_var`).", opts: ["Yes, R supports rightward assignment using `->`", "No, it causes a syntax error.", "Yes, using `=<`.", "Only for boolean values."] },
+            { q: "How do you write a true multi-line comment in R?", a: "R does not have a native multi-line comment syntax. You must either use `#` on every line or wrap text in a dummy `if (FALSE) { ... }` block.", opts: ["Wrap text in a dummy `if (FALSE) { ... }` block.", "Use `/* ... */` like in C.", "Use `''' ... '''` like in Python.", "Use `<!-- ... -->`."] },
+            { q: "What is the difference between `class(14)` and `class(14L)`?", a: "`14` is a floating-point `numeric` by default. The `L` suffix explicitly declares `14L` as an `integer`.", opts: ["`14` is numeric, `14L` is explicitly integer.", "`14` is integer, `14L` is long.", "They are exactly the same.", "`14L` throws a syntax error."] },
+            { q: "Is R case-sensitive? Give an example.", a: "Yes. `TRUE` is a valid boolean keyword, but `True` or `true` will throw an 'object not found' error.", opts: ["Yes. `TRUE` is valid, but `True` throws an error.", "No. `true` and `TRUE` work identically.", "Yes, but only for variable names, not keywords.", "No, R automatically converts everything to lowercase."] },
+            { q: "What happens if you type `T <- FALSE`?", a: "It will successfully overwrite `T` to mean `FALSE`. This is why using `TRUE`/`FALSE` is safer than the `T`/`F` shorthands.", opts: ["It successfully overwrites `T` to mean `FALSE`.", "It throws an 'illegal assignment' error.", "It crashes the R session.", "It converts `FALSE` to a string."] },
+            { q: "What is the exact output of `paste(\"Hello\", \"R\")`?", a: "`\"Hello R\"`. The standard `paste()` function adds a single space between items by default.", opts: ["`\"Hello R\"`", "`\"HelloR\"`", "`\"Hello_R\"`", "`\"Hello,R\"`"] },
+            { q: "What is the exact output of `paste0(\"Hello\", \"R\")`?", a: "`\"HelloR\"`. The `paste0()` function explicitly concatenates with no spaces.", opts: ["`\"HelloR\"`", "`\"Hello R\"`", "`\"Hello_R\"`", "`\"Hello,R\"`"] },
+            { q: "If `x <- 12.34`, what does `sprintf(\"Value: %f\", x)` do?", a: "It formats the float as a string, outputting `\"Value: 12.340000\"`.", opts: ["Outputs `\"Value: 12.340000\"`", "Throws a type error.", "Outputs `\"Value: 12\"`", "Outputs `\"12.34\"` without text."] },
+            { q: "Why can't you use `cat()` to print a list?", a: "`cat()` only works with basic atomic types (logical, integer, numeric, character). It cannot handle complex data structures like lists.", opts: ["`cat()` only works with atomic types.", "Lists are too memory intensive.", "`cat()` is reserved for plotting graphics.", "It actually works fine."] },
+            { q: "What happens when you run `c(1, \"A\", TRUE)`?", a: "R coerces them all to the most flexible type (character). The output is `\"1\" \"A\" \"TRUE\"`.", opts: ["Coerces all elements to character strings.", "Throws a mixed-type error.", "Creates a multi-type List.", "Coerces all elements to logic/booleans."] },
+            { q: "What does `is.numeric(NA)` return?", a: "`[1] logical`. Standard `NA` is a logical type by default, unless specified as `NA_real_`.", opts: ["`FALSE` (it is logical by default).", "`TRUE`.", "`NA`.", "Throws an error."] },
+            { q: "How is `ifelse()` different from a standard `if...else` block?", a: "`ifelse()` is vectorized, meaning it can evaluate an entire vector of conditions at once and return a vector of results. `if...else` evaluates a single condition.", opts: ["`ifelse()` is vectorized to evaluate entire arrays.", "`ifelse()` only works on numbers.", "`if...else` is faster for vectors.", "There is absolutely no difference."] },
+            { q: "What happens if you pass a vector of length 5 into a standard `if (condition)` statement?", a: "The `if` statement will only evaluate the very first element of the vector and will throw a warning.", opts: ["Evaluates only the first element and throws a warning.", "Evaluates all elements and returns a vector.", "Causes a fatal program crash.", "Returns `TRUE` if any element is true."] },
+            { q: "What does the `%%` operator do?", a: "It calculates the modulo (remainder of division). E.g., `5 %% 2` equals `1`.", opts: ["Calculates modulo (remainder).", "Calculates percentages.", "Integer division (removes decimal).", "Multiplies by 100."] },
+            { q: "When does a `while` loop terminate?", a: "When its test condition evaluates to `FALSE`, or when a `break` statement is encountered inside the loop.", opts: ["Condition is `FALSE` or encounters `break`.", "When it reaches 10 iterations.", "Condition is `TRUE` or encounters `next`.", "When it encounters `repeat`."] },
+            { q: "If a `break` statement is executed inside a nested loop, what happens?", a: "It immediately terminates *only the innermost loop* where the `break` was called. The outer loop continues running.", opts: ["Terminates only the innermost loop.", "Terminates all running loops.", "Terminates the outer loop only.", "Skips to the next iteration of the inner loop."] },
+            { q: "What does the `next` statement do?", a: "It immediately skips the rest of the current loop iteration and jumps to the evaluation of the next iteration.", opts: ["Skips to the next iteration.", "Exits the loop entirely.", "Pauses execution until user input.", "Moves to the next function."] },
+            { q: "What is the index of the first element in an R vector?", a: "`1`. Unlike Python or C, R uses 1-based indexing.", opts: ["`1`", "`0`", "`-1`", "It varies based on declaration."] },
+            { q: "What does negative indexing do, e.g., `my_vector[-2]`?", a: "It returns all elements of the vector *except* the element at index 2.", opts: ["Returns vector without the element at index 2.", "Throws an 'out of bounds' error.", "Returns the 2nd element from the end.", "Reverses the vector order."] },
+            { q: "What is the output of `length(NULL)`?", a: "It returns `0`, because `NULL` represents an empty, undefined object.", opts: ["`0`", "`1`", "`NA`", "Error"] },
+            { q: "What is the output of `length(NA)`?", a: "It returns `1`. `NA` represents a single missing value, so it still takes up one slot in memory.", opts: ["`1`", "`0`", "`NA`", "Error"] },
+            { q: "What is the difference between `1:3` and `c(1, 2, 3)`?", a: "Practically nothing in the output, but `:` is a sequence generator operator that efficiently creates the integer sequence without explicitly typing each element.", opts: ["`:` is an efficient sequence generator operator.", "`c()` only works for characters.", "`1:3` creates a list, `c()` creates a vector.", "There is no functional difference internally."] },
+            { q: "What is the output of `rep(c(1, 2), times = 2)`?", a: "`1 2 1 2`. It repeats the entire sequence twice.", opts: ["`1 2 1 2`", "`1 1 2 2`", "`2 4`", "`1 2 2`"] },
+            { q: "What is the output of `rep(c(1, 2), each = 2)`?", a: "`1 1 2 2`. It repeats each individual element twice before moving to the next.", opts: ["`1 1 2 2`", "`1 2 1 2`", "`2 4`", "`1 2 2`"] },
+            { q: "How do you permanently change the 2nd element of `x` to 5?", a: "`x[2] <- 5`.", opts: ["`x[2] <- 5`", "`x(2) = 5`", "`x[[1]] <- 5`", "`replace(x, 2, 5)`"] },
+            { q: "What is the fundamental difference between a Vector and a List?", a: "A vector can only hold elements of the *same* data type. A list can hold elements of *different* data types (strings, numbers, booleans, or even other lists).", opts: ["Vectors hold same types; Lists hold different types.", "Vectors are 1D; Lists are 2D.", "Lists are faster for mathematical computing.", "Lists can only hold characters."] },
+            { q: "Does `append(my_list, 5)` permanently change `my_list`?", a: "No. Most functions in R do not modify in-place. You must overwrite the variable: `my_list <- append(my_list, 5)`.", opts: ["No, you must overwrite the variable.", "Yes, it modifies the list in-place.", "Only if you use `append!`.", "Yes, but only in global scope."] },
+            { q: "How do you extract the actual value of the first element in a list, not just a sub-list?", a: "Using double brackets: `my_list[[1]]`. Single brackets `my_list[1]` return a new list containing that element.", opts: ["`my_list[[1]]`", "`my_list[1]`", "`my_list(1)`", "`my_list{1}`"] },
+            { q: "What keyword is used to create a custom function?", a: "`function()`. Example: `my_func <- function(x) { ... }`.", opts: ["`function()`", "`def()`", "`func()`", "`create()`"] },
+            { q: "What is a formal argument vs an actual argument?", a: "Formal arguments are the parameters defined inside the `function()` parentheses. Actual arguments are the actual values passed when the function is called.", opts: ["Formal = inside definition; Actual = values passed.", "Formal = numeric; Actual = characters.", "Formal = required; Actual = optional.", "They are the exact same thing."] },
+            { q: "Can you change the order of arguments when calling a function?", a: "Yes, by using named arguments (e.g., `power(b=3, a=2)`).", opts: ["Yes, using named arguments.", "No, order is strictly enforced.", "Only for built-in functions.", "Yes, but it throws a warning."] },
+            { q: "How do you give a parameter a default value?", a: "By assigning it in the function definition: `my_func <- function(length = 5) { ... }`.", opts: ["Assign it in definition: `function(length = 5)`", "Pass it as NULL when calling.", "You cannot set default values in R.", "Use the `default` keyword."] },
+            { q: "If an R function doesn't use the `return()` statement, what does it return?", a: "It implicitly returns the result of the very last evaluated expression in the function body.", opts: ["Result of the last evaluated expression.", "`NULL`", "`NA`", "It throws an error."] },
+            { q: "What is nested function calling?", a: "Passing the result of one function directly as an argument into another function. E.g., `print(sum(1, 2))`.", opts: ["Passing function result as argument to another.", "Defining a function inside a loop.", "Using `if` inside a function.", "Recursive functions calling themselves."] },
+            { q: "What is 'Lazy Evaluation' in R?", a: "R only evaluates function arguments when they are actually needed inside the function body.", opts: ["Evaluates arguments only when needed.", "The program runs slowly.", "Variables are not saved to memory.", "Loops are evaluated in the background."] },
+            { q: "If a function is defined as `f <- function(a, b) { print(a) }`, what happens if you call `f(5)` without providing `b`?", a: "It successfully prints `5`. Because `b` is never used in the function, R's lazy evaluation ignores the missing argument.", opts: ["Successfully prints 5 due to lazy evaluation.", "Throws a 'missing argument' error immediately.", "Prints NA.", "Prompts the user for `b`."] },
+            { q: "Following the previous question, what happens if the function *does* use `b` later, e.g., `print(a + b)`?", a: "R will throw an error only at the exact moment it tries to evaluate `b` and realizes it is missing.", opts: ["Throws error right when evaluating `b`.", "Crashes when function is called.", "Returns `NaN`.", "Assumes `b` is 0."] },
+            { q: "What is an inline function?", a: "A compact function written on a single line, often without braces. E.g., `f <- function(x) x^2`.", opts: ["Single-line function without braces.", "Function inside a dataframe.", "Function that cannot take arguments.", "C++ integrated function."] },
+            { q: "What is the output of `sum(4:6)`?", a: "`15` (because 4 + 5 + 6 = 15).", opts: ["`15`", "`10`", "`4 5 6`", "`24`"] },
+            { q: "What happens if you sum a vector containing an `NA`, like `sum(c(1, 2, NA))`?", a: "The result is `NA`. You must use the argument `na.rm = TRUE` to ignore missing values.", opts: ["Result is `NA` without `na.rm=TRUE`.", "Result is `3`.", "Throws an error.", "Result is `NaN`."] },
+            { q: "What does `Inf` signify?", a: "Positive Infinity, typically resulting from mathematical operations like dividing a positive number by 0.", opts: ["Positive Infinity.", "Information flag.", "Invalid Function.", "Integer format."] },
+            { q: "What is the difference between `NaN` and `NA`?", a: "`NaN` is 'Not a Number' (a mathematical impossibility like `0/0`). `NA` is a logical placeholder for missing data.", opts: ["NaN = Math impossibility; NA = Missing data.", "NaN = Missing string; NA = Missing number.", "They are perfectly identical.", "NA throws errors, NaN does not."] },
+            { q: "Is `NaN` considered an `NA`?", a: "Yes, `is.na(NaN)` returns `TRUE`. However, `is.nan(NA)` returns `FALSE`.", opts: ["Yes, `is.na(NaN)` is `TRUE`.", "No, `is.na(NaN)` is `FALSE`.", "Only inside lists.", "Throws a type error."] },
+            { q: "If `x <- c(1, 2, 3)`, what does `str(x)` do?", a: "It displays the compact internal structure of the object: `num [1:3] 1 2 3`.", opts: ["Displays internal structure: `num [1:3] 1 2 3`.", "Converts `x` to a string.", "Strips whitespace from `x`.", "Finds string length."] },
+            { q: "What does `rm(x)` do?", a: "It removes the variable `x` from the current workspace environment, freeing up memory.", opts: ["Removes variable from workspace.", "Reads matrix data.", "Returns modulo.", "Restarts the R session."] },
+            { q: "How do you access the documentation/help file for the `sum` function?", a: "Type `help(sum)` or `?sum` in the console.", opts: ["`help(sum)` or `?sum`", "`doc(sum)`", "`info.sum()`", "`--help sum`"] },
+            { q: "How do you search for help regarding operators like `+` or reserved keywords like `if`?", a: "You must wrap them in backticks or quotes: `help(\"+\")` or `?\"if\"`.", opts: ["Wrap in quotes: `help(\"+\")`", "Type normally: `help(+)`", "Use special keyword: `op_help(+)`", "You cannot get help for operators."] },
+            { q: "What does `&` do vs `|` in R?", a: "`&` is the logical AND operator (returns TRUE only if both sides are TRUE). `|` is the logical OR operator (returns TRUE if at least one side is TRUE).", opts: ["`&` is AND, `|` is OR.", "`&` is OR, `|` is AND.", "`&` concatenates, `|` separates.", "They are bitwise operators only."] },
+            { q: "What does the `!` operator do?", a: "It is the logical NOT operator. It reverses booleans, turning `TRUE` to `FALSE` and vice versa.", opts: ["Logical NOT (reverses boolean).", "Executes shell commands.", "Factorial math.", "Forces execution."] },
+            { q: "What is the rule for starting a variable name with a period (.)?", a: "A variable name can start with a period, but it CANNOT be followed immediately by a digit (e.g., `.myvar` is valid, `.2var` is invalid).", opts: ["Cannot be followed by a digit.", "Must be all uppercase.", "Must be a hidden variable.", "Is strictly prohibited in R."] },
+            { q: "What is a Boolean shorthand in R?", a: "You can type `T` or `F` instead of typing out `TRUE` or `FALSE`.", opts: ["`T` or `F`.", "`1` or `0`.", "`Y` or `N`.", "`+` or `-`."] },
+            { q: "Are single characters (like \"a\") and strings (like \"Word\") considered different classes in R?", a: "No, they both belong to the `character` class. R does not have a separate 'char' type like C or Java.", opts: ["No, both are `character` class.", "Yes, 'char' and 'string'.", "Yes, but R converts them automatically.", "Single characters don't exist in R."] },
+            { q: "What does `%c`, `%e`, and `%u` do in the `sprintf()` function?", a: "`%c` formats as a character, `%e` formats in scientific notation, and `%u` formats as an unsigned decimal integer.", opts: ["Char, Sci Notation, Unsigned Decimal.", "Copy, Execute, Undo.", "Complex, Error, Uniform.", "Column, Exponent, Unique."] },
+            { q: "What is a recursive function?", a: "A function that calls itself from within its own code block (e.g., calculating a factorial mathematically).", opts: ["A function that calls itself.", "A function that loops forever.", "A function imported from C++.", "A function that returns multiple lists."] }
+        ];
+
+        let testActive = false;
+        let timeLeft = 100;
+        let timerInterval = null;
+        let currentTestQuestions = [];
+        let currentQIndex = 0;
+
+        function shuffle(array) {
+            let cur = array.length, ran;
+            while (cur !== 0) {
+                ran = Math.floor(Math.random() * cur); cur--;
+                [array[cur], array[ran]] = [array[ran], array[cur]];
+            }
+            return array;
+        }
+
+        // Format inline code in multiple choice answers
+        function formatOpt(text) {
+            return text.replace(/`([^`]+)`/g, '<code class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm border dark:border-gray-700">$1</code>');
+        }
+
+        function openTestModal() {
+            document.getElementById('testModal').classList.remove('hidden');
+            document.getElementById('resultModal').classList.add('hidden');
+            document.getElementById('submitTestBtn').innerText = "Submit Exam";
+            
+            // Randomly select 10 questions
+            let pool = JSON.parse(JSON.stringify(rQuestions55)); 
+            let selected10 = shuffle(pool).slice(0, 10);
+            
+            currentTestQuestions = selected10.map(q => {
+                let correctOpt = q.opts[0]; 
+                let shuffledOpts = shuffle([...q.opts]); 
+                return { ...q, correct: correctOpt, displayOpts: shuffledOpts };
+            });
+            
+            // Generate HTML for each question
+            let html = "";
+            currentTestQuestions.forEach((q, i) => {
+                html += `
+                <div class="question-slide hidden p-2" id="qc_${i}">
+                    <h3 class="font-bold text-base md:text-lg mb-5 text-gray-800 dark:text-gray-100">${marked.parseInline(q.q)}</h3>
+                    <div class="space-y-3">
+                        ${q.displayOpts.map((opt, optIdx) => `
+                            <label class="flex items-start p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer transition-colors" id="label_${i}_${optIdx}">
+                                <input type="radio" name="q${i}" value="${optIdx}" class="mt-1 mr-3 w-4 h-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+                                <span class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-tight">${formatOpt(opt)}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+            });
+            
+            document.getElementById('questionsWrapper').innerHTML = html;
+            
+            currentQIndex = 0;
+            renderQuestion();
+
+            // Start Timer
+            timeLeft = 100;
+            testActive = true;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest(true);
+                }
+            }, 1000);
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.add('hidden');
+            clearInterval(timerInterval);
+            testActive = false;
+        }
+
+        function renderQuestion() {
+            document.querySelectorAll('.question-slide').forEach((el, i) => {
+                el.classList.toggle('hidden', i !== currentQIndex);
+            });
+            
+            document.getElementById('currentQIndexDisplay').innerText = currentQIndex + 1;
+            
+            document.getElementById('prevBtn').disabled = (currentQIndex === 0);
+            
+            if (currentQIndex === 9) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitTestBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitTestBtn').classList.add('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQIndex < 9) {
+                currentQIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                renderQuestion();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.innerText = `Time: ${timeLeft}s`;
+            if(timeLeft <= 10) {
+                display.classList.remove('bg-blue-100', 'text-blue-800');
+                display.classList.add('bg-red-100', 'text-red-800');
+            } else {
+                display.classList.remove('bg-red-100', 'text-red-800');
+                display.classList.add('bg-blue-100', 'text-blue-800');
+            }
+        }
+
+        function submitTest(isTimeout = false) {
+            if(!testActive) return;
+            let timeTaken = 100 - Math.max(0, timeLeft); // Calculate time taken
+            clearInterval(timerInterval);
+            testActive = false;
+            
+            let score = 0;
+            let detailedResults = []; // Store details for the breakdown
+
+            currentTestQuestions.forEach((q, i) => {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const correctText = q.correct;
+                let correctIdx = q.displayOpts.indexOf(correctText);
+                let isCorrect = false;
+                let userAnsText = "Not answered";
+                
+                if (selected) {
+                    const selectedIdx = parseInt(selected.value);
+                    userAnsText = q.displayOpts[selectedIdx];
+                    if (selectedIdx === correctIdx) { 
+                        score++; 
+                        isCorrect = true;
+                    } 
+                }
+
+                detailedResults.push({
+                    question: q.q,
+                    userAnswer: userAnsText,
+                    correctAnswer: correctText,
+                    isCorrect: isCorrect
+                });
+            });
+
+            showResultModal(score, isTimeout, timeTaken, detailedResults);
+        }
+
+        function showResultModal(score, isTimeout, timeTaken, detailedResults) {
+            closeTestModal();
+            document.getElementById('resultModal').classList.remove('hidden');
+
+            const scoreCircle = document.getElementById('scoreCircle');
+            const scoreValue = document.getElementById('scoreValue');
+            const resultMsg = document.getElementById('resultMessage');
+            const timeDisplay = document.getElementById('timeTakenValue');
+            const resultDetails = document.getElementById('resultDetails');
+
+            scoreValue.innerText = `${score}/10`;
+            timeDisplay.innerText = `${timeTaken}s`;
+
+            // Style circle and text based on score
+            scoreCircle.className = "w-24 h-24 md:w-32 md:h-32 rounded-full border-[8px] md:border-[10px] flex flex-col items-center justify-center transition-colors duration-500 pop-in ";
+            
+            let messageText = "";
+            if (score >= 8) {
+                scoreCircle.classList.add('border-green-500', 'text-green-600');
+                messageText = isTimeout ? "Time's up! But Excellent work!" : "Excellent work!";
+            } else if (score >= 5) {
+                scoreCircle.classList.add('border-yellow-500', 'text-yellow-600');
+                messageText = isTimeout ? "Time's up! Good effort!" : "Good effort! Keep revising.";
+            } else {
+                scoreCircle.classList.add('border-red-500', 'text-red-600');
+                messageText = isTimeout ? "Time's up! You need to practice more." : "Practice more! You'll get there.";
+            }
+            
+            resultMsg.innerText = messageText;
+
+            // Generate HTML for the breakdown
+            let detailsHtml = "";
+            detailedResults.forEach((res, index) => {
+                let userAnsColor = res.isCorrect ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400";
+                let icon = res.isCorrect ? "✓" : "✗";
+                
+                detailsHtml += `
+                <div class="p-3 md:p-4 bg-gray-50 dark:bg-[#21262d] rounded-lg border border-gray-200 dark:border-gray-700">
+                    <p class="font-bold text-sm md:text-base text-gray-800 dark:text-gray-200 mb-2">${index + 1}. ${marked.parseInline(res.question)}</p>
+                    <p class="text-sm md:text-base ${userAnsColor} font-medium flex items-start gap-1.5">
+                        <span class="mt-0.5 font-bold">${icon}</span> 
+                        <span class="leading-tight">Your Answer: ${res.userAnswer === "Not answered" ? "Not answered" : formatOpt(res.userAnswer)}</span>
+                    </p>
+                    ${!res.isCorrect ? `
+                    <p class="text-sm md:text-base text-green-600 dark:text-green-400 font-medium flex items-start gap-1.5 mt-1.5">
+                        <span class="mt-0.5 font-bold">✓</span> 
+                        <span class="leading-tight">Correct Answer: ${formatOpt(res.correctAnswer)}</span>
+                    </p>` : ''}
+                </div>`;
+            });
+            resultDetails.innerHTML = detailsHtml;
+        }
+
+        function closeResultModal() {
+            document.getElementById('resultModal').classList.add('hidden');
+        }
+
+        function retakeExam() {
+            closeResultModal();
+            openTestModal();
+        }
+
+        // --- 4. GO TO TOP & SEARCH TOGGLE LOGIC ---
+        const goToTopBtn = document.getElementById("goToTopBtn");
+        let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        window.onscroll = function() {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Show go to top button after scrolling down 300px
+            if (st > 300) {
+                goToTopBtn.classList.add("show");
+            } else {
+                goToTopBtn.classList.remove("show");
+            }
+
+            // Auto collapse search on scroll (with a slight threshold to avoid accidental mobile triggers)
+            if (Math.abs(lastScrollTop - st) > 10) {
+                const searchContainer = document.getElementById('searchContainer');
+                if (searchContainer && !searchContainer.classList.contains('scale-y-0')) {
+                    closeSearch();
+                    document.getElementById('searchInput').blur(); // Close mobile keyboard
+                }
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth" // Native smooth scrolling animation
+            });
+        }
+
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            const searchInput = document.getElementById('searchInput');
+            if (searchContainer.classList.contains('scale-y-0')) {
+                searchContainer.classList.remove('scale-y-0', 'opacity-0', 'pointer-events-none');
+                searchContainer.classList.add('scale-y-100', 'opacity-100', 'pointer-events-auto');
+                setTimeout(() => searchInput.focus(), 100);
+            } else {
+                closeSearch();
+            }
+        }
+
+        function closeSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            searchContainer.classList.add('scale-y-0', 'opacity-0', 'pointer-events-none');
+            searchContainer.classList.remove('scale-y-100', 'opacity-100', 'pointer-events-auto');
+        }
+    </script>
+</body>
+</html>
