@@ -3,7 +3,9 @@
 >
 > This project is not abandoned, but it receives updates very infrequently. <br>
 > ***Issues and Pull Requests may be submitted, but expect significant delays in reviews.***
----
+
+> [!INFO]
+> **A new domain is registered, visit <a href="https://amit.is-not.cool">here</a>.**
 
 # Source code and files for amit.is-a.dev domain and subdomain
 
