@@ -11,182 +11,357 @@
       content="pwteHw44Ax3N2B1zkFzVJB7NIK0-xgQGRihK_vtZTF4"
     />
     <link rel="canonical" href="https://amit.is-a.dev/" />
+    <link rel="llms-txt" href="https://amit.is-a.dev/llms.txt" />
+    
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "WebSite",
+          "@type": ["WebSite", "ProfilePage"],
           "@id": "https://amit.is-a.dev/#website",
           "url": "https://amit.is-a.dev/",
           "name": "Amit Dutta",
-          "alternateName": ["notamitgamer"],
-          "publisher": { "@id": "https://amit.is-a.dev/#person" }
+          "alternateName": "notamitgamer",
+          "description": "Portfolio of Amit Dutta (notamitgamer), a software developer and B.Sc. Computer Science student at Acharya Prafulla Chandra College, Kolkata. Specialising in Python, C, and web development.",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://amit.is-a.dev/#person" },
+          "about": { "@id": "https://amit.is-a.dev/#person" },
+          "mainEntity": { "@id": "https://amit.is-a.dev/#person" },
+          "hasPart": [
+            { "@id": "https://amit.is-a.dev/#mojic" },
+            { "@id": "https://amit.is-a.dev/#githrun" },
+            { "@id": "https://amit.is-a.dev/#ada" },
+            { "@id": "https://amit.is-a.dev/#bsc" },
+            { "@id": "https://amit.is-a.dev/#adpkg" },
+            { "@id": "https://amit.is-a.dev/#esal" },
+            { "@id": "https://amit.is-a.dev/#compiler" },
+            { "@id": "https://amit.is-a.dev/#logger" },
+            { "@id": "https://amit.is-a.dev/#veyrix" }
+          ]
         },
         {
           "@type": "Person",
           "@id": "https://amit.is-a.dev/#person",
-          "mainEntityOfPage": "https://amit.is-a.dev/",
           "name": "Amit Dutta",
           "alternateName": "notamitgamer",
-          "identifier": "kg:/g/11yzcqs5ff",
           "url": "https://amit.is-a.dev/",
-          "image": {
-            "@type": "ImageObject",
-            "@id": "https://amit.is-a.dev/#image",
-            "url": "https://amit.is-a.dev/mypic.png",
-            "caption": "Amit Dutta (notamitgamer)"
-          },
-          "description": "Amit Dutta (notamitgamer) is a software developer and B.Sc. Computer Science student at Acharya Prafulla Chandra College specializing in Python and C programming.",
-          "gender": "http://schema.org/Male",
-          "birthDate": "2006-07-05",
-          "birthPlace": {
-            "@type": "Place",
-            "name": "Kolkata, West Bengal, India"
-          },
+          "image": "https://amit.is-a.dev/mypic.png",
+          "description": "Software developer and B.Sc. Computer Science Honours student at Acharya Prafulla Chandra College, Kolkata. Building AI-driven platforms, developer tools, and open-source software.",
+          "identifier": "kg:/g/11yzcqs5ff",
           "jobTitle": "Software Developer",
-          "knowsAbout": ["C programming", "Python", "Web Development", "AI"],
+          "nationality": {
+            "@type": "Country",
+            "name": "India"
+          },
+          "knowsAbout": [
+            { "@type": "Thing", "name": "Computer Science", "sameAs": "https://en.wikipedia.org/wiki/Computer_science" },
+            { "@type": "Thing", "name": "Artificial Intelligence", "sameAs": "https://en.wikipedia.org/wiki/Artificial_intelligence" },
+            { "@type": "Thing", "name": "Web Development", "sameAs": "https://en.wikipedia.org/wiki/Web_development" },
+            { "@type": "Thing", "name": "Systems Programming", "sameAs": "https://en.wikipedia.org/wiki/Systems_programming" },
+            { "@type": "Thing", "name": "Open Source Software", "sameAs": "https://en.wikipedia.org/wiki/Open-source_software" }
+          ],
+          "knowsLanguage": [
+            { "@type": "Language", "name": "English" },
+            { "@type": "Language", "name": "Bengali" },
+            { "@type": "ComputerLanguage", "name": "Python" },
+            { "@type": "ComputerLanguage", "name": "C" },
+            { "@type": "ComputerLanguage", "name": "C++" },
+            { "@type": "ComputerLanguage", "name": "JavaScript" }
+          ],
+          "hasCredential": [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "Build a free website with WordPress",
+              "credentialCategory": "Certification",
+              "recognizedBy": {
+                "@type": "Organization",
+                "name": "Coursera Project Network",
+                "sameAs": "https://www.coursera.org"
+              },
+              "url": "https://www.coursera.org/account/accomplishments/records/HT6XTKV390MC"
+            }
+          ],
           "alumniOf": [
             {
               "@type": "CollegeOrUniversity",
               "name": "Acharya Prafulla Chandra College",
               "sameAs": "https://apccollege.ac.in/"
+            },
+            {
+              "@type": "EducationalOrganization",
+              "name": "New Barrackpore Colony Boys' High School"
             }
           ],
           "sameAs": [
+            "https://amit.is-a.dev/about",
+            "https://orcid.org/0009-0006-8834-9881",
+            "https://www.crunchbase.com/person/amit-dutta-d32d",
+            "https://gravatar.com/notamitgamer",
             "https://github.com/notamitgamer",
+            "https://github.com/sponsors/notamitgamer",
+            "https://www.buymeacoffee.com/notamitgamer",
             "https://www.linkedin.com/in/notamitgamer",
             "https://twitter.com/notamitgamer",
+            "https://x.com/notamitgamer",
             "https://www.facebook.com/notamitgamer",
             "https://www.instagram.com/notamitgamer",
             "https://www.reddit.com/user/notamitgamer",
             "https://www.npmjs.com/~notamitgamer",
             "https://news.ycombinator.com/user?id=notamitgamer",
-            "https://holopin.io/@notamitgamer"
+            "https://www.producthunt.com/@notamitgamer",
+            "https://pypi.org/user/notamitgamer",
+            "https://holopin.io/@notamitgamer",
+            "https://www.youtube.com/@amitduttanotamitgamer",
+            "https://leetcode.com/u/notamitgamer",
+            "https://medium.com/@notamitgamer"
           ]
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#mojic",
           "name": "Mojic",
+          "url": "https://amit.is-a.dev/mojicDocs",
           "author": { "@id": "https://amit.is-a.dev/#person" },
           "applicationCategory": "DeveloperApplication",
-          "operatingSystem": "Windows, Linux, MacOS",
+          "operatingSystem": "Windows, Linux, macOS",
+          "programmingLanguage": ["C", "JavaScript"],
+          "codeRepository": "https://github.com/notamitgamer/mojic",
           "description": "C source code obfuscator using a password-seeded rolling cipher.",
-          "url": "https://amit.is-a.dev/mojic",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "datePublished": "2026-02-09",
           "mainEntityOfPage": "https://github.com/notamitgamer/mojic",
           "subjectOf": {
-            "@type": "SocialMediaPosting",
+            "@type": "DiscussionForumPosting",
             "headline": "Show HN: Mojic – C source code obfuscator",
             "url": "https://news.ycombinator.com/item?id=46941800",
+            "image": "https://news.ycombinator.com/y18.svg",
             "datePublished": "2026-02-09T12:00:00+05:30",
-            "author": { 
-              "@type": "Person", 
-              "name": "notamitgamer",
-              "url": "https://amit.is-a.dev/" 
-            },
-            "image": "https://news.ycombinator.com/y18.svg"
+            "author": { "@id": "https://amit.is-a.dev/#person" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Hacker News",
+              "url": "https://news.ycombinator.com"
+            }
           }
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#githrun",
           "name": "Githrun",
+          "url": "https://amit.is-a.dev/githrun",
           "author": { "@id": "https://amit.is-a.dev/#person" },
           "applicationCategory": "DeveloperApplication",
-          "operatingSystem": "Windows, Linux, MacOS",
-          "description": "Run Python scripts directly from GitHub URLs.",
-          "url": "https://amit.is-a.dev/githrun",
+          "operatingSystem": "Windows, Linux, macOS",
+          "programmingLanguage": "Python",
+          "codeRepository": "https://github.com/notamitgamer/githrun",
+          "description": "Run Python scripts directly from GitHub URLs without cloning the repository.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "datePublished": "2026-02-09",
           "mainEntityOfPage": "https://github.com/notamitgamer/githrun",
-          "subjectOf": {
-            "@type": "SocialMediaPosting",
-            "headline": "Show HN: Githrun – Run Python scripts from GitHub URLs",
-            "url": "https://news.ycombinator.com/item?id=46941796",
-            "datePublished": "2026-02-09T12:00:00+05:30",
-            "author": { 
-              "@type": "Person", 
-              "name": "notamitgamer",
-              "url": "https://amit.is-a.dev/" 
+          "subjectOf": [
+            {
+              "@type": "DiscussionForumPosting",
+              "headline": "Show HN: Githrun – Run Python scripts from GitHub URLs",
+              "url": "https://news.ycombinator.com/item?id=46941796",
+              "image": "https://news.ycombinator.com/y18.svg",
+              "datePublished": "2026-02-09T12:00:00+05:30",
+              "author": { "@id": "https://amit.is-a.dev/#person" },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Hacker News",
+                "url": "https://news.ycombinator.com"
+              }
             },
-            "image": "https://news.ycombinator.com/y18.svg"
-          }
+            {
+              "@type": "SocialMediaPosting",
+              "headline": "Githrun on Product Hunt",
+              "url": "https://www.producthunt.com/p/githrun",
+              "image": "https://www.producthunt.com/favicon.ico",
+              "datePublished": "2026-02-11T12:00:00+05:30",
+              "author": { "@id": "https://amit.is-a.dev/#person" },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Product Hunt",
+                "url": "https://www.producthunt.com"
+              }
+            }
+          ]
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#ada",
           "name": "Ada AI",
-          "author": { "@id": "https://amit.is-a.dev/#person" },
-          "applicationCategory": "AssistantApplication",
-          "operatingSystem": "Web",
           "url": "https://ada.amit.is-a.dev/",
-          "description": "AI-driven platform bridging systems programming and AI.",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "AIApplication",
+          "operatingSystem": "Web",
+          "programmingLanguage": ["Python", "JavaScript"],
+          "codeRepository": "https://github.com/notamitgamer/ada-web",
+          "description": "AI-driven platform bridging systems programming and artificial intelligence.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "datePublished": "2026-01-13",
           "mainEntityOfPage": "https://github.com/notamitgamer/ada-web",
           "subjectOf": {
-            "@type": "SocialMediaPosting",
+            "@type": "DiscussionForumPosting",
             "headline": "Show HN: Ada – AI Code Assistant",
             "url": "https://news.ycombinator.com/item?id=46601360",
+            "image": "https://news.ycombinator.com/y18.svg",
             "datePublished": "2026-01-13T12:00:00+05:30",
-            "author": { 
-              "@type": "Person", 
-              "name": "notamitgamer",
-              "url": "https://amit.is-a.dev/" 
-            },
-            "image": "https://news.ycombinator.com/y18.svg"
+            "author": { "@id": "https://amit.is-a.dev/#person" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Hacker News",
+              "url": "https://news.ycombinator.com"
+            }
           }
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#bsc",
           "name": "WBSU B.Sc Coursework",
-          "author": { "@id": "https://amit.is-a.dev/#person" },
-          "applicationCategory": "DeveloperApplication",
-          "operatingSystem": "Web",
           "url": "https://amit.is-a.dev/bsc",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "Web",
+          "programmingLanguage": ["Python", "C", "C++", "Java"],
+          "codeRepository": "https://github.com/notamitgamer/bsc",
           "description": "Comprehensive coursework for B.Sc. Computer Science Honours at West Bengal State University.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
           "mainEntityOfPage": "https://github.com/notamitgamer/bsc"
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#adpkg",
           "name": "ADPKG",
+          "url": "https://github.com/notamitgamer/adpkg",
           "author": { "@id": "https://amit.is-a.dev/#person" },
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Cross-platform",
-          "description": "Python library for math, stats, and data manipulation.",
-          "url": "https://github.com/notamitgamer/adpkg",
+          "programmingLanguage": "Python",
+          "codeRepository": "https://github.com/notamitgamer/adpkg",
+          "description": "Python library for mathematics, statistics, and data manipulation.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          }
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#esal",
           "name": "ESAL-1.0",
+          "url": "https://esal.amit.is-a.dev",
           "author": { "@id": "https://amit.is-a.dev/#person" },
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Web",
-          "url": "https://esal.amit.is-a.dev",
-          "description": "Educational Source-Available License (ESAL-1.0) for academic integrity.",
+          "description": "Educational Source-Available License (ESAL-1.0) designed for academic integrity.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" }
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          }
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#compiler",
           "name": "Cloud Compiler",
+          "url": "https://compiler.amit.is-a.dev",
           "author": { "@id": "https://amit.is-a.dev/#person" },
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Web",
-          "url": "https://compiler.amit.is-a.dev",
-          "description": "Browser-based compiler with server-side execution via WebSockets.",
+          "programmingLanguage": ["JavaScript", "C", "C++", "Python", "HTML"],
+          "codeRepository": "https://github.com/notamitgamer/cloud-compiler",
+          "description": "Browser-based compiler with server-side code execution via WebSockets.",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
           "mainEntityOfPage": "https://github.com/notamitgamer/cloud-compiler"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#logger",
+          "name": "WhatsApp Logger",
+          "url": "https://amit.is-a.dev/logger",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "CommunicationApplication",
+          "operatingSystem": "Windows, Linux, macOS",
+          "programmingLanguage": "Python",
+          "codeRepository": "https://github.com/notamitgamer/logger",
+          "description": "A privacy-first, self-hosted archive for WhatsApp conversations with message logging and edit tracking.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "mainEntityOfPage": "https://github.com/notamitgamer/logger"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://amit.is-a.dev/#veyrix",
+          "name": "Veyrix IDE",
+          "url": "https://veyrix.amit.is-a.dev",
+          "author": { "@id": "https://amit.is-a.dev/#person" },
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web, Windows, Linux, macOS, Android, iOS",
+          "programmingLanguage": ["JavaScript", "HTML", "CSS"],
+          "codeRepository": "https://github.com/notamitgamer/veyrix",
+          "description": "A lightweight, privacy-first progressive web app code editor with offline support and local IndexedDB storage.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "mainEntityOfPage": "https://github.com/notamitgamer/veyrix"
         }
       ]
     }
     </script>
-
     <title>Amit Dutta (notamitgamer)</title>
     <meta
       name="description"
@@ -203,6 +378,9 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -240,6 +418,84 @@
       }
       .font-mono {
         font-family: "JetBrains Mono", monospace;
+      }
+
+      /* --- CUSTOM SCROLLBAR --- */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid #171717; }
+      ::-webkit-scrollbar-thumb { background: #171717; border-radius: 0px; border: 1px solid #27272a; }
+      ::-webkit-scrollbar-thumb:hover { background: #bef264; border-color: #bef264; }
+
+      /* --- INFINITE MARQUEE --- */
+      .marquee-container {
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          position: relative;
+          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      }
+      .marquee-content {
+          display: inline-flex;
+          gap: 1.5rem;
+          animation: marquee 25s linear infinite;
+      }
+      .marquee-content:hover {
+          animation-play-state: paused;
+      }
+      @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+      }
+      .skill-chip {
+          background: rgba(23, 23, 23, 0.8);
+          border: 1px solid var(--border-color);
+          padding: 0.5rem 1.2rem;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.875rem;
+          color: #a3a3a3;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          height: 36px;
+          transition: all 0.3s ease;
+      }
+      .skill-chip:hover {
+          border-color: var(--accent);
+          color: var(--accent);
+          background: rgba(190, 242, 100, 0.1);
+      }
+
+      /* --- RETRO TERMINAL BUTTON --- */
+      .terminal-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.25rem;
+          background: #0a0a0a;
+          border: 1px solid #27272a;
+          color: #a3a3a3;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 0.875rem;
+          text-transform: uppercase;
+          transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          text-decoration: none;
+      }
+      .terminal-btn::before {
+          content: ">_";
+          color: var(--text-muted);
+          transition: color 0.2s;
+      }
+      .terminal-btn:hover {
+          background: var(--accent);
+          color: #050505;
+          border-color: var(--accent);
+          transform: translateX(4px);
+          box-shadow: -4px 4px 0px rgba(190, 242, 100, 0.2);
+      }
+      .terminal-btn:hover::before {
+          color: #050505;
       }
 
       /* --- NOISE TEXTURE --- */
@@ -323,29 +579,8 @@
         box-shadow: 0 0 10px var(--accent);
       }
 
-      /* --- CRT SCANLINE --- */
-      .crt-scanline {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: rgba(190, 242, 100, 0.1);
-        opacity: 0.5;
-        pointer-events: none;
-        z-index: 9997;
-        animation: scanline 8s linear infinite;
-      }
-      @keyframes scanline {
-        0% {
-          top: -10vh;
-        }
-        100% {
-          top: 110vh;
-        }
-      }
-
       /* --- CURSOR --- */
+      html:has(body.custom-cursor-active),
       body.custom-cursor-active,
       body.custom-cursor-active * {
         cursor: none !important;
@@ -356,10 +591,11 @@
         left: 0;
         width: 0;
         height: 0;
-        z-index: 9999;
+        z-index: 99999;
         pointer-events: none;
         will-change: transform;
         display: none;
+        mix-blend-mode: difference;
       }
       body.custom-cursor-active .cursor-dot {
         display: block;
@@ -371,7 +607,14 @@
         height: 10px;
         background-color: var(--accent);
         transform: translate(-50%, -50%) rotate(45deg);
-        mix-blend-mode: difference;
+        transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s, border-radius 0.3s, transform 0.3s;
+      }
+      .cursor-expand::after {
+        width: 40px;
+        height: 40px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(0deg);
       }
       .click-ripple {
         position: fixed;
@@ -661,7 +904,7 @@
       /* --- BACK TO TOP BUTTON --- */
       #back-to-top {
         position: fixed;
-        bottom: 6rem;
+        bottom: 5.5rem;
         right: 1.5rem;
         background: var(--bg-main);
         border: 1px solid var(--border-color);
@@ -706,16 +949,123 @@
           font-size: 0.65rem;
         }
       }
+
+      .cursor-dot::after {
+        content: "";
+        display: block;
+        width: 10px;
+        height: 10px;
+        background-color: var(--accent);
+        transform: translate(-50%, -50%) rotate(45deg);
+        mix-blend-mode: difference;
+        transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s, border-radius 0.3s, transform 0.3s;
+      }
+      .cursor-expand::after {
+        width: 40px;
+        height: 40px;
+        background-color: var(--accent);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      .click-ripple {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.3);
+        z-index: 40;
+        pointer-events: none;
+        letter-spacing: 0.1em;
+      }
+      @media (max-width: 768px) {
+        #site-watermark {
+          top: 1rem;
+          right: 1rem;
+          font-size: 0.65rem;
+        }
+      }
+
+      /* --- PHASE 4: FILTERS & EFFECTS --- */
+      .filtered-out {
+          display: none !important;
+      }
+      @keyframes fadeInUp {
+          from { opacity: 0; transform: scale(0.95) translateY(10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      #hover-tooltip {
+          transition: opacity 0.15s ease;
+      }
+
+      /* --- TERMINAL SCROLL LOCK --- */
+      body.terminal-locked {
+          overflow: hidden !important;
+          height: 100dvh !important;
+      }
+
+      /* --- POWER DRAIN SHUTDOWN --- */
+      body.drain-active > *:not(.drain-vignette):not(#shutdown-overlay):not(.cursor-dot):not(#custom-cursor) {
+          filter: grayscale(100%) brightness(0) contrast(0.5);
+          transition: filter 3s ease-out;
+          pointer-events: none;
+      }
+      .drain-vignette {
+          position: fixed;
+          inset: 0;
+          background: radial-gradient(circle, transparent 0%, black 10%);
+          opacity: 0;
+          z-index: 9999;
+          pointer-events: none;
+          transition: opacity 3s ease-out, background 3s ease-out;
+      }
+      body.drain-active .drain-vignette {
+          opacity: 1;
+          background: radial-gradient(circle, transparent 0%, black 100%);
+      }
+      @keyframes heartbeat {
+          0% { transform: scale(1); opacity: 0.5; }
+          20% { transform: scale(1.1); opacity: 1; }
+          40% { transform: scale(1); opacity: 0.5; }
+          100% { transform: scale(1); opacity: 0.5; }
+      }
+      .power-btn-glow {
+          animation: heartbeat 2s infinite;
+          color: var(--accent);
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+      .power-btn-glow:hover {
+          animation: none;
+          transform: scale(1.2);
+          opacity: 1;
+          color: #ffffff;
+      }
+
+      /* --- SHUTDOWN BUTTON STYLES --- */
+      .terminal-btn.shutdown-btn {
+          border-color: rgba(127, 29, 29, 0.5); /* red-900/50 */
+          color: #ef4444; /* red-500 */
+      }
+      .terminal-btn.shutdown-btn:hover {
+          background: #ef4444;
+          color: #050505;
+          border-color: #ef4444;
+          box-shadow: -4px 4px 0px rgba(239, 68, 68, 0.2);
+      }
+      .terminal-btn.shutdown-btn:hover::before {
+          color: #050505;
+      }
     </style>
   </head>
   <body
     class="antialiased selection:bg-lime-300 selection:text-black custom-cursor-active"
   >
+    <!-- VIGNETTE FOR POWER DRAIN -->
+    <div class="drain-vignette"></div>
+
     <!-- NOISE OVERLAY -->
     <div class="bg-noise"></div>
-
-    <!-- CRT SCANLINE (Atmospheric) -->
-    <div class="crt-scanline"></div>
 
     <!-- PARTICLE CANVAS BACKGROUND -->
     <canvas id="particle-canvas"></canvas>
@@ -743,28 +1093,26 @@
       <div id="sys-time">00:00:00 UTC</div>
     </div>
 
-    <!-- Toggle Switch -->
-    <div
-      class="fixed bottom-6 right-6 z-50 hidden md:flex items-center gap-3 bg-neutral-900/80 backdrop-blur border border-white/10 p-2 rounded-full"
-    >
-      <span
-        class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider pl-2"
-        >Cursor</span
-      >
-      <div class="relative inline-block w-10 h-5 align-middle select-none">
-        <input
-          type="checkbox"
-          name="toggle"
-          id="cursor-toggle"
-          class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-neutral-300 appearance-none cursor-pointer z-10"
-          style="top: 2px; left: 2px"
-          checked
-        />
-        <label
-          for="cursor-toggle"
-          class="toggle-label block overflow-hidden h-full rounded-full bg-neutral-700 cursor-pointer border border-neutral-600 transition-colors duration-300"
-        ></label>
-      </div>
+    <!-- Toggle Switches -->
+    <div class="fixed bottom-6 right-6 z-50 hidden md:flex flex-row items-center gap-2 bg-neutral-900/80 backdrop-blur border border-white/10 rounded-full p-2 shadow-lg hover:border-lime-300/30 transition-colors">
+        <!-- Audio Toggle -->
+        <div class="flex items-center gap-2 pr-2">
+            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider pl-2">UI.Audio</span>
+            <div class="relative inline-block w-10 h-5 align-middle select-none">
+              <input type="checkbox" id="audio-toggle" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-neutral-300 appearance-none cursor-pointer z-10" style="top: 2px; left: 2px" />
+              <label for="audio-toggle" class="toggle-label block overflow-hidden h-full rounded-full bg-neutral-700 cursor-pointer border border-neutral-600 transition-colors duration-300"></label>
+            </div>
+        </div>
+        <!-- Divider -->
+        <div class="w-px h-5 bg-white/20"></div>
+        <!-- Cursor Toggle -->
+        <div class="flex items-center gap-2 pl-2">
+            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Cursor</span>
+            <div class="relative inline-block w-10 h-5 align-middle select-none">
+              <input type="checkbox" id="cursor-toggle" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-neutral-300 appearance-none cursor-pointer z-10" style="top: 2px; left: 2px" checked />
+              <label for="cursor-toggle" class="toggle-label block overflow-hidden h-full rounded-full bg-neutral-700 cursor-pointer border border-neutral-600 transition-colors duration-300"></label>
+            </div>
+        </div>
     </div>
 
     <!-- Sidebar Navigation Dots -->
@@ -908,11 +1256,9 @@
         data-loc="SECTOR 01: PROFILE"
         class="py-24 px-6 md:px-12 lg:px-24 border-t border-white/5"
       >
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl"
-        >
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start max-w-6xl">
           <!-- Text -->
-          <div class="order-2 md:order-1">
+          <div class="lg:col-span-7 order-2 lg:order-1 flex flex-col justify-start">
             <div
               class="font-mono text-lime-300 text-xs mb-6 uppercase tracking-wider decrypt-text"
               data-value="01 / Profile"
@@ -920,17 +1266,13 @@
               01 / Profile
             </div>
 
-            <h3
-              class="text-3xl md:text-4xl font-heading font-bold mb-6 text-white leading-tight"
-            >
+            <h3 class="text-3xl md:text-4xl font-heading font-bold mb-6 text-white leading-tight">
               Building digital architecture with
               <span class="text-neutral-500">precision</span> and
               <span class="text-neutral-500">purpose</span>.
             </h3>
 
-            <div
-              class="space-y-4 text-neutral-400 text-lg font-light leading-relaxed"
-            >
+            <div class="space-y-4 text-neutral-400 text-lg font-light leading-relaxed">
               <p>
                 I am a Computer Science undergraduate at
                 <strong class="text-white font-normal"
@@ -940,25 +1282,17 @@
               </p>
               <p>
                 My recent work involves architecting AI-driven platforms like
-                <a
-                  href="https://ada.amit.is-a.dev/docs"
-                  class="text-lime-300 hover:underline"
-                  >Ada AI</a
-                >
+                <a href="https://ada.amit.is-a.dev/docs" class="text-lime-300 hover:underline">Ada AI</a>
                 and engineering developer tools like
-                <a href="/mojic.html" class="text-lime-300 hover:underline"
-                  >Mojic</a
-                >
+                <a href="/mojic.html" class="text-lime-300 hover:underline">Mojic</a>
                 (see
-                <a
-                  href="/mojicDocs.html"
-                  class="text-neutral-500 hover:text-white hover:underline transition-colors"
-                  >docs</a
-                >) and
-                <a href="/githrun.html" class="text-lime-300 hover:underline"
-                  >Githrun</a
-                >. I believe in clean code, efficiency, and brutalist
-                aesthetics.
+                <a href="/mojicDocs.html" class="text-neutral-500 hover:text-white hover:underline transition-colors">docs</a>) and
+                <a href="/githrun.html" class="text-lime-300 hover:underline">Githrun</a>. I believe in clean code, efficiency, and brutalist aesthetics.
+              </p>
+              <p>
+                <strong class="text-white font-normal"
+                  >See more about me <a href="/about" class="text-lime-300 hover:underline">here</a>.</strong
+                >
               </p>
             </div>
 
@@ -971,72 +1305,37 @@
                 <span class="block text-white mb-1">STACK</span>
                 Python, Web
               </div>
+              <div>
+                <span class="block text-white mb-1">SYS.STATUS</span>
+                <div class="flex items-center gap-2">
+                  <div id="status-indicator" class="w-2 h-2 rounded-full animate-pulse bg-lime-400"></div>
+                  <span id="status-text" class="text-lime-300">Tracking...</span>
+                </div>
+              </div>
             </div>
 
-            <!-- NEW TECH STACK SECTION -->
-            <div class="mt-8 pt-8 border-t border-white/5">
-              <div
-                class="font-mono text-lime-300 text-xs mb-4 uppercase tracking-wider"
-              >
-                01.1 / Tech Stack
+            <!-- RESTORED STATIC TECH STACK -->
+            <div class="mt-12 reveal-box">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-2 h-2 bg-lime-300 rotate-45"></div>
+                <div class="font-mono text-lime-300 text-xs uppercase tracking-wider">
+                  01.1 / Tech Stack
+                </div>
               </div>
-              <div
-                class="flex flex-wrap gap-2 text-xs font-mono text-neutral-400"
-              >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Python</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >C</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >C++</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >HTML5</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >CSS3</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >JavaScript</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Java</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Kotlin</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Google Script</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Markdown</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Firebase</span
-                >
-                <span
-                  class="px-2 py-1 border border-neutral-800 rounded bg-neutral-900/50 hover:border-lime-300 hover:text-lime-300 transition-colors cursor-default"
-                  >Render</span
-                >
+              <div class="flex flex-wrap gap-2 font-mono text-xs text-neutral-400">
+                <span class="px-4 py-2 border border-white/10 rounded">Python</span>
+                <span class="px-4 py-2 border border-white/10 rounded">C / C++</span>
+                <span class="px-4 py-2 border border-white/10 rounded">JavaScript</span>
+                <span class="px-4 py-2 border border-white/10 rounded">HTML5 & CSS3</span>
+                <span class="px-4 py-2 border border-white/10 rounded">Firebase</span>
+                <span class="px-4 py-2 border border-white/10 rounded">Render</span>
+                <span class="px-4 py-2 border border-white/10 rounded">Git</span>
               </div>
             </div>
           </div>
 
           <!-- Circular Photo -->
-          <div class="order-1 md:order-2 flex justify-center md:justify-end">
+          <div class="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end mt-4 lg:mt-0">
             <div
               id="photo-container"
               class="w-64 h-64 md:w-80 md:h-80 cursor-pointer group"
@@ -1046,17 +1345,13 @@
               <!-- Image -->
               <img
                 id="photo-img"
-                src="https://amit.is-a.dev/mypic.png"
+                src="/mypic.png"
                 alt="Amit Dutta"
                 class="w-full h-full object-cover relative z-10 border-2 border-transparent group-hover:border-lime-300/50 transition-colors duration-300"
-                onerror="
-                  this.src = 'https://placehold.co/400x400/111/FFF?text=AD'
-                "
+                onerror="this.src = 'https://placehold.co/400x400/111/FFF?text=Amit'"
               />
               <!-- Tech Tag -->
-              <div
-                class="absolute -bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] text-lime-300 bg-neutral-900/80 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-lime-300/20"
-              >
+              <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 font-mono text-[10px] text-lime-300 bg-neutral-900/80 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-lime-300/20">
                 IMG_AMIT.RAW
               </div>
             </div>
@@ -1070,8 +1365,8 @@
         data-loc="SECTOR 02: WORKS"
         class="py-24 px-6 md:px-12 lg:px-24 bg-neutral-900/30 border-t border-white/5"
       >
-        <div class="max-w-6xl">
-          <div class="flex items-end justify-between mb-16">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
             <div>
               <div
                 class="font-mono text-lime-300 text-xs mb-2 uppercase tracking-wider decrypt-text"
@@ -1085,11 +1380,13 @@
                 Project Protocol
               </h2>
             </div>
-            <a
-              href="https://github.com/notamitgamer"
-              class="hidden md:block font-mono text-xs text-neutral-500 hover:text-white transition-colors uppercase"
-              >[ View Github ]</a
-            >
+            <!-- PROJECT FILTERS -->
+            <div class="flex flex-wrap gap-2 font-mono text-[10px] md:text-xs uppercase" id="project-filters">
+                <button class="filter-btn active border border-lime-300 text-lime-300 px-3 py-1 hover:bg-lime-300 hover:text-black transition-colors" data-filter="all">[ ALL ]</button>
+                <button class="filter-btn border border-white/20 text-neutral-500 px-3 py-1 hover:border-lime-300 hover:text-lime-300 transition-colors" data-filter="python">[ PYTHON ]</button>
+                <button class="filter-btn border border-white/20 text-neutral-500 px-3 py-1 hover:border-lime-300 hover:text-lime-300 transition-colors" data-filter="web">[ WEB ]</button>
+                <button class="filter-btn border border-white/20 text-neutral-500 px-3 py-1 hover:border-lime-300 hover:text-lime-300 transition-colors" data-filter="c">[ C/C++ ]</button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1115,38 +1412,38 @@
               </p>
               <!-- Button -->
               <div class="relative z-10 flex flex-col gap-3">
-  <a
-    href="/codenct"
-    class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded text-center  w-fit"
-  >
-    INITIATE v1
-  </a>
-  
-  <a
-    href="/nct-legacy"
-    class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-flex items-center justify-center gap-1.5  w-fit"
-  >
-    INITIATE v2.11
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="#D0BCFF">
-      <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-    </svg>
-    (Legacy Edition)
-  </a>
-  <div class="flex gap-3 relative z-10">
                 <a
-                  href="https://amit.is-a.dev/code-nct-legacy"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
+                  href="/codenct"
+                  class="terminal-btn interactive-hover w-fit"
                 >
-                  Source Code
+                  INITIATE v1
                 </a>
+                
                 <a
-                  href="https://github.com/notamitgamer/nct"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-white hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
+                  href="/nct-legacy"
+                  class="terminal-btn interactive-hover w-fit"
                 >
-                  GITHUB
+                  INITIATE v2.11
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#D0BCFF">
+                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                  </svg>
+                  (Legacy Edition)
                 </a>
+                <div class="flex flex-wrap gap-3 relative z-10 mt-2">
+                  <a
+                    href="https://amit.is-a.dev/code-nct-legacy"
+                    class="terminal-btn interactive-hover w-fit"
+                  >
+                    Source Code
+                  </a>
+                  <a
+                    href="https://github.com/notamitgamer/nct"
+                    class="terminal-btn interactive-hover w-fit"
+                  >
+                    GITHUB
+                  </a>
+                </div>
               </div>
-</div>
             </div>
 
             <!-- Card 2 -->
@@ -1175,7 +1472,7 @@
               <div class="relative z-10">
                 <a
                   href="https://pypi.org/project/adpkg/"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   PIP INSTALL
                 </a>
@@ -1208,7 +1505,7 @@
               <div class="relative z-10">
                 <a
                   href="https://compiler.amit.is-a.dev"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   COMPILE
                 </a>
@@ -1238,16 +1535,16 @@
                 codes and assignments.
               </p>
               <!-- Dual Buttons -->
-              <div class="flex gap-3 relative z-10">
+              <div class="flex flex-wrap gap-3 relative z-10">
                 <a
                   href="https://amit.is-a.dev/bsc"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   LIVE SITE
                 </a>
                 <a
                   href="https://github.com/notamitgamer/bsc"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-white hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   GITHUB
                 </a>
@@ -1279,7 +1576,7 @@
               <div class="relative z-10">
                 <a
                   href="https://ada.amit.is-a.dev"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   DEMO
                 </a>
@@ -1312,7 +1609,7 @@
               <div class="relative z-10">
                 <a
                   href="https://esal.amit.is-a.dev"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   READ DOCS
                 </a>
@@ -1345,7 +1642,7 @@
                 <a
                   href="/mojicDocs"
                   target="_blank"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   VIEW DOCS
                 </a>
@@ -1386,12 +1683,128 @@
                 <a
                   href="/githrun"
                   target="_blank"
-                  class="px-4 py-2 bg-neutral-800 hover:bg-lime-300 hover:text-black text-xs font-mono border border-neutral-700 transition-colors uppercase rounded inline-block"
+                  class="terminal-btn interactive-hover w-fit"
                 >
                   VIEW DOCS
                 </a>
               </div>
             </div>
+            <div class="project-card block p-8 rounded relative group overflow-hidden">
+              <div class="card-icon-wrapper">
+                <svg
+                  class="w-32 h-32"
+                  fill="currentColor"
+                  viewBox="0 0 100 100"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                    <rect width="100" height="100" rx="30" fill="currentColor" />
+
+                    <path 
+                      d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H45L30 70V35Z" 
+                      fill="black" 
+                      opacity="0.5" 
+                    />
+
+                    <circle cx="42" cy="45" r="3" fill="black" />
+                    <circle cx="50" cy="45" r="3" fill="black" />
+                    <circle cx="58" cy="45" r="3" fill="black" />
+                </svg>
+              </div>
+              <div class="font-mono text-neutral-600 text-xs mb-4">009</div>
+              <h3 class="text-xl text-white font-bold mb-2 group-hover:text-lime-300 transition-colors">
+                Whatsapp Logger
+              </h3>
+              <p class="text-neutral-400 text-sm leading-relaxed mb-6">
+                A privacy-first, self-hosted archive for WhatsApp conversations.
+              </p>
+              <div class="relative z-10">
+                <a
+                  href="/logger"
+                  target="_blank"
+                  class="terminal-btn interactive-hover w-fit"
+                >
+                  VIEW DOCS
+                </a>
+              </div>
+            </div>
+            <div class="project-card block p-8 rounded relative group overflow-hidden">
+  <div class="card-icon-wrapper">
+    <svg class="w-32 h-32" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M120 140 L256 380 L392 140 L310 140 L256 240 L202 140 Z" />
+      <path d="M160 140 L256 320 L352 140 L310 140 L256 240 L202 140 Z" opacity="0.8" />
+      <circle cx="256" cy="420" r="16" />
+    </svg>
+  </div>
+
+  <div class="font-mono text-neutral-600 text-xs mb-4">010</div>
+  
+  <h3 class="text-xl text-white font-bold mb-2 group-hover:text-lime-300 transition-colors">
+    Veyrix IDE
+  </h3>
+  
+  <p class="text-neutral-400 text-sm leading-relaxed mb-6">
+    A lightweight, privacy-first progressive web app code editor. Features offline support, local IndexedDB storage, and secure dual sharing mechanics without server setup.
+  </p>
+
+  <div class="flex flex-wrap gap-3 relative z-10">
+    <a
+      href="https://veyrix.amit.is-a.dev"
+      class="terminal-btn interactive-hover w-fit"
+    >
+      LIVE SITE
+    </a>
+    <a
+      href="https://veyrix.amit.is-a.dev/docs"
+      class="terminal-btn interactive-hover w-fit"
+    >
+      DOCS
+    </a>
+    <a
+      href="https://github.com/notamitgamer/veyrix"
+      class="terminal-btn interactive-hover w-fit"
+    >
+      GITHUB
+    </a>
+  </div>
+</div>
+<div class="hidden lg:block project-card p-8 rounded relative group overflow-hidden border-dashed border-lime-300/30 bg-lime-300/5">
+  <div class="card-icon-wrapper opacity-20">
+    <svg class="w-32 h-32 animate-spin-slow" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+  </div>
+  <div class="font-mono text-lime-300/40 text-xs mb-4">011 / PENDING</div>
+  <h3 class="text-xl text-white font-bold mb-2 group-hover:text-lime-300 transition-colors">System.Update_</h3>
+  <p class="text-neutral-500 text-sm leading-relaxed mb-6 font-mono">
+    &gt; Initializing new modules...<br>
+    &gt; Status: [ IN_DEVELOPMENT ]
+  </p>
+  <div class="relative z-10">
+    <div class="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-lime-300/20 text-lime-300/50 text-[10px] font-mono uppercase rounded tracking-widest">
+      <span class="w-1.5 h-1.5 bg-lime-300 rounded-full animate-pulse"></span>
+      Compiling Next Project
+    </div>
+  </div>
+</div>
+<div class="hidden lg:block project-card p-8 rounded relative group overflow-hidden border-dashed border-lime-300/30 bg-lime-300/5">
+  <div class="card-icon-wrapper opacity-20">
+    <svg class="w-32 h-32 animate-spin-slow" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+  </div>
+  <div class="font-mono text-lime-300/40 text-xs mb-4">012 / PENDING</div>
+  <h3 class="text-xl text-white font-bold mb-2 group-hover:text-lime-300 transition-colors">System.Update_</h3>
+  <p class="text-neutral-500 text-sm leading-relaxed mb-6 font-mono">
+    &gt; Initializing new modules...<br>
+    &gt; Status: [ IN_DEVELOPMENT ]
+  </p>
+  <div class="relative z-10">
+    <div class="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-lime-300/20 text-lime-300/50 text-[10px] font-mono uppercase rounded tracking-widest">
+      <span class="w-1.5 h-1.5 bg-lime-300 rounded-full animate-pulse"></span>
+      Compiling Next Project
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
@@ -1402,72 +1815,120 @@
         data-loc="SECTOR 03: COMMS"
         class="py-32 px-6 md:px-12 lg:px-24 border-t border-white/5 bg-neutral-950"
       >
-        <div class="max-w-4xl mx-auto text-center">
-          <h2
-            class="text-5xl md:text-7xl font-heading font-bold text-white mb-8 tracking-tighter"
-          >
-            Let's_<span class="text-lime-300">Talk.</span>
-          </h2>
-          <p class="text-neutral-400 text-lg mb-12 max-w-xl mx-auto">
-            Available for collaborations, coffee chats, or discussing the future
-            of AI.
-          </p>
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-16">
+            <h2
+              class="text-5xl md:text-7xl font-heading font-bold text-white mb-6 tracking-tighter"
+            >
+              Let's_<span class="text-lime-300">Talk.</span>
+            </h2>
+            <p class="text-neutral-400 text-lg max-w-xl mx-auto">
+              Available for collaborations, open-source maintenance, or discussing the future
+              of AI interfaces.
+            </p>
+          </div>
 
-          <div class="flex flex-wrap justify-center gap-6 font-mono text-sm">
-            <a
-              href="https://github.com/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >GITHUB</a
-            >
-            <a
-              href="https://linkedin.com/in/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >LINKEDIN</a
-            >
-            <a
-              href="mailto:amitdutta4255@gmail.com"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >EMAIL</a
-            >
-            <a
-              href="https://wa.me/917278779512?text=hi"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >WHATSAPP</a
-            >
-            <a
-              href="https://facebook.com/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >FACEBOOK</a
-            >
-            <a
-              href="https://instagram.com/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >INSTAGRAM</a
-            >
-            <a
-              href="https://twitter.com/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >X (TWITTER)</a
-            >
-            <a
-              href="https://reddit.com/user/notamitgamer"
-              class="magnetic-btn px-6 py-3 border border-neutral-800 rounded-full hover:bg-lime-300 hover:text-black hover:border-lime-300 transition-all duration-300"
-              >REDDIT</a
-            >
+          <div class="md:hidden text-center mb-6 font-mono text-xs text-lime-300/70 animate-pulse">
+            &larr; Swipe to explore &rarr;
+          </div>
+
+          <!-- BENTO TERMINAL GRID -->
+          <!-- Added strict Tailwind classes to hide scrollbar: [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -->
+          <div id="bento-carousel" class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 pb-4 -mx-6 px-[10vw] md:mx-0 md:px-0">
+            
+            <!-- DEV PROFILES -->
+            <!-- ADDED: snap-always to force strict stopping at each item -->
+            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+              <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ DEV_PROFILES ]</h3>
+              <a href="https://github.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="GitHub">GitHub</a>
+              <a href="https://www.npmjs.com/~notamitgamer" class="terminal-btn interactive-hover" aria-label="NPM">NPM</a>
+              <a href="https://pypi.org/user/notamitgamer" class="terminal-btn interactive-hover" aria-label="PyPI">PyPI</a>
+              <a href="https://leetcode.com/u/notamitgamer" class="terminal-btn interactive-hover" aria-label="LeetCode">LeetCode</a>
+              <a href="https://holopin.io/@notamitgamer" class="terminal-btn interactive-hover" aria-label="Holopin">Holopin</a>
+            </div>
+
+            <!-- PROFESSIONAL -->
+            <!-- ADDED: snap-always -->
+            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+              <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ PROFESSIONAL ]</h3>
+              <a href="https://linkedin.com/in/notamitgamer" class="terminal-btn interactive-hover" aria-label="LinkedIn">LinkedIn</a>
+              <a href="https://orcid.org/0009-0006-8834-9881" class="terminal-btn interactive-hover" aria-label="ORCID">ORCID</a>
+              <a href="https://www.crunchbase.com/person/amit-dutta-d32d" class="terminal-btn interactive-hover" aria-label="Crunchbase">Crunchbase</a>
+              <a href="https://medium.com/@notamitgamer" class="terminal-btn interactive-hover" aria-label="Medium">Medium</a>
+              <a href="https://gravatar.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="Gravatar">Gravatar</a>
+            </div>
+
+            <!-- SOCIAL COMMS -->
+            <!-- ADDED: snap-always -->
+            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+              <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ SOCIAL_COMMS ]</h3>
+              <a href="https://x.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="X (Twitter)">X (Twitter)</a>
+              <a href="https://reddit.com/user/notamitgamer" class="terminal-btn interactive-hover" aria-label="Reddit">Reddit</a>
+              <a href="https://www.producthunt.com/@notamitgamer" class="terminal-btn interactive-hover" aria-label="Product Hunt">Product Hunt</a>
+              <a href="https://news.ycombinator.com/user?id=notamitgamer" class="terminal-btn interactive-hover" aria-label="Hacker News">Hacker News</a>
+              <a href="https://www.youtube.com/@amitduttanotamitgamer" class="terminal-btn interactive-hover" aria-label="YouTube">YouTube</a>
+              <a href="https://facebook.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="Facebook">Facebook</a>
+              <a href="https://instagram.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="Instagram">Instagram</a>
+            </div>
+
+            <!-- SPONSORSHIP & DIRECT -->
+            <!-- ADDED: snap-always -->
+            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+              <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ DIRECT_ACCESS ]</h3>
+              <a href="mailto:amitdutta4255@gmail.com" class="terminal-btn border-lime-300/30 text-lime-300 interactive-hover" aria-label="Email Me">Personal Mail</a>
+              <a href="mailto:mail@amit.is-a.dev" class="terminal-btn border-lime-300/30 text-lime-300 interactive-hover" aria-label="Work Email">Work Mail</a>
+              <a href="https://wa.me/917278779512?text=hi" class="terminal-btn interactive-hover" aria-label="WhatsApp">WhatsApp</a>
+              <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 mt-4 border-b border-white/5 pb-2">[ SPONSORSHIP ]</h3>
+              <a href="https://github.com/sponsors/notamitgamer" class="terminal-btn interactive-hover" aria-label="GitHub Sponsors">GitHub Sponsors</a>
+              <a href="https://www.buymeacoffee.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="Buy Me a Coffee">Buy Me a Coffee</a>
+            </div>
+
+          </div>
+
+          <!-- CAROUSEL PAGINATION DOTS (Mobile) -->
+          <div id="bento-dots" class="md:hidden flex justify-center gap-2 mt-2">
+            <div class="w-2 h-2 rounded-full bg-lime-300 transition-colors duration-300"></div>
+            <div class="w-2 h-2 rounded-full bg-neutral-800 transition-colors duration-300"></div>
+            <div class="w-2 h-2 rounded-full bg-neutral-800 transition-colors duration-300"></div>
+            <div class="w-2 h-2 rounded-full bg-neutral-800 transition-colors duration-300"></div>
           </div>
         </div>
       </section>
 
       <!-- FOOTER -->
       <footer
-        class="py-8 text-center text-neutral-600 font-mono text-[10px] uppercase border-t border-white/5 flex flex-col items-center gap-4"
+        class="py-16 text-center text-neutral-600 font-mono text-[10px] uppercase border-t border-white/5 flex flex-col items-center gap-8 relative overflow-hidden"
       >
-        <div>
+        <!-- ASCII Art -->
+        <pre class="text-lime-300/100 font-mono text-[6px] md:text-[8px] leading-[1.1] tracking-tighter select-none pointer-events-none hover:text-lime-300/40 transition-colors duration-500 text-left">
+ ________  _____ ______   ___  _________        ________  ___  ___  _________  _________  ________     
+|\   __  \|\   _ \  _   \|\  \|\___   ___\     |\   ___ \|\  \|\  \|\___   ___\\___   ___\\   __  \    
+\ \  \|\  \ \  \\\__\ \  \ \  \|___ \  \_|     \ \  \_|\ \ \  \\\  \|___ \  \_\|___ \  \_\ \  \|\  \   
+ \ \   __  \ \  \\|__| \  \ \  \   \ \  \       \ \  \ \\ \ \  \\\  \   \ \  \     \ \  \ \ \   __  \  
+  \ \  \ \  \ \  \    \ \  \ \  \   \ \  \       \ \  \_\\ \ \  \\\  \   \ \  \     \ \  \ \ \  \ \  \ 
+   \ \__\ \__\ \__\    \ \__\ \__\   \ \__\       \ \_______\ \_______\   \ \__\     \ \__\ \ \__\ \__\
+    \|__|\|__|\|__|     \|__|\|__|    \|__|        \|_______|\|_______|    \|__|      \|__|  \|__|\|__|
+                                                                                                       
+                                                                                                       
+                                                                                                       
+        </pre>
+
+        <div class="text-neutral-500 animate-pulse mt-4">
+          SYS_MSG: Press [ ` ] or [ CTRL + ~ ] to access root terminal.
+        </div>
+
+        <!-- Shutdown Button -->
+        <button id="shutdown-btn" class="terminal-btn shutdown-btn interactive-hover mt-4 mx-auto w-fit">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            System Shutdown
+        </button>
+
+        <div class="mt-4">
           &copy; 2025 - 2026 Amit Dutta (notamitgamer) // All Systems Normal
         </div>
 
         <!-- Powered By Section -->
-        <div class="flex items-center gap-4 transition-opacity duration-300">
+        <div class="flex items-center gap-4 transition-opacity duration-300 mt-4">
           <span class="tracking-widest">Powered By</span>
           <div class="h-4 w-px bg-neutral-700"></div>
 
@@ -1476,9 +1937,9 @@
             href="https://animejs.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="hover:brightness-125 transition-all"
+            class="hover:brightness-125 transition-all interactive-hover"
           >
-            <img src="animejs-logo.svg" alt="Anime.js" class="h-6 w-auto" />
+            <img src="/assets/animejs-logo.svg" alt="Anime.js" class="h-6 w-auto" />
           </a>
 
           <!-- Tailwind CSS -->
@@ -1486,10 +1947,10 @@
             href="https://tailwindcss.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="hover:brightness-125 transition-all"
+            class="hover:brightness-125 transition-all interactive-hover"
           >
             <img
-              src="tailwind-logo-dark.svg"
+              src="/assets/tailwind-logo-dark.svg"
               alt="Tailwind CSS"
               class="h-4 w-auto"
             />
@@ -1498,10 +1959,94 @@
       </footer>
     </div>
 
+    <!-- PHASE 4 OVERLAYS -->
+
+    <!-- Dynamic Hover Tooltip -->
+    <div id="hover-tooltip" class="fixed pointer-events-none z-[9998] opacity-0 bg-neutral-900/90 backdrop-blur border border-lime-300/30 text-lime-300 font-mono text-[10px] uppercase px-3 py-1.5 rounded shadow-lg transform translate-x-4 -translate-y-full"></div>
+
+    <!-- Hidden Console Easter Egg -->
+    <!-- EDIT TRANSLUCENCY HERE: Change 'bg-black/70' to adjust background opacity (e.g., bg-black/50 is clearer, bg-black/95 is darker) -->
+    <div id="cmd-terminal" class="fixed inset-0 bg-black/50 backdrop-blur-xl z-[9999] hidden flex-col font-mono text-lime-300 text-sm">
+        <!-- Sticky Header -->
+        <div class="flex-none flex justify-between items-center border-b border-lime-300/20 px-6 py-4 md:px-12 md:py-6 bg-black/40">
+            <div>ROOT_TERMINAL // v2.0.1</div>
+            <button id="close-terminal" class="text-lime-300/50 hover:text-lime-300 transition-colors">[ CLOSE ]</button>
+        </div>
+        
+        <!-- Scrollable Output Area -->
+        <div id="term-output" class="flex-auto overflow-y-auto px-6 py-4 md:px-12 space-y-2 pointer-events-auto overscroll-contain">
+            <div>> Access granted to root-amit.is-a.dev. Type 'help' for available commands.</div>
+        </div>
+        
+        <!-- Sticky Input Area -->
+        <div class="flex-none flex items-center gap-2 px-6 py-4 md:px-12 border-t border-lime-300/10 bg-black/40">
+            <span>~#</span>
+            <input type="text" id="term-input" class="flex-1 bg-transparent border-none outline-none text-lime-300 caret-lime-300 w-full" autocomplete="off" spellcheck="false" autofocus>
+        </div>
+    </div>
+
+    <!-- Cinematic Shutdown Overlay -->
+    <div id="shutdown-overlay" class="fixed inset-0 z-[10000] hidden flex-col items-center justify-center text-center px-6 bg-black opacity-0 transition-opacity duration-1000">
+        <svg onclick="window.location.reload()" class="power-btn-glow w-24 h-24 interactive-hover" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9"></path>
+        </svg>
+        <div class="text-neutral-600 mt-6 tracking-widest text-sm uppercase">Manual Restart Required</div>
+    </div>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="custom-cursor"></div>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // --- 1. UTILS ---
+        // --- 1. UTILS & PHASE 4 AUDIO SYNTH ---
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        
+        let audioCtx;
+        const audioToggle = document.getElementById("audio-toggle");
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if (!audioToggle || !audioToggle.checked) return;
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'click') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'type') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600 + Math.random() * 200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.005, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.03);
+            }
+        }
+
+        // Global Sound Listeners
+        document.body.addEventListener('mouseover', (e) => {
+            if (e.target.closest('a, button, .interactive-hover, .filter-btn, .toggle-label')) playSound('hover');
+        });
+        document.body.addEventListener('mousedown', (e) => {
+            if (e.target.closest('a, button, .interactive-hover, .filter-btn, .toggle-label, input')) playSound('click');
+        });
 
         // Helper function for random string generation
         const randomString = (length) => {
@@ -1512,7 +2057,7 @@
           }
           return result;
         };
-
+        
         // Helper for system detection
         function getSystemInfo() {
           const ua = navigator.userAgent;
@@ -1539,6 +2084,22 @@
 
         const sysInfo = getSystemInfo();
 
+                const statusText = document.getElementById('status-text');
+        const statusIndicator = document.getElementById('status-indicator');
+        
+        if (statusText && statusIndicator) {
+            const hour = new Date().getHours();
+            if (hour >= 6 && hour < 20) {
+                statusText.textContent = "Compiling / Deep Work";
+                statusIndicator.className = "w-2 h-2 rounded-full animate-pulse bg-lime-400";
+                statusText.className = "text-lime-300";
+            } else {
+                statusText.textContent = "Recharging / Offline";
+                statusIndicator.className = "w-2 h-2 rounded-full bg-yellow-500 animate-pulse";
+                statusText.className = "text-yellow-500";
+            }
+        }
+        
         // --- 2. INTRO SEQUENCE ---
 
         const logs = [
@@ -1561,7 +2122,7 @@
         const skipHint = document.getElementById("skip-hint");
 
         let stepIndex = 0;
-        const stepBaseDelay = 400; // Delay between normal logs
+        const stepBaseDelay = 100; // Delay between normal logs
 
         // Flags and Timers for Skipping
         const hasVisited = localStorage.getItem("aranag_visited");
@@ -1626,6 +2187,7 @@
             const content = logItem();
             if (content.type === "typing") {
               // Logic for "Loading assets: [......]"
+              playSound('type');
               p.textContent = `> ${content.text}`;
               requestAnimationFrame(() => {
                 p.style.opacity = "1";
@@ -1642,7 +2204,7 @@
                 // Typing Interval
                 currentTypeInterval = setInterval(() => {
                   if (isSkipping) return;
-
+                  playSound('type');
                   p.textContent = `> ${content.text}${randomString(i)}`;
                   i++;
                   if (i > finalLength) {
@@ -1660,6 +2222,7 @@
             }
           } else {
             // Standard Log
+            playSound('type');
             const text = logItem.startsWith(">") ? logItem : `> ${logItem}`;
             p.textContent = text;
             requestAnimationFrame(() => {
@@ -1793,7 +2356,7 @@
               }
             });
           },
-          { threshold: 0.5 },
+          { threshold: 0.1 }, // Changed from 0.5 to fix tall sections like #projects
         );
 
         sections.forEach((sec) => locObserver.observe(sec));
@@ -1808,6 +2371,12 @@
           const posX = e.clientX;
           const posY = e.clientY;
           cursorDot.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+
+          if (e.target.closest('a, button, .interactive-hover, .filter-btn, .toggle-label')) {
+              cursorDot.classList.add('cursor-expand');
+          } else {
+              cursorDot.classList.remove('cursor-expand');
+          }
         });
 
         // Click Ripple Effect
@@ -1955,6 +2524,131 @@
         initParticles();
         animateParticles();
 
+        // --- 14. INFINITE SNEAK PEEK CAROUSEL (Mobile) ---
+        const carousel = document.getElementById('bento-carousel');
+        const bentoDots = document.getElementById('bento-dots');
+        
+        if (carousel && window.innerWidth < 768) {
+            const items = Array.from(carousel.querySelectorAll('.carousel-item'));
+            const numItems = items.length;
+            const dots = bentoDots ? Array.from(bentoDots.children) : [];
+
+            if (numItems > 0) {
+                // Clone items to create a seamless infinite runway
+                const clonesBefore = items.map(el => {
+                    const clone = el.cloneNode(true);
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.classList.add('md:hidden'); // Prevent clones from breaking desktop grid if resized
+                    return clone;
+                });
+                const clonesAfter = items.map(el => {
+                    const clone = el.cloneNode(true);
+                    clone.setAttribute('aria-hidden', 'true');
+                    clone.classList.add('md:hidden');
+                    return clone;
+                });
+
+                // Inject clones
+                clonesBefore.reverse().forEach(clone => carousel.insertBefore(clone, carousel.firstChild));
+                clonesAfter.forEach(clone => carousel.appendChild(clone));
+
+                // Initialize scroll position silently to the first real item
+                setTimeout(() => {
+                    const paddingLeft = parseFloat(window.getComputedStyle(carousel).paddingLeft) || 0;
+                    carousel.style.scrollSnapType = 'none';
+                    carousel.scrollLeft = carousel.children[numItems].offsetLeft - paddingLeft;
+                    void carousel.offsetWidth; // Force layout refresh
+                    carousel.style.scrollSnapType = 'x mandatory';
+                }, 50);
+
+                // Anti-twitch Silent Jump Logic
+                let isTouching = false;
+                let scrollTimeout;
+
+                // Track touches to never interrupt an active swipe
+                carousel.addEventListener('touchstart', () => { isTouching = true; }, { passive: true });
+                carousel.addEventListener('touchend', () => {
+                    isTouching = false;
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(checkAndJump, 150);
+                }, { passive: true });
+
+                // Track momentum scrolling & update dots
+                carousel.addEventListener('scroll', () => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        if (!isTouching) checkAndJump();
+                    }, 150);
+
+                    // Real-time Dot Update
+                    const allItems = Array.from(carousel.children);
+                    const containerCenter = carousel.scrollLeft + carousel.offsetWidth / 2;
+                    let closestDist = Infinity;
+                    let closestIndex = -1;
+
+                    // Find which box is closest to center
+                    allItems.forEach((item, index) => {
+                        const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+                        const dist = Math.abs(itemCenter - containerCenter);
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestIndex = index;
+                        }
+                    });
+
+                    // Update the styling of the 4 dots based on real logical index
+                    if (dots.length > 0 && closestIndex !== -1) {
+                        const realIndex = closestIndex % numItems;
+                        dots.forEach((dot, idx) => {
+                            if (idx === realIndex) {
+                                dot.classList.remove('bg-neutral-800');
+                                dot.classList.add('bg-lime-300');
+                            } else {
+                                dot.classList.remove('bg-lime-300');
+                                dot.classList.add('bg-neutral-800');
+                            }
+                        });
+                    }
+                });
+
+                function checkAndJump() {
+                    const allItems = Array.from(carousel.children);
+                    const containerCenter = carousel.scrollLeft + carousel.offsetWidth / 2;
+                    let closestDist = Infinity;
+                    let closestIndex = -1;
+
+                    // Find which box the user stopped on
+                    allItems.forEach((item, index) => {
+                        const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+                        const dist = Math.abs(itemCenter - containerCenter);
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestIndex = index;
+                        }
+                    });
+
+                    const paddingLeft = parseFloat(window.getComputedStyle(carousel).paddingLeft) || 0;
+
+                    // If user scrolled into the cloned front-end, silently jump forward to real items
+                    if (closestIndex < numItems) {
+                        const targetItem = allItems[closestIndex + numItems];
+                        carousel.style.scrollSnapType = 'none'; // Disable snap to prevent animation
+                        carousel.scrollLeft = targetItem.offsetLeft - paddingLeft;
+                        void carousel.offsetWidth;
+                        carousel.style.scrollSnapType = 'x mandatory';
+                    } 
+                    // If user scrolled into the cloned back-end, silently jump backward to real items
+                    else if (closestIndex >= numItems * 2) {
+                        const targetItem = allItems[closestIndex - numItems];
+                        carousel.style.scrollSnapType = 'none';
+                        carousel.scrollLeft = targetItem.offsetLeft - paddingLeft;
+                        void carousel.offsetWidth;
+                        carousel.style.scrollSnapType = 'x mandatory';
+                    }
+                }
+            }
+        }
+
         // --- 13. 3D GRID ANIMATION (Optimized) ---
         function startGridAnimation() {
           const visualizer = document.querySelector(".stagger-visualizer");
@@ -2049,6 +2743,181 @@
             });
 
           animation.play();
+        }
+
+        // --- 15. PHASE 4 ADVANCED FEATURES ---
+
+        // A. Dynamic Project Filtering (Auto-Tagging)
+        const projectCards = document.querySelectorAll('.project-card');
+        projectCards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            let cats = ['all'];
+            if (text.includes('python') || text.includes('adpkg') || text.includes('githrun') || text.includes('logger') || text.includes('ada')) cats.push('python');
+            if (text.includes('html') || text.includes('web') || text.includes('javascript') || text.includes('npm') || text.includes('site') || text.includes('veyrix')) cats.push('web');
+            if (text.includes(' c ') || text.includes('c++') || text.includes('compiler') || text.includes('mojic') || text.includes('esal')) cats.push('c');
+            card.dataset.category = cats.join(' ');
+        });
+
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state
+                filterBtns.forEach(b => {
+                    b.classList.remove('text-lime-300', 'border-lime-300', 'active');
+                    b.classList.add('text-neutral-500', 'border-white/20');
+                });
+                btn.classList.remove('text-neutral-500', 'border-white/20');
+                btn.classList.add('text-lime-300', 'border-lime-300', 'active');
+
+                // Filter logic with animation reset
+                const target = btn.dataset.filter;
+                projectCards.forEach(card => {
+                    if (card.dataset.category.includes(target)) {
+                        card.classList.remove('filtered-out');
+                        card.style.animation = 'none'; 
+                        void card.offsetWidth; // trigger reflow
+                        card.style.animation = 'fadeInUp 0.4s ease-out forwards';
+                    } else {
+                        card.classList.add('filtered-out');
+                    }
+                });
+            });
+        });
+
+        // B. Hidden Console Easter Egg
+        const terminalOverlay = document.getElementById('cmd-terminal');
+        const termInput = document.getElementById('term-input');
+        const termOutput = document.getElementById('term-output');
+        const closeTerm = document.getElementById('close-terminal');
+
+        // Prevent losing focus when clicking inside the terminal
+        terminalOverlay.addEventListener('click', () => {
+            if (window.getSelection().toString() === '') {
+                termInput.focus({ preventScroll: true });
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '`' || (e.ctrlKey && e.key === '~')) {
+                e.preventDefault();
+                
+                const isOpening = terminalOverlay.classList.contains('hidden');
+                terminalOverlay.classList.toggle('hidden');
+                terminalOverlay.classList.toggle('flex');
+                
+                if (isOpening) {
+                    document.body.classList.add('terminal-locked');
+                    termInput.focus({ preventScroll: true });
+                    playSound('click');
+                } else {
+                    document.body.classList.remove('terminal-locked');
+                }
+            }
+        });
+
+        if (closeTerm) {
+            closeTerm.addEventListener('click', () => {
+                terminalOverlay.classList.add('hidden');
+                terminalOverlay.classList.remove('flex');
+                document.body.classList.remove('terminal-locked');
+            });
+        }
+
+        if (termInput) {
+            termInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = termInput.value.trim().toLowerCase();
+                    termInput.value = '';
+                    playSound('type');
+                    
+                    const line = document.createElement('div');
+                    line.textContent = `~# ${cmd}`;
+                    line.className = 'text-white opacity-50';
+                    termOutput.appendChild(line);
+
+                    const res = document.createElement('div');
+                    res.className = 'mb-2';
+
+                    switch(cmd) {
+                        case 'help': res.innerHTML = "Available commands:<br>- whoami<br>- ls projects<br>- fetch resume<br>- clear<br>- exit"; break;
+                        case 'whoami': res.innerHTML = "Amit Dutta (notamitgamer) - Architect / AI Systems Developer"; break;
+                        case 'ls projects': res.innerHTML = "Interactive_Calculator  ADPKG  Compiler  WBSU  Project_ADA  ESAL  Mojic  Githrun  Logger  Veyrix"; break;
+                        case 'fetch resume': res.innerHTML = "Accessing database...<br>Resume available at: <a href='/about' class='underline hover:text-white'>/about</a>"; break;
+                        case 'clear': termOutput.innerHTML = ''; break;
+                        case 'exit': 
+                            terminalOverlay.classList.add('hidden');
+                            terminalOverlay.classList.remove('flex');
+                            document.body.classList.remove('terminal-locked');
+                            break;
+                        case 'sudo': res.innerHTML = "Access denied. This incident will be reported."; break;
+                        case '': break;
+                        default: res.innerHTML = `bash: ${cmd}: command not found`;
+                    }
+                    
+                    if (cmd !== 'clear' && cmd !== '') termOutput.appendChild(res);
+                    
+                    // Allow the DOM to render the new content before scrolling
+                    setTimeout(() => {
+                        termOutput.scrollTop = termOutput.scrollHeight;
+                    }, 10);
+                }
+            });
+        }
+
+        // C. Dynamic Link Tooltips
+        const hoverTooltip = document.getElementById('hover-tooltip');
+        document.querySelectorAll('a, button, .nav-dot').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                if (window.innerWidth < 768) return; // Desktop only
+                let text = el.getAttribute('aria-label') || el.innerText || el.getAttribute('data-target');
+                if (!text || text.trim() === "" || text.length > 20) text = "External Link";
+                text = text.replace(/\n/g, ' ').trim();
+                
+                hoverTooltip.innerText = `[ Target: ${text} ]`;
+                hoverTooltip.style.opacity = '1';
+                hoverTooltip.style.left = (e.clientX + 15) + 'px';
+                hoverTooltip.style.top = (e.clientY + 15) + 'px';
+            });
+            el.addEventListener('mouseleave', () => {
+                hoverTooltip.style.opacity = '0';
+            });
+        });
+
+        // D. System Shutdown Cinematic Animation
+        const shutdownBtn = document.getElementById('shutdown-btn');
+        const shutdownOverlay = document.getElementById('shutdown-overlay');
+        if (shutdownBtn && shutdownOverlay) {
+            shutdownBtn.addEventListener('click', () => {
+                if (audioCtx) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 2.5);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 2.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(); 
+                    osc.stop(audioCtx.currentTime + 2.5);
+                }
+                
+                // Trigger Power Drain animation and lock scroll
+                document.body.classList.add('drain-active');
+                document.body.classList.add('terminal-locked');
+
+                // Show the offline screen safely after the fade out
+                setTimeout(() => {
+                    shutdownOverlay.classList.remove('hidden');
+                    shutdownOverlay.classList.add('flex');
+                    
+                    // Fade it into solid black
+                    requestAnimationFrame(() => {
+                        shutdownOverlay.classList.remove('opacity-0');
+                        shutdownOverlay.classList.add('opacity-100');
+                    });
+                }, 2500); 
+            });
         }
       });
     </script>
