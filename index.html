@@ -1070,8 +1070,15 @@
     <!-- PARTICLE CANVAS BACKGROUND -->
     <canvas id="particle-canvas"></canvas>
 
-    <!-- SITE WATERMARK -->
-    <div id="site-watermark" align="right">amit.is-a.dev</div>
+    <!-- SITE WATERMARK & WARNING TOGGLE -->
+    <div class="fixed top-4 right-4 md:top-6 md:right-6 z-[60] flex items-center gap-3">
+        <button id="reopen-warning-btn" class="hidden text-yellow-500 hover:scale-110 hover:text-yellow-400 transition-transform cursor-pointer pointer-events-auto" title="Suboptimal Device Warning">
+            <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </button>
+        <div class="font-mono text-[10px] md:text-xs text-white/30 tracking-widest select-none pointer-events-none">amit.is-a.dev</div>
+    </div>
 
     <!-- Scroll Progress Bar -->
     <div id="scroll-progress"></div>
@@ -1139,6 +1146,35 @@
         ></path>
       </svg>
     </button>
+
+    <!-- Mobile Viewing Warning -->
+    <div id="mobile-warning-overlay" class="fixed inset-0 z-[10001] hidden flex-col items-center justify-center bg-black/95 backdrop-blur-md px-6 text-center transition-opacity duration-300">
+        <div class="border border-yellow-500/30 bg-neutral-950 p-8 rounded-lg max-w-sm w-full relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.1)]">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+            
+            <svg class="w-12 h-12 text-yellow-500 mx-auto mb-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            
+            <div class="font-mono text-yellow-500/70 text-xs mb-2 uppercase tracking-wider">Viewport Warning</div>
+            <h3 class="text-white font-heading font-bold text-xl mb-4 tracking-tight">Suboptimal Device Detected</h3>
+            
+            <p class="text-neutral-400 text-sm font-light mb-8 leading-relaxed">
+                This terminal is heavily engineered with complex 3D grid animations, dense data matrices, and hover-based micro-interactions. 
+                <br><br>
+                For the intended immersive experience, viewing via a <span class="text-white font-medium">desktop client</span> is highly recommended.
+            </p>
+            
+            <div class="flex flex-col gap-3 w-full">
+                <button id="copy-link-btn" class="terminal-btn interactive-hover w-full justify-center bg-yellow-500 text-black font-bold border-yellow-500 hover:bg-yellow-400 shadow-none">
+                    [ COPY LINK FOR PC ]
+                </button>
+                <button id="force-view-btn" class="terminal-btn interactive-hover w-full justify-center border-yellow-500/30 text-yellow-500 hover:bg-yellow-500 hover:text-black hover:border-yellow-500 shadow-none">
+                    [ DISMISS WARNING ]
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Intro Sequence -->
     <div id="intro-overlay">
@@ -1928,38 +1964,121 @@
         </div>
 
         <!-- Powered By Section -->
-        <div class="flex items-center gap-4 transition-opacity duration-300 mt-4">
-          <span class="tracking-widest">Powered By</span>
-          <div class="h-4 w-px bg-neutral-700"></div>
+        <div class="flex flex-col justify-center items-center gap-4 md:gap-5 transition-opacity duration-300 mt-8 w-full max-w-4xl">
+          <!-- Text Group -->
+          <div class="mb-3 flex flex-col items-center gap-1.5">
+            <span class="tracking-widest text-neutral-500 text-xs md:text-sm text-center">Powered By & Tributes</span>
+            <span class="text-[10px] font-mono text-lime-300/50 uppercase tracking-wider animate-pulse">[ Click logos to inspect ]</span>
+          </div>
 
-          <!-- Anime.js -->
-          <a
-            href="https://animejs.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:brightness-125 transition-all interactive-hover"
-          >
-            <img src="/assets/animejs-logo.svg" alt="Anime.js" class="h-6 w-auto" />
-          </a>
+          <!-- Logos Flex Container -->
+          <div class="flex flex-wrap justify-center items-center gap-4 md:gap-4 px-2 md:px-4">
+            <!-- Anime.js -->
+            <a
+              href="https://animejs.com/"
+              data-tech="animejs"
+              class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover"
+            >
+              <img src="/assets/animejs-logo.svg" alt="Anime.js" class="h-5 md:h-4 w-auto pointer-events-none" />
+            </a>
 
           <!-- Tailwind CSS -->
           <a
             href="https://tailwindcss.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:brightness-125 transition-all interactive-hover"
+            data-tech="tailwindcss"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover"
           >
             <img
               src="/assets/tailwind-logo-dark.svg"
               alt="Tailwind CSS"
-              class="h-4 w-auto"
+              class="h-3.5 md:h-3 w-auto pointer-events-none"
             />
           </a>
+
+          <!-- Cloudflare -->
+          <a
+            href="https://www.cloudflare.com/"
+            data-tech="cloudflare"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover bg-white/90 px-2 py-1 rounded-md"
+          >
+            <img src="/assets/cloudflare.svg" alt="Cloudflare" class="h-3.5 md:h-3 w-auto pointer-events-none" />
+          </a>
+
+          <!-- Firebase -->
+          <a
+            href="https://firebase.google.com/"
+            data-tech="firebase"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover"
+          >
+            <img src="/assets/firebase.svg" alt="Firebase" class="h-6 md:h-5 w-auto pointer-events-none" />
+          </a>
+
+          <!-- Google Gemini -->
+          <a
+            href="https://gemini.google.com/"
+            data-tech="gemini"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover bg-white/90 px-2 py-1 rounded-md"
+          >
+            <img src="/assets/gemini_bg.png" alt="Google Gemini" class="h-5 md:h-4 w-auto pointer-events-none" />
+          </a>
+
+          <!-- is-a.dev -->
+          <a
+            href="https://is-a.dev/"
+            data-tech="isadev"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover mix-blend-screen brightness-[2]"
+          >
+            <img src="/assets/isadev.png" alt="is-a.dev" class="h-5 md:h-4 w-auto pointer-events-none" />
+          </a>
+
+          <!-- GitHub -->
+          <a
+            href="https://github.com/"
+            data-tech="github"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover"
+          >
+            <img src="/assets/github.svg" alt="GitHub" class="h-5 md:h-4 w-auto pointer-events-none" />
+          </a>
+
+          <!-- Render -->
+          <a
+            href="https://render.com/"
+            data-tech="render"
+            class="tribute-trigger grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 interactive-hover"
+          >
+            <img src="/assets/render.svg" alt="Render" class="h-5 md:h-4 w-auto pointer-events-none" />
+          </a>
+          </div>
         </div>
       </footer>
     </div>
 
     <!-- PHASE 4 OVERLAYS -->
+
+    <!-- Tribute Modal Overlay -->
+    <div id="tribute-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-md opacity-0 transition-opacity duration-300 px-4">
+      <div class="bg-neutral-950 border border-lime-300/20 rounded-xl p-8 max-w-md w-full text-center transform scale-95 transition-transform duration-300 shadow-2xl relative overflow-hidden">
+        <!-- Decoration Line -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-lime-300/50 to-transparent"></div>
+        
+        <!-- Logo Container -->
+        <div id="tribute-logo-container" class="flex justify-center mb-6 h-12 items-center pointer-events-none">
+          <!-- Logo injected via JS -->
+        </div>
+        
+        <h3 id="tribute-title" class="text-xl font-bold text-white mb-2 font-heading tracking-tight"></h3>
+        <p id="tribute-desc" class="text-neutral-400 text-sm leading-relaxed mb-8 font-light"></p>
+        
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a id="tribute-link" href="#" target="_blank" rel="noopener noreferrer" class="terminal-btn interactive-hover w-full sm:w-auto justify-center bg-lime-300 text-black hover:bg-lime-400 font-bold border-lime-300">
+            VISIT SITE
+          </a>
+          <button id="tribute-close" class="terminal-btn border-white/10 text-neutral-400 hover:border-lime-300/50 hover:text-white interactive-hover w-full sm:w-auto justify-center">
+            [ CLOSE ]
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Dynamic Hover Tooltip -->
     <div id="hover-tooltip" class="fixed pointer-events-none z-[9998] opacity-0 bg-neutral-900/90 backdrop-blur border border-lime-300/30 text-lime-300 font-mono text-[10px] uppercase px-3 py-1.5 rounded shadow-lg transform translate-x-4 -translate-y-full"></div>
@@ -2238,9 +2357,70 @@
           }
         }
 
-        // Start the sequence
-        // Store initial timeout in case they skip immediately upon load (unlikely but possible)
+        // --- MOBILE WARNING INTERCEPT ---
+        const mobileWarningOverlay = document.getElementById("mobile-warning-overlay");
+        const forceViewBtn = document.getElementById("force-view-btn");
+        const copyLinkBtn = document.getElementById("copy-link-btn");
+        const reopenWarningBtn = document.getElementById("reopen-warning-btn");
+        const isMobileViewport = window.innerWidth < 768;
+
+        // Always show the warning icon on mobile viewports
+        if (isMobileViewport && reopenWarningBtn) {
+            reopenWarningBtn.classList.remove("hidden");
+        }
+
+        // Always start the boot sequence immediately without blocking
         currentLogTimeout = setTimeout(processNextLog, 500);
+
+        if (forceViewBtn) {
+            forceViewBtn.addEventListener("click", () => {
+                playSound('click');
+                mobileWarningOverlay.style.opacity = "0";
+                
+                setTimeout(() => {
+                    mobileWarningOverlay.classList.add("hidden");
+                    mobileWarningOverlay.classList.remove("flex");
+                }, 300);
+            });
+        }
+
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener("click", () => {
+                playSound('click');
+                // Use execCommand for iframe/mobile compatibility
+                const tempInput = document.createElement("input");
+                tempInput.value = "https://amit.is-a.dev";
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                
+                copyLinkBtn.innerHTML = "[ COPIED! PASTE IN PC ]";
+                copyLinkBtn.classList.remove("bg-yellow-500", "text-black", "border-yellow-500", "hover:bg-yellow-400");
+                copyLinkBtn.classList.add("bg-lime-400", "text-black", "border-lime-400", "hover:bg-lime-300");
+                
+                setTimeout(() => {
+                    // Attempt to close tab (browsers may block this for security)
+                    try { window.close(); } catch(e) {}
+                    
+                    // Fallback UI if tab stays open: Wipe the entire document to a black screen
+                    document.open();
+                    document.write('<html><head><title>Session Terminated</title></head><body style="background-color: #000; margin: 0; overflow: hidden;"></body></html>');
+                    document.close();
+                }, 2000);
+            });
+        }
+
+        if (reopenWarningBtn) {
+            reopenWarningBtn.addEventListener("click", () => {
+                playSound('click');
+                mobileWarningOverlay.classList.remove("hidden");
+                mobileWarningOverlay.classList.add("flex");
+                requestAnimationFrame(() => {
+                    mobileWarningOverlay.style.opacity = "1";
+                });
+            });
+        }
 
         function finishIntro() {
           // Set visited flag on finish
@@ -2917,6 +3097,115 @@
                         shutdownOverlay.classList.add('opacity-100');
                     });
                 }, 2500); 
+            });
+        }
+
+        // E. Custom Tribute Modal System
+        const tributesInfo = {
+          animejs: {
+            title: "Anime.js",
+            desc: "Utilized for rendering the complex, hardware-accelerated 3D background grid and orchestrating fluid, sequential staggering animations across the interface.",
+            img: "/assets/animejs-logo.svg",
+            imgClass: "h-8 w-auto"
+          },
+          tailwindcss: {
+            title: "Tailwind CSS",
+            desc: "The core utility-first CSS framework powering the brutalist aesthetic, responsive design matrix, and seamless micro-interactions.",
+            img: "/assets/tailwind-logo-dark.svg",
+            imgClass: "h-6 w-auto"
+          },
+          cloudflare: {
+            title: "Cloudflare",
+            desc: "Provides robust edge-network security, DDoS protection, fast DNS routing, and secure Zero Trust tunnels for backend services.",
+            img: "/assets/cloudflare.svg",
+            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md"
+          },
+          firebase: {
+            title: "Firebase",
+            desc: "Delivers high-performance, globally distributed static hosting and seamless deployment pipelines for the front-end architecture.",
+            img: "/assets/firebase.svg",
+            imgClass: "h-10 w-auto"
+          },
+          gemini: {
+            title: "Google Gemini",
+            desc: "Acts as the cognitive engine for various backend services, intelligent code generation tools, and AI-driven platform features.",
+            img: "/assets/gemini_bg.png",
+            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md"
+          },
+          isadev: {
+            title: "is-a.dev",
+            desc: "A developer-focused service providing the sleek, memorable amit.is-a.dev domain name, establishing a professional digital identity.",
+            img: "/assets/isadev.png",
+            imgClass: "h-8 w-auto mix-blend-screen brightness-[2]"
+          },
+          github: {
+            title: "GitHub",
+            desc: "The foundational platform for version control, continuous integration workflows, and secure repository management for all codebases.",
+            img: "/assets/github.svg",
+            imgClass: "h-8 w-auto"
+          },
+          render: {
+            title: "Render",
+            desc: "Powers the server-side infrastructure, offering reliable, scalable, and zero-maintenance cloud hosting for backend services and APIs.",
+            img: "/assets/render.svg",
+            imgClass: "h-8 w-auto"
+          }
+        };
+
+        const tributeModal = document.getElementById('tribute-modal');
+        const tributeLogoContainer = document.getElementById('tribute-logo-container');
+        const tributeTitle = document.getElementById('tribute-title');
+        const tributeDesc = document.getElementById('tribute-desc');
+        const tributeLink = document.getElementById('tribute-link');
+        const tributeCloseBtn = document.getElementById('tribute-close');
+        
+        document.querySelectorAll('.tribute-trigger').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                playSound('click');
+                const techKey = trigger.getAttribute('data-tech');
+                const techData = tributesInfo[techKey];
+                
+                if (techData) {
+                    tributeLogoContainer.innerHTML = `<img src="${techData.img}" class="${techData.imgClass}" alt="${techData.title}" />`;
+                    tributeTitle.textContent = `Powered by ${techData.title}`;
+                    tributeDesc.textContent = techData.desc;
+                    tributeLink.href = trigger.getAttribute('href');
+                    
+                    tributeModal.classList.remove('hidden');
+                    tributeModal.classList.add('flex');
+                    
+                    // Trigger reflow for animation
+                    void tributeModal.offsetWidth;
+                    
+                    tributeModal.classList.remove('opacity-0');
+                    tributeModal.firstElementChild.classList.remove('scale-95');
+                    tributeModal.firstElementChild.classList.add('scale-100');
+                    
+                    document.body.classList.add('terminal-locked'); // Lock background scroll
+                }
+            });
+        });
+
+        const closeTributeModal = () => {
+            playSound('click');
+            tributeModal.classList.add('opacity-0');
+            tributeModal.firstElementChild.classList.remove('scale-100');
+            tributeModal.firstElementChild.classList.add('scale-95');
+            
+            setTimeout(() => {
+                tributeModal.classList.add('hidden');
+                tributeModal.classList.remove('flex');
+                document.body.classList.remove('terminal-locked');
+            }, 300);
+        };
+
+        if (tributeCloseBtn) tributeCloseBtn.addEventListener('click', closeTributeModal);
+        
+        if (tributeModal) {
+            tributeModal.addEventListener('click', (e) => {
+                // Close if clicked on the dark background overlay (not the inner box)
+                if (e.target === tributeModal) closeTributeModal();
             });
         }
       });
