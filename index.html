@@ -377,7 +377,7 @@
     />
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./dist/output.css" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1056,6 +1056,26 @@
       .terminal-btn.shutdown-btn:hover::before {
           color: #050505;
       }
+
+      /* --- DYNAMIC MODALS (FLIP ANIMATION) --- */
+      .flip-card {
+          transform: translate(var(--start-x, 0px), var(--start-y, 0px)) scale(0.05);
+          opacity: 0;
+          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease-out;
+          will-change: transform, opacity;
+      }
+      .flip-card.is-open {
+          transform: translate(0px, 0px) scale(1);
+          opacity: 1;
+      }
+      .tribute-btn-primary:hover {
+          filter: brightness(1.15);
+          box-shadow: -4px 4px 0px var(--brand-dim) !important;
+      }
+      .tribute-btn-secondary:hover {
+          border-color: var(--brand-dim) !important;
+          box-shadow: -4px 4px 0px var(--brand-dim) !important;
+      }
     </style>
   </head>
   <body
@@ -1148,8 +1168,8 @@
     </button>
 
     <!-- Mobile Viewing Warning -->
-    <div id="mobile-warning-overlay" class="fixed inset-0 z-[10001] hidden flex-col items-center justify-center bg-black/95 backdrop-blur-md px-6 text-center transition-opacity duration-300">
-        <div class="border border-yellow-500/30 bg-neutral-950 p-8 rounded-lg max-w-sm w-full relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.1)]">
+    <div id="mobile-warning-overlay" style="opacity: 0;" class="fixed inset-0 z-[10001] hidden flex-col items-center justify-center bg-black/95 backdrop-blur-md px-6 text-center transition-opacity duration-500">
+        <div id="warning-card" class="border border-yellow-500/30 bg-neutral-950 p-8 rounded-lg max-w-sm w-full relative overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.1)] flip-card">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
             
             <svg class="w-12 h-12 text-yellow-500 mx-auto mb-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1870,11 +1890,11 @@
 
           <!-- BENTO TERMINAL GRID -->
           <!-- Added strict Tailwind classes to hide scrollbar: [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -->
-          <div id="bento-carousel" class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 pb-4 -mx-6 px-[10vw] md:mx-0 md:px-0">
+          <div id="bento-carousel" class="flex overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 py-4 -mx-6 px-[10vw] md:mx-0 md:px-0">
             
             <!-- DEV PROFILES -->
             <!-- ADDED: snap-always to force strict stopping at each item -->
-            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+            <div class="carousel-item bg-[#050505] border border-white/5 hover:border-lime-300 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:z-10 relative p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
               <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ DEV_PROFILES ]</h3>
               <a href="https://github.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="GitHub">GitHub</a>
               <a href="https://www.npmjs.com/~notamitgamer" class="terminal-btn interactive-hover" aria-label="NPM">NPM</a>
@@ -1885,7 +1905,7 @@
 
             <!-- PROFESSIONAL -->
             <!-- ADDED: snap-always -->
-            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+            <div class="carousel-item bg-[#050505] border border-white/5 hover:border-lime-300 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:z-10 relative p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
               <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ PROFESSIONAL ]</h3>
               <a href="https://linkedin.com/in/notamitgamer" class="terminal-btn interactive-hover" aria-label="LinkedIn">LinkedIn</a>
               <a href="https://orcid.org/0009-0006-8834-9881" class="terminal-btn interactive-hover" aria-label="ORCID">ORCID</a>
@@ -1896,7 +1916,7 @@
 
             <!-- SOCIAL COMMS -->
             <!-- ADDED: snap-always -->
-            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+            <div class="carousel-item bg-[#050505] border border-white/5 hover:border-lime-300 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:z-10 relative p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
               <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ SOCIAL_COMMS ]</h3>
               <a href="https://x.com/notamitgamer" class="terminal-btn interactive-hover" aria-label="X (Twitter)">X (Twitter)</a>
               <a href="https://reddit.com/user/notamitgamer" class="terminal-btn interactive-hover" aria-label="Reddit">Reddit</a>
@@ -1909,7 +1929,7 @@
 
             <!-- SPONSORSHIP & DIRECT -->
             <!-- ADDED: snap-always -->
-            <div class="carousel-item bg-[#050505] border border-white/5 p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
+            <div class="carousel-item bg-[#050505] border border-white/5 hover:border-lime-300 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:z-10 relative p-6 rounded-lg flex flex-col gap-3 w-[80vw] md:w-auto snap-center snap-always shrink-0">
               <h3 class="font-mono text-xs text-lime-300 uppercase mb-2 border-b border-white/5 pb-2">[ DIRECT_ACCESS ]</h3>
               <a href="mailto:amitdutta4255@gmail.com" class="terminal-btn border-lime-300/30 text-lime-300 interactive-hover" aria-label="Email Me">Personal Mail</a>
               <a href="mailto:mail@amit.is-a.dev" class="terminal-btn border-lime-300/30 text-lime-300 interactive-hover" aria-label="Work Email">Work Mail</a>
@@ -2056,10 +2076,10 @@
     <!-- PHASE 4 OVERLAYS -->
 
     <!-- Tribute Modal Overlay -->
-    <div id="tribute-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-md opacity-0 transition-opacity duration-300 px-4">
-      <div class="bg-neutral-950 border border-lime-300/20 rounded-xl p-8 max-w-md w-full text-center transform scale-95 transition-transform duration-300 shadow-2xl relative overflow-hidden">
+    <div id="tribute-modal" style="--brand: #bef264; --brand-dim: rgba(190, 242, 100, 0.2);" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-500 px-4">
+      <div id="tribute-card" class="bg-neutral-950/60 backdrop-blur-xl border border-[var(--brand-dim)] rounded-xl p-8 max-w-md w-full text-center shadow-2xl relative overflow-hidden flip-card">
         <!-- Decoration Line -->
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-lime-300/50 to-transparent"></div>
+        <div class="absolute top-0 left-0 w-full h-1 bg-[linear-gradient(to_right,transparent,var(--brand),transparent)] opacity-60"></div>
         
         <!-- Logo Container -->
         <div id="tribute-logo-container" class="flex justify-center mb-6 h-12 items-center pointer-events-none">
@@ -2070,10 +2090,10 @@
         <p id="tribute-desc" class="text-neutral-400 text-sm leading-relaxed mb-8 font-light"></p>
         
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-          <a id="tribute-link" href="#" target="_blank" rel="noopener noreferrer" class="terminal-btn interactive-hover w-full sm:w-auto justify-center bg-lime-300 text-black hover:bg-lime-400 font-bold border-lime-300">
+          <a id="tribute-link" href="#" target="_blank" rel="noopener noreferrer" class="terminal-btn interactive-hover w-full sm:w-auto justify-center text-black font-bold tribute-btn-primary border-transparent" style="background-color: var(--brand);">
             VISIT SITE
           </a>
-          <button id="tribute-close" class="terminal-btn border-white/10 text-neutral-400 hover:border-lime-300/50 hover:text-white interactive-hover w-full sm:w-auto justify-center">
+          <button id="tribute-close" class="terminal-btn border-white/10 text-neutral-400 hover:text-white interactive-hover w-full sm:w-auto justify-center tribute-btn-secondary">
             [ CLOSE ]
           </button>
         </div>
@@ -2377,10 +2397,13 @@
                 playSound('click');
                 mobileWarningOverlay.style.opacity = "0";
                 
+                const warningCard = document.getElementById('warning-card');
+                if (warningCard) warningCard.classList.remove('is-open');
+                
                 setTimeout(() => {
                     mobileWarningOverlay.classList.add("hidden");
                     mobileWarningOverlay.classList.remove("flex");
-                }, 300);
+                }, 500); // Wait for FLIP animation
             });
         }
 
@@ -2414,11 +2437,26 @@
         if (reopenWarningBtn) {
             reopenWarningBtn.addEventListener("click", () => {
                 playSound('click');
+                
+                // CALCULATE ANIMATION ORIGIN (FLIP effect)
+                const rect = reopenWarningBtn.getBoundingClientRect();
+                const iconX = rect.left + rect.width / 2;
+                const iconY = rect.top + rect.height / 2;
+                const winX = window.innerWidth / 2;
+                const winY = window.innerHeight / 2;
+                
+                const warningCard = document.getElementById('warning-card');
+                warningCard.style.setProperty('--start-x', `${iconX - winX}px`);
+                warningCard.style.setProperty('--start-y', `${iconY - winY}px`);
+
                 mobileWarningOverlay.classList.remove("hidden");
                 mobileWarningOverlay.classList.add("flex");
-                requestAnimationFrame(() => {
-                    mobileWarningOverlay.style.opacity = "1";
-                });
+                
+                // Trigger reflow for animation
+                void mobileWarningOverlay.offsetWidth;
+                
+                mobileWarningOverlay.style.opacity = "1";
+                warningCard.classList.add('is-open');
             });
         }
 
@@ -2969,6 +3007,7 @@
         const termInput = document.getElementById('term-input');
         const termOutput = document.getElementById('term-output');
         const closeTerm = document.getElementById('close-terminal');
+        let isTermStreaming = false; // Guard for streaming state
 
         // Prevent losing focus when clicking inside the terminal
         terminalOverlay.addEventListener('click', () => {
@@ -3004,8 +3043,8 @@
         }
 
         if (termInput) {
-            termInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+            termInput.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter' && !isTermStreaming) {
                     const cmd = termInput.value.trim().toLowerCase();
                     termInput.value = '';
                     playSound('type');
@@ -3017,29 +3056,62 @@
 
                     const res = document.createElement('div');
                     res.className = 'mb-2';
+                    let outputContent = "";
 
                     switch(cmd) {
-                        case 'help': res.innerHTML = "Available commands:<br>- whoami<br>- ls projects<br>- fetch resume<br>- clear<br>- exit"; break;
-                        case 'whoami': res.innerHTML = "Amit Dutta (notamitgamer) - Architect / AI Systems Developer"; break;
-                        case 'ls projects': res.innerHTML = "Interactive_Calculator  ADPKG  Compiler  WBSU  Project_ADA  ESAL  Mojic  Githrun  Logger  Veyrix"; break;
-                        case 'fetch resume': res.innerHTML = "Accessing database...<br>Resume available at: <a href='/about' class='underline hover:text-white'>/about</a>"; break;
+                        case 'help': outputContent = "Available commands:<br>- whoami<br>- ls projects<br>- fetch resume<br>- clear<br>- exit"; break;
+                        case 'whoami': outputContent = "Amit Dutta (notamitgamer) - Architect / AI Systems Developer"; break;
+                        case 'ls projects': outputContent = "Interactive_Calculator  ADPKG  Compiler  WBSU  Project_ADA  ESAL  Mojic  Githrun  Logger  Veyrix"; break;
+                        case 'fetch resume': outputContent = "Accessing database...<br>Resume available at: <a href='/about' class='underline hover:text-white'>/about</a>"; break;
                         case 'clear': termOutput.innerHTML = ''; break;
                         case 'exit': 
                             terminalOverlay.classList.add('hidden');
                             terminalOverlay.classList.remove('flex');
                             document.body.classList.remove('terminal-locked');
                             break;
-                        case 'sudo': res.innerHTML = "Access denied. This incident will be reported."; break;
+                        case 'sudo': outputContent = "Access denied. This incident will be reported."; break;
                         case '': break;
-                        default: res.innerHTML = `bash: ${cmd}: command not found`;
+                        default: outputContent = `bash: ${cmd}: command not found`;
                     }
                     
-                    if (cmd !== 'clear' && cmd !== '') termOutput.appendChild(res);
-                    
-                    // Allow the DOM to render the new content before scrolling
-                    setTimeout(() => {
-                        termOutput.scrollTop = termOutput.scrollHeight;
-                    }, 10);
+                    if (cmd !== 'clear' && cmd !== 'exit' && cmd !== '') {
+                        termOutput.appendChild(res);
+                        isTermStreaming = true;
+                        
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = outputContent;
+                        
+                        // Async recursive function to stream text while preserving HTML nodes
+                        async function typeNode(node, targetParent) {
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                const text = node.textContent;
+                                for (let i = 0; i < text.length; i++) {
+                                    targetParent.appendChild(document.createTextNode(text[i]));
+                                    // Play sound periodically to avoid overlapping/audio glitches
+                                    if (i % 2 === 0) playSound('type');
+                                    termOutput.scrollTop = termOutput.scrollHeight;
+                                    await new Promise(r => setTimeout(r, 15)); // rapid pace typing delay
+                                }
+                            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                                const clone = node.cloneNode(false);
+                                targetParent.appendChild(clone);
+                                for (const child of node.childNodes) {
+                                    await typeNode(child, clone);
+                                }
+                            }
+                        }
+                        
+                        // Start typing the parsed content
+                        for (const child of tempDiv.childNodes) {
+                            await typeNode(child, res);
+                        }
+                        isTermStreaming = false;
+                    } else {
+                        // Allow the DOM to render the new content before scrolling
+                        setTimeout(() => {
+                            termOutput.scrollTop = termOutput.scrollHeight;
+                        }, 10);
+                    }
                 }
             });
         }
@@ -3106,49 +3178,57 @@
             title: "Anime.js",
             desc: "Utilized for rendering the complex, hardware-accelerated 3D background grid and orchestrating fluid, sequential staggering animations across the interface.",
             img: "/assets/animejs-logo.svg",
-            imgClass: "h-8 w-auto"
+            imgClass: "h-8 w-auto",
+            color: "#FF4B4B"
           },
           tailwindcss: {
             title: "Tailwind CSS",
             desc: "The core utility-first CSS framework powering the brutalist aesthetic, responsive design matrix, and seamless micro-interactions.",
             img: "/assets/tailwind-logo-dark.svg",
-            imgClass: "h-6 w-auto"
+            imgClass: "h-6 w-auto",
+            color: "#38BDF8"
           },
           cloudflare: {
             title: "Cloudflare",
             desc: "Provides robust edge-network security, DDoS protection, fast DNS routing, and secure Zero Trust tunnels for backend services.",
             img: "/assets/cloudflare.svg",
-            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md"
+            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md",
+            color: "#F38020"
           },
           firebase: {
             title: "Firebase",
             desc: "Delivers high-performance, globally distributed static hosting and seamless deployment pipelines for the front-end architecture.",
             img: "/assets/firebase.svg",
-            imgClass: "h-10 w-auto"
+            imgClass: "h-10 w-auto",
+            color: "#FFCA28"
           },
           gemini: {
             title: "Google Gemini",
             desc: "Acts as the cognitive engine for various backend services, intelligent code generation tools, and AI-driven platform features.",
             img: "/assets/gemini_bg.png",
-            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md"
+            imgClass: "h-8 w-auto bg-white/90 px-3 py-1.5 rounded-md",
+            color: "#4285F4"
           },
           isadev: {
             title: "is-a.dev",
             desc: "A developer-focused service providing the sleek, memorable amit.is-a.dev domain name, establishing a professional digital identity.",
             img: "/assets/isadev.png",
-            imgClass: "h-8 w-auto mix-blend-screen brightness-[2]"
+            imgClass: "h-8 w-auto mix-blend-screen brightness-[2]",
+            color: "#8B5CF6"
           },
           github: {
             title: "GitHub",
             desc: "The foundational platform for version control, continuous integration workflows, and secure repository management for all codebases.",
             img: "/assets/github.svg",
-            imgClass: "h-8 w-auto"
+            imgClass: "h-8 w-auto",
+            color: "#FFFFFF"
           },
           render: {
             title: "Render",
             desc: "Powers the server-side infrastructure, offering reliable, scalable, and zero-maintenance cloud hosting for backend services and APIs.",
             img: "/assets/render.svg",
-            imgClass: "h-8 w-auto"
+            imgClass: "h-8 w-auto",
+            color: "#46E3B7"
           }
         };
 
@@ -3167,6 +3247,28 @@
                 const techData = tributesInfo[techKey];
                 
                 if (techData) {
+                    // CALCULATE ANIMATION ORIGIN (FLIP effect)
+                    const rect = trigger.getBoundingClientRect();
+                    const iconX = rect.left + rect.width / 2;
+                    const iconY = rect.top + rect.height / 2;
+                    const winX = window.innerWidth / 2;
+                    const winY = window.innerHeight / 2;
+                    
+                    const tributeCard = document.getElementById('tribute-card');
+                    tributeCard.style.setProperty('--start-x', `${iconX - winX}px`);
+                    tributeCard.style.setProperty('--start-y', `${iconY - winY}px`);
+
+                    // Convert Hex to RGBA for dim border (20% opacity)
+                    const hex = techData.color || '#bef264';
+                    let r = 190, g = 242, b = 100; // default lime
+                    if(hex.length === 7) {
+                        r = parseInt(hex.slice(1, 3), 16);
+                        g = parseInt(hex.slice(3, 5), 16);
+                        b = parseInt(hex.slice(5, 7), 16);
+                    }
+                    tributeModal.style.setProperty('--brand', hex);
+                    tributeModal.style.setProperty('--brand-dim', `rgba(${r}, ${g}, ${b}, 0.2)`);
+
                     tributeLogoContainer.innerHTML = `<img src="${techData.img}" class="${techData.imgClass}" alt="${techData.title}" />`;
                     tributeTitle.textContent = `Powered by ${techData.title}`;
                     tributeDesc.textContent = techData.desc;
@@ -3179,8 +3281,7 @@
                     void tributeModal.offsetWidth;
                     
                     tributeModal.classList.remove('opacity-0');
-                    tributeModal.firstElementChild.classList.remove('scale-95');
-                    tributeModal.firstElementChild.classList.add('scale-100');
+                    tributeCard.classList.add('is-open');
                     
                     document.body.classList.add('terminal-locked'); // Lock background scroll
                 }
@@ -3189,15 +3290,16 @@
 
         const closeTributeModal = () => {
             playSound('click');
+            const tributeCard = document.getElementById('tribute-card');
+            
             tributeModal.classList.add('opacity-0');
-            tributeModal.firstElementChild.classList.remove('scale-100');
-            tributeModal.firstElementChild.classList.add('scale-95');
+            tributeCard.classList.remove('is-open');
             
             setTimeout(() => {
                 tributeModal.classList.add('hidden');
                 tributeModal.classList.remove('flex');
                 document.body.classList.remove('terminal-locked');
-            }, 300);
+            }, 500); // Sync with CSS transition duration
         };
 
         if (tributeCloseBtn) tributeCloseBtn.addEventListener('click', closeTributeModal);
@@ -3208,6 +3310,59 @@
                 if (e.target === tributeModal) closeTributeModal();
             });
         }
+
+        // F. Terminal Button Cipher Hover Effect
+        const cipherChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        const allTerminalBtns = document.querySelectorAll('.terminal-btn');
+        
+        allTerminalBtns.forEach(btn => {
+            let scrambleInterval;
+            let originalTexts = [];
+            
+            btn.addEventListener('mouseenter', () => {
+                let iteration = 0;
+                clearInterval(scrambleInterval);
+                
+                // Extract only text nodes safely to avoid destroying inner SVGs/Icons
+                const textNodes = Array.from(btn.childNodes).filter(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== '');
+                if (textNodes.length === 0) return;
+                
+                // Store the real text on the very first hover
+                if (originalTexts.length === 0) {
+                    originalTexts = textNodes.map(node => node.nodeValue);
+                }
+                
+                scrambleInterval = setInterval(() => {
+                    textNodes.forEach((node, i) => {
+                        node.nodeValue = originalTexts[i].split('').map(char => {
+                            if (char === ' ' || char === '\n') return char;
+                            return cipherChars[Math.floor(Math.random() * cipherChars.length)];
+                        }).join('');
+                    });
+                    
+                    iteration++;
+                    // Run for exactly ~0.2 seconds (6 iterations * 30ms = 180ms)
+                    if (iteration > 6) { 
+                        clearInterval(scrambleInterval);
+                        textNodes.forEach((node, i) => {
+                            node.nodeValue = originalTexts[i];
+                        });
+                    }
+                }, 30);
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                // Instantly snap back to original text to prevent stuck gibberish on fast swipes
+                clearInterval(scrambleInterval);
+                const textNodes = Array.from(btn.childNodes).filter(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== '');
+                if (originalTexts.length > 0) {
+                    textNodes.forEach((node, i) => {
+                        if(originalTexts[i]) node.nodeValue = originalTexts[i];
+                    });
+                }
+            });
+        });
+
       });
     </script>
   </body>
