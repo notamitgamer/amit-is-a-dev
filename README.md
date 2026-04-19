@@ -5,7 +5,7 @@
 > ***Issues and Pull Requests may be submitted, but expect significant delays in reviews.***
 
 > [!NOTE]
-> **A new domain has been registered recently for portfolio, visit <a href="https://amit.is-not.cool">here</a> to know more.**
+> **A new domain has been registered recently for portfolio, visit <a href="https://amit.is-not.cool">amit.is-not.cool</a> to know more.**
 
 > [!NOTE]
 > **Added new mail-id ***mail@amit.is-a.dev*** and ***notifierbot@amit.is-a.dev*****
