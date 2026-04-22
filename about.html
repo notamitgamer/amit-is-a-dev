@@ -12,7 +12,7 @@
         "@type": "WebPage",
         "@id": "https://amit.is-a.dev/about#webpage",
         "url": "https://amit.is-a.dev/about",
-        "name": "About Amit Dutta - Software Developer & CS Student",
+        "name": "The Architect behind notamitgamer - Amit Dutta",
         "description": "Learn about Amit Dutta (notamitgamer), a B.Sc. Computer Science student at APC College, specialist in Python, C, and AI systems.",
         "breadcrumb": {
             "@id": "https://amit.is-a.dev/about#breadcrumb"
@@ -34,7 +34,7 @@
         "alternateName": "notamitgamer",
         "identifier": "kg:/g/11yzcqs5ff",
         "jobTitle": "Software Developer",
-        "description": "Software engineer in training at Acharya Prafulla Chandra College (WBSU) specializing in Python and C.",
+        "description": "Amit Dutta (notamitgamer) is a software developer and B.Sc. CS student at APC College. Specialist in Python, C, and Web Development.",
         "url": "https://amit.is-a.dev/about",
         "image": "https://amit.is-a.dev/mypic.png",
         "knowsAbout": ["Computer Science", "Python", "C Programming", "Web Development", "AI"],
@@ -79,7 +79,7 @@
     }
     </script>
 
-    <title>Amit Dutta (notamitgamer) | The Architect</title>
+    <title>The Architect behind notamitgamer - Amit Dutta</title>
     <meta name="description" content="Amit Dutta (notamitgamer) - The Architect behind notamitgamer. Systems Engineer in training. Creator of Mojic, Githrun, and Ada AI." />
     
     <link rel="icon" type="image/png" href="https://amit.is-a.dev/mypic.png" />
@@ -158,7 +158,125 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--md-sys-color-outline-variant);
             box-shadow: 0 4px 20px -8px rgba(0,0,0,0.1);
+            transition: all 0.6s var(--md-sys-motion-easing-emphasized);
+            transform-origin: center center;
+            /* Explicitly set pointer events for children to work */
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
         }
+
+        /* ----- Minimized Floating Bubble Styles ----- */
+        .nav-minimized {
+            /* [EDIT HERE] Photo Sizing: Adjust width/height below to resize the bubble */
+            width: 64px !important; 
+            height: 64px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            justify-content: center !important;
+            background: rgba(253, 253, 245, 1) !important;
+            border: 2px solid #bcfa86 !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+            cursor: grab;
+            touch-action: none; /* Important for dragging */
+            z-index: 9999;
+            overflow: hidden; /* Ensure image clipping */
+        }
+
+        .nav-minimized:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        /* Hides content when minimized */
+        .nav-minimized .nav-content,
+        .nav-minimized #pill-nav-container, 
+        .nav-minimized .m3-font {
+            opacity: 0;
+            pointer-events: none;
+            display: none; 
+        }
+
+        /* Ensures logo fills the bubble when minimized */
+        .nav-minimized .logo-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0; /* Remove padding for full image */
+            border-radius: 50%;
+        }
+        
+        .nav-minimized .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* [EDIT HERE] Scale: Adjust scale() to zoom image in/out inside bubble */
+            transform: scale(1.1); 
+        }
+
+        /* Dragging State - Disables transition for instant follow */
+        .is-dragging {
+            /* Keep shape transition for butter smooth shrink, disable pos transition */
+            transition: width 0.4s cubic-bezier(0.2, 0, 0, 1), 
+                        height 0.4s cubic-bezier(0.2, 0, 0, 1), 
+                        border-radius 0.4s cubic-bezier(0.2, 0, 0, 1) !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Edge Docking Shapes */
+        .docked-left {
+            border-radius: 0 50% 50% 0 !important;
+            border-left: none !important;
+        }
+        
+        .docked-right {
+            border-radius: 50% 0 0 50% !important;
+            border-right: none !important;
+        }
+
+        /* ----- Kill Zone (Trash) ----- */
+        #kill-zone {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            width: 80px;
+            height: 80px;
+            background: #ffffff; /* White background for GIF */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.4s var(--md-sys-motion-easing-emphasized), 
+                        box-shadow 0.3s ease;
+            z-index: 9998;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        #kill-zone.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* AURA EFFECT */
+        #kill-zone.danger {
+            transform: translateX(-50%) scale(1.2);
+            box-shadow: 0 0 0 10px rgba(255, 82, 82, 0.2), 
+                        0 0 40px rgba(255, 82, 82, 0.4);
+            border-color: #ffcdd2;
+        }
+        
+        #kill-zone img {
+            width: 40px;
+            height: 40px;
+            transition: transform 0.2s ease;
+            mix-blend-mode: multiply; /* Blends gif background */
+        }
+
+        #kill-zone.danger img {
+            transform: scale(1.1) rotate(10deg);
+        }
+
 
         /* Infinite Marquee */
         .marquee-container {
@@ -238,18 +356,25 @@
     <div class="blob bg-[#bcfa86]" id="blob-1" style="width: 50vw; height: 50vw; top: -10%; right: -10%;"></div>
     <div class="blob bg-[#dce775]" id="blob-2" style="width: 40vw; height: 40vw; bottom: 0%; left: -5%;"></div>
 
-    <!-- M3 Navigation Pill (Updated) -->
+    <!-- KILL ZONE (Trash for Floating Bubble) -->
+    <div id="kill-zone">
+        <img src="/assets/icons8-waste.gif" alt="Delete">
+    </div>
+
+    <!-- M3 Navigation Pill -->
+    <!-- Added id="nav-wrapper" to help with positioning context -->
     <nav class="fixed top-4 left-0 right-0 mx-auto w-[95%] max-w-3xl z-50 rounded-full m3-nav-pill px-6 py-3 flex justify-between items-center transform -translate-y-20 opacity-0" id="nav-bar">
-        <!-- Logo -->
-        <a href="index.html" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-full overflow-hidden border border-black/10 relative">
-                <img src="https://amit.is-a.dev/mypic.png" alt="Amit" class="w-full h-full object-cover">
+        
+        <!-- Logo / Avatar Wrapper (Becomes the Drag Handle) -->
+        <a href="index.html" class="flex items-center gap-3 group logo-container-link" id="drag-handle">
+            <div class="w-9 h-9 rounded-full overflow-hidden border border-black/10 relative logo-container bg-white">
+                <img src="https://amit.is-a.dev/mypic.png" alt="Amit" class="w-full h-full object-cover pointer-events-none">
             </div>
-            <span class="m3-font font-bold text-lg text-[#1a1c18] tracking-tight">Amit Dutta</span>
+            <span class="m3-font font-bold text-lg text-[#1a1c18] tracking-tight nav-content">Amit Dutta</span>
         </a>
 
         <!-- Right Side Nav Items -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 nav-content">
             
             <!-- Sliding Pill Wrapper (Visible on Small Screens+) -->
             <div class="relative hidden sm:flex items-center bg-[#eeeee6] rounded-full p-1 border border-[#c3c8bc]/30" id="pill-nav-container">
@@ -263,8 +388,9 @@
                 <a href="#connect" class="nav-pill-link relative z-10 px-4 py-2 text-sm font-medium text-[#43483e] hover:text-[#0f2000] transition-colors rounded-full">Connect</a>
             </div>
 
-            <!-- CTA Button (Separate) -->
+            <!-- CTA Button -->
             <a href="index.html" class="ml-2 nav-link text-sm text-[#3d6a00] font-bold bg-[#bcfa86]/40 px-5 py-2 rounded-full hover:bg-[#bcfa86] transition-colors">Portfolio</a>
+            
         </div>
     </nav>
 
@@ -310,7 +436,10 @@
                         </div>
                         <div class="pt-4 border-t border-[#c3c8bc]/30 mt-2">
                             <span class="block text-[10px] text-[#74796d] mb-1">CURRENT OBJECTIVE</span>
-                            <span class="font-bold">Build "Jarvis" (Home Automation)</span>
+                            <span class="flex items-center justify-between w-full font-bold">
+                                <span>Build whatsapp chat logger.</span>
+                                <a href="https://github.com/notamitgamer/logger"><i class="fa-brands fa-github ml-3"></i></a>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -385,9 +514,52 @@
             
             <div class="space-y-8">
                 
-                <!-- 1. Ada AI (Stack Left | Details Right) -->
+                <div class="m3-card shape-large p-0 bg-[#fefefe] border border-[#c3c8bc]/40 grid grid-cols-1 lg:grid-cols-12 overflow-hidden group reveal-section">
+                    <div class="lg:col-span-7 p-8 md:p-10 flex flex-col justify-center order-last lg:order-first">
+                        <div class="flex items-center gap-3 mb-4">
+                            <h3 class="text-3xl font-bold m3-font project-title" data-project="logger">Logger</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-full bg-[#bcfa86] text-[#0f2000] text-xs font-bold font-mono">SELF-HOSTED</span>
+                                <img id="logger-new-gif" src="/assets/icons8-new.gif" alt="New" class="h-10 w-10 object-contain mix-blend-multiply transition-opacity duration-500" style="opacity: 0">
+                            </div>
+                        </div>
+                        <p class="text-[#43483e] mb-6 leading-relaxed">
+                            A privacy-first "Companion Device" architecture that runs 24/7 in the cloud to archive WhatsApp conversations permanently, ensuring messages are preserved even if deleted by the sender.
+                        </p>
+                        <div class="mt-2 pt-6 border-t border-[#c3c8bc]/30">
+                            <a href="logger.html" class="inline-flex items-center gap-2 text-[#3d6a00] font-bold hover:gap-3 transition-all">
+                                Read Setup Guide <span class="text-xl">→</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 bg-[#006C4C] relative min-h-[400px] text-white flex flex-col justify-center p-8">
+                        <div class="space-y-4 font-mono text-[0.82rem]">
+                            <span class="text-xl"><u>Stack</u></span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-[#bcfa86]"></div>
+                                <span>Node.js / Baileys</span>
+                            </div>
+                            <div class="h-4 border-l border-white/20 ml-1"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-[#bcfa86]"></div>
+                                <span>Render / Uptime-Bot</span>
+                            </div>
+                            <div class="h-4 border-l border-white/20 ml-1"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-[#bcfa86]"></div>
+                                <span>Cloud Firestore</span>
+                            </div>
+                            <div class="h-4 border-l border-white/20 ml-1"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-[#bcfa86]"></div>
+                                <span>PWA / Web-Vault UI</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Ada AI -->
                 <div class="m3-card shape-large p-0 bg-[#fefefe] border border-[#c3c8bc]/40 grid grid-cols-1 lg:grid-cols-12 overflow-hidden group">
-                     <!-- EDIT: Height Increased Here (min-h-[260px]) -->
                      <div class="lg:col-span-5 bg-[#386663] relative min-h-[400px] text-white flex flex-col justify-center p-8 order-last lg:order-first">
                         <div class="space-y-4 font-mono text-[0.82rem]">
                             <span class="text-xl"><u>Stack</u></span>
@@ -414,7 +586,6 @@
                     </div>
                     <div class="lg:col-span-7 p-8 md:p-10 flex flex-col justify-center">
                         <div class="flex items-center gap-3 mb-4">
-                            <!-- Project Title Target for Animation -->
                             <h3 class="text-3xl font-bold m3-font project-title" data-project="ada">Ada AI</h3>
                             <span class="px-3 py-1 rounded-full bg-[#bcfa86] text-[#0f2000] text-xs font-bold font-mono">FULL STACK</span>
                         </div>
@@ -429,11 +600,10 @@
                     </div>
                 </div>
 
-                <!-- 2. Mojic (Details Left | Stack Right) -->
+                <!-- 2. Mojic -->
                 <div class="m3-card shape-large p-0 bg-[#fefefe] border border-[#c3c8bc]/40 grid grid-cols-1 lg:grid-cols-12 overflow-hidden group">
                     <div class="lg:col-span-7 p-8 md:p-10 flex flex-col justify-center order-last lg:order-first">
                         <div class="flex items-center gap-3 mb-4">
-                            <!-- Project Title Target for Animation -->
                             <h3 class="text-3xl font-bold m3-font project-title" data-project="mojic">Mojic</h3>
                             <span class="px-3 py-1 rounded-full bg-[#bcfa86] text-[#0f2000] text-xs font-bold font-mono">CLI TOOL</span>
                         </div>
@@ -446,7 +616,6 @@
                             </a>
                         </div>
                     </div>
-                    <!-- EDIT: Height Increased Here (min-h-[260px]) -->
                     <div class="lg:col-span-5 bg-[#e8e8e0] relative min-h-[400px] flex flex-col justify-center p-8">
                          <div class="space-y-4 font-mono text-[0.82rem]">
                             <span class="text-xl"><u>Stack</u></span>
@@ -473,9 +642,8 @@
                     </div>
                 </div>
 
-                <!-- 3. Githrun (Stack Left | Details Right) -->
+                <!-- 3. Githrun -->
                 <div class="m3-card shape-large p-0 bg-[#fefefe] border border-[#c3c8bc]/40 grid grid-cols-1 lg:grid-cols-12 overflow-hidden group">
-                    <!-- EDIT: Height Increased Here (min-h-[260px]) -->
                     <div class="lg:col-span-5 bg-[#3d6a00] relative min-h-[400px] text-white flex flex-col justify-center p-8 order-last lg:order-first">
                         <div class="space-y-4 font-mono text-[0.82rem]">
                             <span class="text-xl"><u>Stack</u></span>
@@ -502,7 +670,6 @@
                     </div>
                     <div class="lg:col-span-7 p-8 md:p-10 flex flex-col justify-center">
                         <div class="flex items-center gap-3 mb-4">
-                            <!-- Project Title Target for Animation -->
                             <h3 class="text-3xl font-bold m3-font project-title" data-project="githrun">Githrun</h3>
                             <span class="px-3 py-1 rounded-full bg-[#bcfa86] text-[#0f2000] text-xs font-bold font-mono">DEV TOOL</span>
                         </div>
@@ -517,11 +684,10 @@
                     </div>
                 </div>
 
-                <!-- 4. Cloud Compiler (Details Left | Stack Right) -->
+                <!-- 4. Cloud Compiler -->
                 <div class="m3-card shape-large p-0 bg-[#fefefe] border border-[#c3c8bc]/40 grid grid-cols-1 lg:grid-cols-12 overflow-hidden group">
                      <div class="lg:col-span-7 p-8 md:p-10 flex flex-col justify-center order-last lg:order-first">
                         <div class="flex items-center gap-3 mb-4">
-                            <!-- Project Title Target for Animation -->
                             <h3 class="text-3xl font-bold m3-font project-title" data-project="compiler">Cloud Compiler</h3>
                             <span class="px-3 py-1 rounded-full bg-[#bcfa86] text-[#0f2000] text-xs font-bold font-mono">SERVICE</span>
                         </div>
@@ -530,11 +696,10 @@
                         </p>
                          <div class="mt-2 pt-6 border-t border-[#c3c8bc]/30">
                             <a href="https://compiler.amit.is-a.dev/docs" class="inline-flex items-center gap-2 text-[#3d6a00] font-bold hover:gap-3 transition-all">
-                                Service API <span class="text-xl">→</span>
+                                Read Documentation <span class="text-xl">→</span>
                             </a>
                         </div>
                     </div>
-                     <!-- EDIT: Height Increased Here (min-h-[260px]) -->
                      <div class="lg:col-span-5 bg-[#1a1c18] relative min-h-[260px] text-[#e0e0e0] flex flex-col justify-center p-8">
                          <div class="space-y-4 font-mono text-[0.82rem]">
                             <span class="text-xl"><u>Stack</u></span>
@@ -595,7 +760,7 @@
                         <ul class="space-y-3 text-sm text-[#a0a0a0]">
                             <li class="flex justify-between border-b border-white/10 pb-2">
                             <span>Compute Core</span>
-                            <span class="text-white">i5-10400F (6C/12T) <span class="text-[10px] text-[#555] live-stat" data-type="cpu">[Load: --%]</span></span>
+                            <span class="text-white">i5-12400F (6C/12T) <span class="text-[10px] text-[#555] live-stat" data-type="cpu">[Load: --%]</span></span>
                         </li>
                         <li class="flex justify-between border-b border-white/10 pb-2">
                             <span>Mainboard</span>
@@ -634,21 +799,18 @@
                 <!-- Academic Timeline -->
                 <div class="m3-card shape-medium p-8 bg-white">
                     <h3 class="m3-font text-xl font-bold mb-8 flex items-center gap-3">
-                    <div class="bg-green-100 p-3 rounded-xl text-green-800">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                                </svg>
-                            </div>
-                    </span> Formal Education
-                    </h3>
+                    <div class="bg-green-100 p-2 rounded-xl flex items-center justify-center overflow-hidden">
+                        <img src="/assets/graduate.gif" alt="Trophy Icon" class="h-10 w-10 object-contain mix-blend-multiply">
+                    </div>
+                    Formal Education
+                </h3>
                     <p class="font-mono text-zinc-600 mb-8">
                             My academic journey has been rooted in the Barrackpore and Madhyamgram regions, 
                             building a strong foundation from early schooling to advanced computer science.
                     </p>
                     <div class="relative pl-6 space-y-2 border-l-2 border-[#eeeee6]">
                         <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                             <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#3d6a00] select-none">2025 - PRESENT</div>
@@ -662,7 +824,7 @@
                             </div>
                         </div>
                         <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                              <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#74796d] select-none">2025</div>
@@ -670,13 +832,13 @@
                                 </div>
                                 <div class="absolute left-0 top-0 w-full h-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 flex justify-end items-center z-20">
                                     <div class="bg-[#1a1c18] text-white p-4 rounded-xl shadow-xl w-64 translate-x-4 group-hover:translate-x-0 transition-transform duration-300 pointer-events-auto border border-[#3d6a00]/30">
-                                        <p class="text-xs leading-relaxed font-medium">New Barrackpur Colony Boys' High School (Science Stream). Major focus on Physics, Chemistry, and Mathematics.</p>
+                                        <p class="text-xs leading-relaxed font-medium">New Barrackpur Colony Boys' High School (Science Stream). Major focus on Computer Science and Mathematics.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                         <div class="group relative py-4">
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                              <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#74796d] select-none">2023</div>
@@ -690,7 +852,7 @@
                             </div>
                         </div>
                         <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                              <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#74796d] select-none">2017 - 2022</div>
@@ -704,7 +866,7 @@
                             </div>
                         </div>
                         <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                              <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#74796d] select-none">2013 - 2016</div>
@@ -718,7 +880,7 @@
                             </div>
                         </div>
                         <div class="group relative py-4">
-                            <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                            <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                              <div class="flex items-center justify-between cursor-default">
                                 <div class="transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 origin-left">
                                     <div class="mb-1 text-xs font-mono text-[#74796d] select-none">2009 - 2012</div>
@@ -733,11 +895,10 @@
                         </div>
                         <div class="group relative py-4">
                             <div class="border-t border-zinc-100 pt-6">
-                                <h4 class="font-bold text-base mb-4 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-700" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.54-1.53.2-3.23-.97-4.4-1.17-1.17-2.87-1.51-4.4-.97C14.25 2.18 12.88 1.3 11.3 1.3s-2.95.88-3.65 2.18c-1.53-.54-3.23-.2-4.4.97-1.17 1.17-1.51 2.87-.97 4.4C1.3 9.55.42 10.92.42 12.5s.88 2.95 2.18 3.65c-.54 1.53-.2 3.23.97 4.4 1.17 1.17 2.87 1.51 4.4.97 0.7 1.3 2.07 2.18 3.65 2.18s2.95-.88 3.65-2.18c1.53.54 3.23.2 4.4-.97 1.17-1.17 1.51-2.87.97-4.4 1.3-.7 2.18-2.07 2.18-3.65zm-12.23 4.21l-4.14-4.14 1.48-1.48 2.66 2.66 6.02-6.02 1.48 1.48-7.5 7.5z"/>
-                                    </svg>
-
+                                <h4 class="font-bold text-base mb-4 flex items-center gap-3">
+                                    <div class="bg-green-50 p-2 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="/assets/verified.gif" alt="Verified Certification" class="h-10 w-10 object-contain mix-blend-multiply">
+                                    </div>
                                     Certifications
                                 </h4>
                                 <a href="https://www.coursera.org/account/accomplishments/records/HT6XTKV390MC" target="_blank" class="block p-3 rounded-xl bg-zinc-50 hover:bg-green-50 transition-colors border border-transparent hover:border-green-100 group">
@@ -753,7 +914,10 @@
                 <!-- Project Timeline -->
                 <div class="m3-card shape-medium p-8 bg-white">
                     <h3 class="m3-font text-xl font-bold mb-8 flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-[#bcfa86]"></span> Deployment & Achievement
+                        <div class="bg-[#bcfa86] p-2 rounded-xl flex items-center justify-center overflow-hidden">
+                            <img src="/assets/launch.gif" alt="Launch Achievement Icon" class="h-10 w-10 object-contain mix-blend-multiply">
+                        </div>
+                        Deployment & Achievement
                     </h3>
                     
                     <!-- 2026 Block -->
@@ -761,8 +925,21 @@
                         <div class="text-xs font-mono font-bold text-[#bcfa86] bg-[#1a1c18] inline-block px-2 py-1 rounded mb-4">2026 ERA</div>
                         <div class="relative pl-6 space-y-2 border-l-2 border-[#bcfa86]">
                             <!-- Projects 2026 (NCT Legacy, Githrun, Mojic) -->
+                              <div class="group relative py-4">
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
+                                <div class="flex items-center justify-between cursor-default">
+                                    <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
+                                        <h4 class="font-bold text-lg text-[#1a1c18] select-none">Whatsapp Logger</h4>
+                                    </div>
+                                    <div class="absolute left-0 top-0 w-full h-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 flex justify-end items-center z-20">
+                                        <div class="bg-[#1a1c18] text-white p-4 rounded-xl shadow-xl w-64 translate-x-4 group-hover:translate-x-0 transition-transform duration-300 pointer-events-auto border border-[#3d6a00]/30">
+                                            <p class="text-xs leading-relaxed font-medium">A privacy-first, self-hosted WhatsApp archiver that captures and preserves messages in real-time to a private Firebase database, ensuring deleted chats amd sms remain accessible.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Knowledge Graph Verification</h4>
@@ -775,7 +952,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">NCT Legacy</h4>
@@ -788,7 +965,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Githrun CLI</h4>
@@ -801,7 +978,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#3d6a00] border-2 border-white box-content group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Mojic</h4>
@@ -822,20 +999,20 @@
                         <div class="relative pl-6 space-y-2 border-l-2 border-[#e0e2d8]">
                              <!-- Projects 2025 -->
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">ESAL License</h4>
                                     </div>
                                     <div class="absolute left-0 top-0 w-full h-full pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 flex justify-end items-center z-20">
                                         <div class="bg-[#1a1c18] text-white p-4 rounded-xl shadow-xl w-64 translate-x-4 group-hover:translate-x-0 transition-transform duration-300 pointer-events-auto border border-[#3d6a00]/30">
-                                            <p class="text-xs leading-relaxed font-medium">Educational Software & Academic License v1.0.</p>
+                                            <p class="text-xs leading-relaxed font-medium">EDUCATIONAL SOURCE-AVAILABLE LICENSE (ESAL-1.0)</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Ada AI</h4>
@@ -848,7 +1025,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">BSC Repo</h4>
@@ -861,7 +1038,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Cloud Compiler</h4>
@@ -874,7 +1051,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">Adpkg Library</h4>
@@ -887,7 +1064,7 @@
                                 </div>
                             </div>
                              <div class="group relative py-4">
-                                <div class="absolute -left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
+                                <div class="absolute -left-[32px] md:-left-[33px] top-6 w-3 h-3 rounded-full bg-[#74796d] border-2 border-white box-content group-hover:bg-[#3d6a00] group-hover:scale-125 transition-all"></div>
                                 <div class="flex items-center justify-between cursor-default">
                                     <div class="transition-all duration-300 group-hover:scale-105 group-hover:translate-x-2 origin-left">
                                         <h4 class="font-bold text-lg text-[#1a1c18] select-none">NCT</h4>
@@ -915,7 +1092,7 @@
                         <h4 class="font-bold text-lg m3-font">ESAL License</h4>
                         <i class="font-mono text-[10px] text-[#74796d]">License</i>
                     </div>
-                    <p class="text-sm text-[#43483e] mb-4">Educational Software & Academic License (v1.0). A strict anti-plagiarism license designed for academic submissions.</p>
+                    <p class="text-sm text-[#43483e] mb-4">EDUCATIONAL SOURCE-AVAILABLE LICENSE (ESAL-1.0) A strict anti-plagiarism license designed for academic submissions.</p>
                     <a href="https://esal.amit.is-a.dev" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View License →</a>
                 </div>
                 <div class="m3-card shape-medium p-6 bg-white hover:bg-[#f4f7f0]">
@@ -942,7 +1119,7 @@
                     <p class="text-sm text-[#43483e] mb-4">Published python library. A utility package for simplified application development.</p>
                     <a href="https://pypi.org/project/adpkg/" target="_blank" class="text-xs font-bold text-[#3d6a00] uppercase tracking-wide">View on PyPi →</a>
                 </div>
-                <div class="m3-card shape-medium p-6 bg-white hover:bg-[#f4f7f0]">
+                 <div class="m3-card shape-medium p-6 bg-white hover:bg-[#f4f7f0]">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="font-bold text-lg m3-font">NCT</h4>
                         <i class="font-mono text-[10px] text-[#74796d]">Utility</i>
@@ -964,19 +1141,14 @@
                 </p>
                 <!-- Contact Buttons Container -->
                 <div class="flex flex-wrap justify-center gap-4">
-                    <!-- Email Button -->
                     <a href="mailto:amitdutta4255@gmail.com" class="px-8 py-4 bg-[#0f2000] text-white rounded-full font-bold hover:scale-105 active:scale-95 transition-transform flex items-center gap-2">
                         <span>Start a Conversation</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </a>
-
-                    <!-- GitHub Button (Icon Added) -->
                     <a href="https://github.com/notamitgamer" class="px-8 py-4 bg-white/60 backdrop-blur-md text-[#0f2000] border border-[#0f2000]/10 rounded-full font-bold hover:bg-white transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
                         <i class="fa-brands fa-github text-xl"></i>
                         <span>View GitHub Profile</span>
                     </a>
-
-                    <!-- LinkedIn Button (Blue Type) -->
                     <a href="https://www.linkedin.com/in/notamitgamer" class="px-8 py-4 bg-[#0A66C2] text-white rounded-full font-bold hover:bg-[#004182] transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
                         <i class="fa-brands fa-linkedin text-xl"></i>
                         <span>Connect on LinkedIn</span>
@@ -988,27 +1160,33 @@
 
         <footer class="text-center py-12 text-[#74796d] text-xs font-mono uppercase tracking-widest border-t border-[#c3c8bc]/30">
             &copy; 2026 Amit Dutta // Entity kg:/g/11yzcqs5ff<br>All Rights Reserved<br>
-            <a href="https://amit.is-a.dev">amit.is-a.dev</a> // <a href="https://github.com/notamitgamer">notamitgamer</a>
+            <a href="https://amit.is-a.dev"><u>amit.is-a.dev</u></a> // <a href="https://github.com/notamitgamer"><u>notamitgamer</u></a>
+            <br>Icons by <a href="https://icons8.com/"><u>icons8.com</u></a>
         </footer>
+        <!-- Mobile Interaction Hint (Visible only on small screens) -->
+        <div class="md:hidden mt-8 anim-entry">
+            <div class="bg-[#cbdef7] border border-[#3688f5]/50 p-4 rounded-2xl flex items-start gap-4 shadow-sm relative overflow-hidden">
+                <!-- Icon Container -->
+                <div class="bg-[#f0f4fa] p-7 rounded-xl shrink-0 flex items-center justify-center">
+                    <img src="/assets/icons8-idea.gif" alt="Tip" class="h-10 w-10 object-contain mix-blend-multiply">
+                </div>
+                
+                <!-- Text Content -->
+                <div class="space-y-1">
+                    <p class="text-xs font-bold text-[#3d6a00] uppercase tracking-wider">Interactive UI</p>
+                    <p class="text-sm text-[#1a1c18] leading-relaxed">
+                        Touch and drag my <span class="font-bold border-b border-[#3d6a00]/30">profile picture</span> or the text <span class="font-bold border-b border-[#3d6a00]/30">Amit Dutta</span> to transform the navbar. Drop it in the trash to close it.
+                    </p>
+                </div>
+            </div>
+        </div>
     </main>
-
-    <!-- HIDDEN PRINT RESUME (Preserved) -->
-    <div id="resume-print-view">
-        <h1 style="font-size: 24pt; font-weight: bold; text-transform: uppercase;">Amit Dutta</h1>
-        <p>Software Developer & CS Undergraduate | Kolkata, India</p>
-        <p>Email: amitdutta4255@gmail.com | Github: notamitgamer</p>
-        <hr style="border-top: 2px solid black; margin: 15px 0;">
-        <h3>Objective</h3>
-        <p>Computer Science student seeking internship opportunities.</p>
-        <h3 style="margin-top: 20px;">Education</h3>
-        <p>B.Sc Computer Science (Hons) - APC College</p>
-    </div>
 
     <!-- LOGIC SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- 0. NAV BAR PILL LOGIC (UPDATED) ---
+            // --- 0. NAV BAR PILL LOGIC ---
             const pillContainer = document.getElementById('pill-nav-container');
             const pill = document.getElementById('sliding-pill');
             const pillLinks = document.querySelectorAll('.nav-pill-link');
@@ -1019,13 +1197,11 @@
                         const rect = e.target.getBoundingClientRect();
                         const containerRect = pillContainer.getBoundingClientRect();
                         
-                        // Calculate position relative to the container
                         const left = rect.left - containerRect.left;
                         const top = rect.top - containerRect.top;
                         const width = rect.width;
                         const height = rect.height;
 
-                        // Apply styles
                         pill.style.width = `${width}px`;
                         pill.style.height = `${height}px`;
                         pill.style.transform = `translate(${left}px, ${top}px)`;
@@ -1037,6 +1213,207 @@
                     pill.style.opacity = '0';
                 });
             }
+
+            // --- 0.5. ANDROID-STYLE FLOATING NAV PHYSICS (UPDATED MOBILE ONLY) ---
+            const navBar = document.getElementById('nav-bar');
+            // const minimizeBtn = document.getElementById('minimize-btn'); // REMOVED
+            const dragHandle = document.getElementById('drag-handle');
+            const killZone = document.getElementById('kill-zone');
+            
+            let isMinimized = false;
+            let isDragging = false;
+            
+            // Physics variables
+            let startX, startY, initialLeft, initialTop;
+            let currentX, currentY;
+            
+            // Desktop Minimize Action (Click Button) -> REMOVED
+            /*
+            minimizeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                minimizeNav(e);
+            });
+            */
+
+            // Mobile Gesture Logic (Immediate Drag on Touch)
+            navBar.addEventListener('pointerdown', (e) => {
+                // Only on strictly mobile (screen < 768px) to exclude tablets
+                if (window.innerWidth >= 768) return;
+                
+                // If not minimized, we treat a touch on the photo/name as a drag start
+                if (!isMinimized) {
+                    // Prevent link navigation
+                    if (e.target.closest('#drag-handle')) {
+                        e.preventDefault(); 
+                    } else {
+                        return; // Allow scrolling on other parts
+                    }
+                    
+                    // Trigger shrink immediately
+                    minimizeNav(e);
+                    
+                    // Start drag physics immediately
+                    isDragging = true;
+                    navBar.classList.add('is-dragging');
+                    killZone.classList.add('active');
+                    
+                    // Setup coordinates
+                    const rect = navBar.getBoundingClientRect();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = rect.left;
+                    initialTop = rect.top;
+                    
+                    navBar.setPointerCapture(e.pointerId);
+                } else {
+                    // Already minimized, just start standard drag
+                    e.preventDefault(); 
+                    isDragging = true;
+                    navBar.classList.add('is-dragging');
+                    navBar.classList.remove('docked-left', 'docked-right');
+                    
+                    killZone.classList.add('active');
+
+                    const rect = navBar.getBoundingClientRect();
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = rect.left;
+                    initialTop = rect.top;
+                    
+                    navBar.setPointerCapture(e.pointerId);
+                }
+            });
+
+            function minimizeNav(e) {
+                isMinimized = true;
+                
+                // Add minimized class
+                navBar.classList.add('nav-minimized');
+                
+                // If triggered by gesture, position under finger, else default top-right
+                if (e && e.clientX) {
+                    const bubbleRadius = 32; // Half of 64px width
+                    navBar.style.left = (e.clientX - bubbleRadius) + 'px';
+                    navBar.style.top = (e.clientY - bubbleRadius) + 'px';
+                } else {
+                    navBar.style.left = (window.innerWidth - 80) + 'px';
+                    navBar.style.top = '20px';
+                }
+                
+                navBar.style.right = 'auto'; // Important for positioning
+                navBar.style.transform = 'translate(0, 0)'; 
+            }
+
+            function restoreNav() {
+                isMinimized = false;
+                navBar.classList.remove('nav-minimized', 'docked-left', 'docked-right');
+                
+                // Reset styles explicitly to fix "Disappear" bug & Center bug
+                navBar.style.left = '';
+                navBar.style.top = '';
+                navBar.style.right = ''; // FIX: Clear 'auto' so mx-auto works again
+                navBar.style.transform = 'translateY(0)'; // Force reset transform
+                navBar.style.opacity = '1'; // Force visible
+            }
+            
+            // Kill Nav Animation
+            function killNav() {
+                navBar.style.transition = "transform 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.3s ease";
+                navBar.style.transform = "scale(0)";
+                navBar.style.opacity = "0";
+                
+                killZone.classList.remove('active', 'danger');
+                
+                setTimeout(() => {
+                    navBar.style.display = 'none';
+                }, 300);
+            }
+
+            navBar.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                currentX = initialLeft + dx;
+                currentY = initialTop + dy;
+
+                navBar.style.left = `${currentX}px`;
+                navBar.style.top = `${currentY}px`;
+                
+                // Check Collision with Kill Zone
+                const killRect = killZone.getBoundingClientRect();
+                const bubbleRect = navBar.getBoundingClientRect();
+                
+                const killCenter = { x: killRect.left + killRect.width/2, y: killRect.top + killRect.height/2 };
+                const bubbleCenter = { x: bubbleRect.left + bubbleRect.width/2, y: bubbleRect.top + bubbleRect.height/2 };
+                
+                const distance = Math.sqrt(Math.pow(killCenter.x - bubbleCenter.x, 2) + Math.pow(killCenter.y - bubbleCenter.y, 2));
+                
+                if (distance < 70) { 
+                    killZone.classList.add('danger'); // Triggers Aura
+                    navBar.style.opacity = '0.5';
+                    navBar.style.transform = 'scale(0.8)';
+                } else {
+                    killZone.classList.remove('danger');
+                    navBar.style.opacity = '1';
+                    navBar.style.transform = 'scale(1)';
+                }
+            });
+
+            navBar.addEventListener('pointerup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                navBar.classList.remove('is-dragging');
+                navBar.releasePointerCapture(e.pointerId);
+                
+                killZone.classList.remove('active', 'danger');
+
+                // 1. Kill Zone?
+                 const killRect = killZone.getBoundingClientRect();
+                 const bubbleRect = navBar.getBoundingClientRect();
+                 const kC = { x: killRect.left + killRect.width/2, y: killRect.top + killRect.height/2 };
+                 const bC = { x: bubbleRect.left + bubbleRect.width/2, y: bubbleRect.top + bubbleRect.height/2 };
+                 const dist = Math.sqrt(Math.pow(kC.x - bC.x, 2) + Math.pow(kC.y - bC.y, 2));
+
+                if (dist < 70) {
+                    killNav();
+                    return;
+                }
+                
+                // 2. Header Zone (Restore)?
+                if (currentY < 80) { 
+                    restoreNav();
+                    return;
+                }
+                
+                // 3. Docking Logic
+                const screenWidth = window.innerWidth;
+                const bubbleWidth = 64; 
+                const dockThreshold = 50; 
+                
+                let finalX = currentX;
+                let finalY = Math.max(20, Math.min(window.innerHeight - 80, currentY));
+                
+                if (currentX < dockThreshold) {
+                    finalX = 0;
+                    navBar.classList.add('docked-left');
+                } else if (currentX > screenWidth - bubbleWidth - dockThreshold) {
+                    finalX = screenWidth - bubbleWidth;
+                    navBar.classList.add('docked-right');
+                } else {
+                    finalX = Math.max(0, Math.min(screenWidth - bubbleWidth, currentX));
+                }
+
+                navBar.style.left = `${finalX}px`;
+                navBar.style.top = `${finalY}px`;
+                navBar.style.transform = ''; 
+                navBar.style.opacity = '1';
+            });
+            
+            // Prevent default drag behavior on the image
+            document.querySelector('.logo-container img').addEventListener('dragstart', (e) => e.preventDefault());
+
 
             // --- 1. TIME-AWARE HERO STATUS ---
             const statusFocus = document.getElementById('status-focus');
@@ -1070,13 +1447,12 @@
                         const text = target.getAttribute('data-text');
                         target.textContent = ""; 
                         
-                        // Simple typing (no cursor per request)
                         let i = 0;
                         function type() {
                             if (i < text.length) {
                                 target.textContent += text.charAt(i);
                                 i++;
-                                setTimeout(type, 50); // Typing speed
+                                setTimeout(type, 50); 
                             }
                         }
                         type();
@@ -1099,7 +1475,7 @@
             }, 2000);
 
 
-            // --- 3. PROJECT TITLE ANIMATIONS (SCROLL ONLY, NO HOVER) ---
+            // --- 3. PROJECT TITLE ANIMATIONS ---
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const binary = "010101010101"; 
             const emojis = ["🔒", "🗝️", "📝", "💻", "💾", "🛡️", "🔐", "🔓"];
@@ -1107,12 +1483,11 @@
             const code = "{}[]<>";
             
             function triggerAnimation(target) {
-                // Avoid restarting if already running
                 if (target.dataset.animating === 'true') return;
                 target.dataset.animating = 'true';
                 
                 const originalText = target.dataset.original;
-                const type = target.dataset.project;
+                const projectType = target.dataset.project; // Get the project type (e.g., 'logger')
                 let iterations = 0;
                 
                 const interval = setInterval(() => {
@@ -1120,10 +1495,11 @@
                         .map((letter, index) => {
                             if(index < iterations) return letter;
                             
-                            if (type === 'mojic') return emojis[Math.floor(Math.random() * emojis.length)];
-                            if (type === 'ada') return binary[Math.floor(Math.random() * binary.length)];
-                            if (type === 'githrun') return terminal[Math.floor(Math.random() * terminal.length)];
-                            if (type === 'compiler') return code[Math.floor(Math.random() * code.length)];
+                            // Scramble characters based on project type
+                            if (projectType === 'mojic') return emojis[Math.floor(Math.random() * emojis.length)];
+                            if (projectType === 'ada') return binary[Math.floor(Math.random() * binary.length)];
+                            if (projectType === 'githrun') return terminal[Math.floor(Math.random() * terminal.length)];
+                            if (projectType === 'compiler') return code[Math.floor(Math.random() * code.length)];
                             
                             return letters[Math.floor(Math.random() * 26)];
                         })
@@ -1133,26 +1509,28 @@
                         clearInterval(interval);
                         target.innerText = originalText;
                         target.dataset.animating = 'false';
+
+                        // --- SHOW GIF AFTER COMPLETION ---
+                        if(projectType === 'logger') {
+                            const newGif = document.getElementById('logger-new-gif');
+                            if(newGif) newGif.style.opacity = '1';
+                        }
                     }
                     
                     iterations += 1/3; 
-                }, 40); // Slightly slower for better visibility
+                }, 40); 
             }
 
-            // Setup targets
             const projectTitles = document.querySelectorAll('.project-title');
             
-            // EDIT: Removed Hover Listener
             projectTitles.forEach(title => {
                 title.dataset.original = title.textContent.trim();
             });
 
-            // 2. Scroll Observer (Auto Trigger - Once)
             const titleObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         triggerAnimation(entry.target);
-                        // EDIT: Unobserve to run ONLY ONCE
                         titleObserver.unobserve(entry.target); 
                     }
                 });
@@ -1160,14 +1538,14 @@
 
             projectTitles.forEach(title => titleObserver.observe(title));
 
-            // --- 4. STANDARD ANIMATIONS (NAV & SCROLL) ---
+            // --- 4. STANDARD ANIMATIONS ---
             anime({
                 targets: '#nav-bar',
                 translateY: [-20, 0],
                 opacity: [0, 1],
-                duration: 1000,
+                duration: 100,
                 easing: 'cubicBezier(0.2, 0, 0, 1)',
-                delay: 200
+                delay: 100
             });
 
             anime({
@@ -1179,7 +1557,6 @@
                 easing: 'cubicBezier(0.2, 0, 0, 1)'
             });
 
-            // Blob Mouse Follow
             const b1 = document.getElementById('blob-1');
             const b2 = document.getElementById('blob-2');
             window.addEventListener('mousemove', (e) => {
@@ -1191,7 +1568,6 @@
                 });
             });
 
-             // Scroll Reveal Observer
              const revealObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
