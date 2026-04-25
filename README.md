@@ -8,7 +8,7 @@
 > **A new domain has been registered recently for portfolio, visit <a href="https://amit.is-not.cool">amit.is-not.cool</a> to know more.**
 
 > [!NOTE]
-> **Added new mail-id ***mail@amit.is-a.dev*** and ***notifierbot@amit.is-a.dev*****
+> **Added new mail-id ***mail@amit.is-a.dev*** and ***notifierbot@amit.is-a.dev***.**
 
 # Source code and files for amit.is-a.dev domain and subdomain
 
