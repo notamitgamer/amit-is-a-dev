@@ -20,6 +20,16 @@
 > https://github.com/advisories/GHSA-wqq3-wfmp-v85g <br>
 > https://github.com/notamitgamer/mojic/security/advisories/GHSA-wqq3-wfmp-v85g
 
+> [!IMPORTANT]
+> ***Due large number of files and storage, new separate CDN has been published.***
+> 
+> ***View the file at:***
+> * https://usercontent.amit.is-a.dev
+> * https://usercontent.amit.is-not.cool<br>
+>
+> ***Use the raw files using:***
+> * https://raw.usercontent.amit.is-a.dev
+> * https://raw.usercontent.amit.is-not.cool
 
 # Source code and files for amit.is-a.dev domain and subdomain
 
